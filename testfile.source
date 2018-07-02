@@ -1,1 +1,6 @@
-asdf=12+12;
+const int asdf=12+12;
+
+int asdf(int i,char c){
+    int i=0;
+    i=i+3;
+}

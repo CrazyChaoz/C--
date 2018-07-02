@@ -15,14 +15,12 @@ CHARACTERS
   letter    = 'A'..'Z' + 'a'..'z'.
   digit     = '0'..'9'.
   character    = ANY - '\r' - '\n' - '\t' - '\'' - '\\'.
-  zero      = '0'.
-  nonzerodigit  = '1'..'9'.
 
 TOKENS
-  ident     = letter { letter | digit }.
+  ident     = letter { letter | digit | '_' }.
+  intCon    = digit{digit}.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
   charCon   = '\'' ( character | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
-  number    = zero | (nonzerodigit {digit}).
 
   //--- token definitions for lookahead peeking
   lpar      = "(".
@@ -46,13 +44,27 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 Cmm={
-Assignment
+Constant
+|Procedure
 }.
+
+Procedure   = Type ident "("{Parameters}")"
+"{"
+Assignment
+|Expression
+"}".
+
+
+Parameters  = Type ident{","Type ident}.
+
+Constant    = "const" Type ident.
+
+Type        = ident{"["intCon"]"}.
 
 Assignment  = Variable "=" Expression ";".
 Variable    = ident {"." ident | "[" Expression "]"}.
 Expression  = Term {('+'|'-')Term}.
 Term        = Factor {('*'|'/') Factor}.
-Factor      = ['='] (ident|number).
+Factor      = ['='] (ident|intCon).
 
 END Cmm.
