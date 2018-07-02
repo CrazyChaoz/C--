@@ -23,8 +23,6 @@ TOKENS
   charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
 
 
-  testCompiler="COMPILER".
-
   //--- token definitions for lookahead peeking
   lpar      = "(".
   rpar      = ")".
@@ -46,7 +44,9 @@ IGNORE "\t\r\n"
 
 PRODUCTIONS
 
-Cmm=testCompiler ident.
+Cmm={
+number
+}.
 //{
 //constDecl
 //}.
