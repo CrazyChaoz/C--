@@ -1,8 +1,5 @@
-<p align="center">
-
 # Diplomarbeit C--
 
-<p>
 
 `von Jakub Krajnansky und Stefan Kempinger`  
 `in zusammenarbeit mit der `[JKU Linz](ssw.jku.at)
@@ -14,10 +11,14 @@
 ### Arbeitsteilung  
 
 ---
+<br>
+
 ##### Krajnansky
-<p align="center">
+
 Compiler
-<p>
+
+<br>
+
 
 ##### Kempinger
 <p align="center">
