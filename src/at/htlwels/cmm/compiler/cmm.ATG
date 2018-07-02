@@ -1,5 +1,3 @@
-
-
 /*-------------------------------------------------------------------------
 CMM Compiler description for C--
 === ============================
@@ -46,6 +44,21 @@ COMPILER CMM
 		return obj.kind == Obj.TYPE;
 	}
 
+
+
+	String readType(){
+    	    Token x = scanner.Peek();
+    	    String retval=x.val;
+    	    return retval;
+    	}
+
+	String readType(){
+    	    Token x = scanner.Peek();
+    	    String retval=x.val;
+    	    return retval;
+    	}
+
+
 /*-------------------------------------------------------------------------*/
 
 CHARACTERS
@@ -58,6 +71,7 @@ TOKENS
   intCon    = digit { digit }.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
   charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
+  whitespace = ' ' | '\t' | '\r' | '\n'.
 
   //--- token definitions for lookahead peeking
   lpar      = "(".
@@ -87,7 +101,7 @@ CMM
 | StructDecl
 | IF(isVarDecl()) VarDecl
 | ProcDecl
-}                                 (. if (debug[0]) tab.dumpScope(tab.curScope.locals, 0); .)
+}                                   (. if (debug[0]) tab.dumpScope(tab.curScope.locals, 0); .)
 .
 //-------------------------------------------------------------------------
 ConstDecl
@@ -95,7 +109,7 @@ ConstDecl
 "const" Type ident "=" (intCon | floatCon | charCon) ";".
 //-------------------------------------------------------------------------
 VarDecl
-=
+=                                   (. tab.insert(Obj.VAR,scanner.Peek(),); .)
 Type ident {"," ident} ";".
 //-------------------------------------------------------------------------
 StructDecl

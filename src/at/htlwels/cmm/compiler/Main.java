@@ -16,6 +16,7 @@ public class Main {
         Parser parser = new Parser(new Scanner("testfile.source"));
         parser.Parse();
         System.out.println("Number of Errors: " + parser.errors.count);
+
     }
 
 
