@@ -6,15 +6,16 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import at.htlwels.cmm.compiler.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class Tests {
+public class Main {
 
     public static void main(String[] args) {
-
+        Parser parser=new Parser(new Scanner("testfile.source"));
+        parser.Parse();
+        System.out.println("Number of Errors: "+parser.errors.count);
     }
 
     @Test
@@ -26,7 +27,8 @@ public class Tests {
 
         Scanner instance = new Scanner(is);
         Token expected = new Token();
-        expected.kind = Parser._lss;
+        expected.kind = Parser._assign;
+
         expected.val = sContent;
         // Test
         Token result = instance.Scan();
@@ -36,5 +38,7 @@ public class Tests {
         assertEquals(expected.kind, result.kind);
         assertEquals(expected.val, result.val);
     }
+
+
 
 }
