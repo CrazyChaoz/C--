@@ -13,23 +13,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class Main {
 
     public static void main(String[] args) {
-        Parser parser=new Parser(new Scanner("testfile.source"));
+        Parser parser = new Parser(new Scanner("testfile.source"));
         parser.Parse();
-        System.out.println("Number of Errors: "+parser.errors.count);
+        System.out.println("Number of Errors: " + parser.errors.count);
     }
 
     @Test
     public void tokenTest() throws UnsupportedEncodingException {
         System.out.println("Der TokenTest");
         // Initialize
-        String sContent = "<";
+        String sContent = "=";
         InputStream is = new ByteArrayInputStream(sContent.getBytes("UTF-8"));
 
         Scanner instance = new Scanner(is);
         Token expected = new Token();
         expected.kind = Parser._assign;
-
         expected.val = sContent;
+
+
         // Test
         Token result = instance.Scan();
         // Validate
@@ -38,7 +39,6 @@ public class Main {
         assertEquals(expected.kind, result.kind);
         assertEquals(expected.val, result.val);
     }
-
 
 
 }
