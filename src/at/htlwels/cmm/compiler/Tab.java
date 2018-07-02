@@ -32,9 +32,12 @@ public class Tab {
 
 	//------------------ scope management ---------------------
 
-	public void openScope() {
-		// TODO
-	}
+    public void openScope() {
+        Scope newScope=new Scope();
+        newScope.outer=curScope;
+        curScope = newScope;
+        curLevel++;
+    }
 
 	public void closeScope() {
 		curScope = curScope.outer;

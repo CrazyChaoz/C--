@@ -11,7 +11,11 @@ public class NodeList {
 	// Append x to the list
 	public void add(Node x) {
 		if (x != null) {
-			if (head == null) head = x; else tail.next = x;
+			if (head == null)
+				head = x;
+			else
+				tail.next = x;
+
 			tail = x;
 		}
 	}
