@@ -28,7 +28,6 @@ public class Strings {
 
 	// Returns the string that is stored at adr in the string storage
 	public String get(int adr) {
-		// TODO
 		return null;
 	}
 

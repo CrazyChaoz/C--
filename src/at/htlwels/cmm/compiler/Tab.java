@@ -86,20 +86,17 @@ public class Tab {
 
 	// Convert a digit string into an int
 	public int intVal(String s) {
-		// TODO
-		return 0;
+		return Integer.parseInt(s);
 	}
 
 	// Convert a string representation of a float constant into a float value
 	public float floatVal(String s) {
-		// TODO
-		return 0f;
+		return Float.parseFloat(s);
 	}
 
 	// Convert a string representation of a char constant into a char value
 	public char charVal(String s) {
-		// TODO
-		return 0;
+		return s.charAt(0);
 	}
 
 	//---------------- methods for dumping the symbol table --------------
