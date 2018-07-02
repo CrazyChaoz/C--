@@ -15,7 +15,7 @@ public class Obj {
 		PROC   = 3;
 	public int     kind;      // CON, VAR, TYPE, PROC
 	public String  name;      // object name
-	public Struct  type;      // object type
+	public Type type;      // object type
 	public Obj     next;      // next local object in this scope
 
 	public int     val;       // CON: int or char value
@@ -31,7 +31,7 @@ public class Obj {
 	public Obj     locals;    // PROC: parameters and local objects
 	public boolean isForward; // PROC: is it a forward declaration
 
-	public Obj(int kind, String name, Struct type) {
+	public Obj(int kind, String name, Type type) {
 		this.kind = kind; this.name = name; this.type = type;
 	}
 }

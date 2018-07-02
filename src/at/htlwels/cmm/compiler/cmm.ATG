@@ -46,17 +46,16 @@ COMPILER CMM
 
 
 
-	String readType(){
-    	    Token x = scanner.Peek();
-    	    String retval=x.val;
-    	    return retval;
-    	}
+	String read1Ahead(){
+        Token x = scanner.Peek();
+        return x.val;
+    }
 
-	String readType(){
-    	    Token x = scanner.Peek();
-    	    String retval=x.val;
-    	    return retval;
-    	}
+	String read2Ahead(){
+        scanner.Peek();
+        Token x = scanner.Peek();
+        return x.val;
+    }
 
 
 /*-------------------------------------------------------------------------*/

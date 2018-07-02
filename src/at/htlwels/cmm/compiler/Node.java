@@ -54,7 +54,7 @@ public final class Node {
 		AND      = 34;   // &&
 
 	public int kind;        // STATSEQ, ASSIGN, ...
-	public Struct type;     // only used in expressions
+	public Type type;     // only used in expressions
 	public int line;        // only used in statement nodes
 
 	public Node left;       // left son
@@ -66,7 +66,7 @@ public final class Node {
 	public float fVal;      // value of a FLOATCON
 
 	// for expression nodes
-	public Node(int kind, Node left, Node right, Struct type) {
+	public Node(int kind, Node left, Node right, Type type) {
 		this.kind = kind;
 		this.left = left;
 		this.right = right;

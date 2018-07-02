@@ -1,14 +1,14 @@
 package at.htlwels.cmm.compiler;
 
 /*--------------------------------------------------------------------------------
-Struct   Structure of a C-- type
+Type   Structure of a C-- type
 ======   =======================
-A Struct holds information about a C-- type. There are 3 primitive types
+A Type holds information about a C-- type. There are 3 primitive types
 (int, float, char) and 2 structured types (arrays, structures). The type Bool
 results from compare operations, but there is no boolean type in C--.
 --------------------------------------------------------------------------------*/
 
-public class Struct {
+public class Type {
 	public static final int // structure kinds
 		NONE   = 0,
 		INT    = 1,
@@ -17,13 +17,14 @@ public class Struct {
 		BOOL   = 4,
 		ARR    = 5,
 		STRUCT = 6;
+
 	public int    kind;		  // NONE, INT, FLOAT, CHAR, ARR, STRUCT
 	public int    size;     // size of this type in bytes
 	public int    elements; // ARR: number of elements
-	public Struct elemType; // ARR: element type
+	public Type elemType; // ARR: element type
 	public Obj    fields;   // STRUCT: fields
 
-	public Struct(int kind) {
+	public Type(int kind) {
 		this.kind = kind;
 		switch (kind) {
 			case INT:   size = 4; break;
@@ -34,12 +35,15 @@ public class Struct {
 		}
 	}
 
-	public Struct(int kind, int elements, Struct elemType) {
+
+	public Type(int kind, int elements, Type elemType) {
 		this.kind = kind;
 		this.elements = elements;
 		this.elemType = elemType;
 		size = elements * elemType.size;
 	}
+
+
 
 	// Checks whether this type is a primitive type
 	public boolean isPrimitive() {
