@@ -20,11 +20,11 @@ public class Tab {
     public Scope curScope;             // current scope
     public int curLevel;             // nesting level of current scope
 
-    public static Struct intType;    // predefined types
-    public static Struct floatType;
-    public static Struct charType;
-    public static Struct boolType;
-    public static Struct noType;
+    public static Type intType;    // predefined types
+    public static Type floatType;
+    public static Type charType;
+    public static Type boolType;
+    public static Type noType;
     public static Obj noObj;             // predefined objects
 
     private Parser parser;           // for error messages
@@ -47,8 +47,14 @@ public class Tab {
 
     // Create a new object with the given kind, name and type
     // and insert it into the current scope.
-    public Obj insert(int kind, String name, Struct type) {
-        // TODO
+
+    public Obj insert(int kind, String name, String type) {
+
+        return null;
+    }
+
+    public Obj insert(int kind, String name, Type type) {
+
         return null;
     }
 
@@ -60,7 +66,7 @@ public class Tab {
     }
 
     // Retrieve a struct field with the given name from the fields of "type"
-    public Obj findField(String name, Struct type) {
+    public Obj findField(String name, Type type) {
         // TODO
         return null;
     }
@@ -107,26 +113,26 @@ public class Tab {
     //---------------- methods for dumping the symbol table --------------
 
     // Print a type
-    public void dumpStruct(Struct type, int indent) {
+    public void dumpStruct(Type type, int indent) {
         switch (type.kind) {
-            case Struct.INT:
+            case Type.INT:
                 System.out.print("Int(" + type.size + ")");
                 break;
-            case Struct.FLOAT:
+            case Type.FLOAT:
                 System.out.print("Float(" + type.size + ")");
                 break;
-            case Struct.CHAR:
+            case Type.CHAR:
                 System.out.print("Char(" + type.size + ")");
                 break;
-            case Struct.BOOL:
+            case Type.BOOL:
                 System.out.print("Bool(" + type.size + ")");
                 break;
-            case Struct.ARR:
+            case Type.ARR:
                 System.out.print("Arr[" + type.elements + "(" + type.size + ")] of ");
                 dumpStruct(type.elemType, indent);
                 break;
-            case Struct.STRUCT:
-                System.out.println("Struct(" + type.size + ") {");
+            case Type.STRUCT:
+                System.out.println("Type(" + type.size + ") {");
                 for (Obj o = type.fields; o != null; o = o.next) dumpObj(o, indent + 1);
                 for (int i = 0; i < indent; i++) System.out.print("  ");
                 System.out.print("}");
@@ -184,11 +190,11 @@ public class Tab {
         curLevel = -1;
 
         // create predeclared types
-        intType = new Struct(Struct.INT);
-        floatType = new Struct(Struct.FLOAT);
-        charType = new Struct(Struct.CHAR);
-        boolType = new Struct(Struct.BOOL);
-        noType = new Struct(Struct.NONE);
+        intType = new Type(Type.INT);
+        floatType = new Type(Type.FLOAT);
+        charType = new Type(Type.CHAR);
+        boolType = new Type(Type.BOOL);
+        noType = new Type(Type.NONE);
         noObj = new Obj(Obj.VAR, "???", noType);
 
         // insert predeclared types into universe
