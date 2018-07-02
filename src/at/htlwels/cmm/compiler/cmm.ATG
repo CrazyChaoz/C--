@@ -1,26 +1,63 @@
-package at.htlwels.cmm.compiler;
-
-// Set the name of your grammar here (and at the end of this grammar):
-
-COMPILER Cmm
-
-// Add auxiliary methods and declaration here.
 
 
-// If you want your generated compiler case insensitive add the
-// keyword IGNORECASE here.
+/*-------------------------------------------------------------------------
+CMM Compiler description for C--
+=== ============================
+-------------------------------------------------------------------------*/
 
+COMPILER CMM
+
+  public  Tab       tab;                     // symbol table
+  public  boolean[] debug = new boolean[10]; // switches for trace output
+
+//--- LL(1) conflict resolvers
+
+	// Returns true if a VarDecl comes next in the input
+	boolean isVarDecl() {
+		if (la.kind == _ident) {
+			Token x = scanner.Peek();
+			while (x.kind != _semicolon) {
+				if (x.kind == _EOF || x.kind == _lpar || x.kind == _assign) return false;
+				x = scanner.Peek();
+			}
+			return true;
+		}
+		return false;
+	}
+
+	// Returns true if the next input is an Expr and not a '(' Condition ')'
+	boolean isExpr() {
+		if (la.kind == _bang) return false;
+		else if (la.kind == _lpar) {
+			Token x = scanner.Peek();
+			while (x.kind != _rpar && x.kind != _EOF) {
+				if (x.kind == _eql || x.kind == _neq || x.kind == _lss || x.kind == _leq || x.kind == _gtr || x.kind == _geq) return false;
+				x = scanner.Peek();
+			}
+			return x.kind == _rpar;
+		} else return true;
+	}
+
+	// Returns true if the next input is a type cast (requires symbol table)
+	boolean isCast() {
+		Token x = scanner.Peek();
+		if (x.kind != _ident) return false;
+		Obj obj = tab.find(x.val);
+		return obj.kind == Obj.TYPE;
+	}
+
+/*-------------------------------------------------------------------------*/
 
 CHARACTERS
   letter    = 'A'..'Z' + 'a'..'z'.
   digit     = '0'..'9'.
-  character    = ANY - '\r' - '\n' - '\t' - '\'' - '\\'.
+  charCh    = ANY - '\r' - '\n' - '\t' - '\'' - '\\'.
 
 TOKENS
-  ident     = letter { letter | digit | '_' }.
-  intCon    = digit{digit}.
+  ident     = letter { letter | digit }.
+  intCon    = digit { digit }.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
-  charCon   = '\'' ( character | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
+  charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
 
   //--- token definitions for lookahead peeking
   lpar      = "(".
@@ -40,31 +77,128 @@ COMMENTS FROM "//" TO '\n'
 
 IGNORE "\t\r\n"
 
+//-------------------------------------------------------------------------
 
 PRODUCTIONS
 
-Cmm={
-Constant
-|Procedure
-}.
-
-Procedure   = Type ident "("{Parameters}")"
+CMM
+=	                                (. tab = new Tab(this); .)
+{ ConstDecl
+| StructDecl
+| IF(isVarDecl()) VarDecl
+| ProcDecl
+}                                 (. if (debug[0]) tab.dumpScope(tab.curScope.locals, 0); .)
+.
+//-------------------------------------------------------------------------
+ConstDecl
+=
+"const" Type ident "=" (intCon | floatCon | charCon) ";".
+//-------------------------------------------------------------------------
+VarDecl
+=
+Type ident {"," ident} ";".
+//-------------------------------------------------------------------------
+StructDecl
+=
+"struct" ident "{" { VarDecl} "}".
+//-------------------------------------------------------------------------
+ProcDecl                          (. Obj curProc; .)
+=
+(Type | "void") ident "(" [ FormPars ] ")"
 "{"
-Assignment
-|Expression
-"}".
+{ ConstDecl
+| IF(isVarDecl()) VarDecl
+| Statement
+}
+"}"                               (. if (debug[1]) Node.dump(curProc.ast, 0); .)
+| ";" "forward" ";".
+//-------------------------------------------------------------------------
+FormPars
+=
+FormPar {"," FormPar}.
+//-------------------------------------------------------------------------
+FormPar
+=
+["ref"] Type ident.
+//-------------------------------------------------------------------------
+Type
+=
+ident {"[" intCon "]"}.
+//-------------------------------------------------------------------------
+Statement
+=
+( Designator
+  ( "=" Expr
+  | ActPars
+  ) ";"
+| "if" "(" Condition ")" Statement ["else" Statement]
+| "while" "(" Condition ")" Statement
+| "print" "(" Expr ")" ";"
+| "{" {Statement} "}"
+| "return" Expr ";"
+| ";"
+).
+//-------------------------------------------------------------------------
+ActPars
+=
+"(" [ActPar {"," ActPar}] ")".
+//-------------------------------------------------------------------------
+ActPar
+=
+Expr | "ref" Expr.
+//-------------------------------------------------------------------------
+Condition
+=
+CondTerm {"||" CondTerm}.
+//-------------------------------------------------------------------------
+CondTerm
+=
+CondFact {"&&" CondFact}.
+//-------------------------------------------------------------------------
+CondFact
+=
+( IF (isExpr()) Expr
+  Relop
+  Expr
+| "!" "(" Condition ")"
+| "(" Condition ")"
+).
+//-------------------------------------------------------------------------
+Relop
+=
+"==" | "!=" | ">" | ">=" | "<" | "<=".
+//-------------------------------------------------------------------------
+Expr
+=
+Term {Addop Term}.
+//-------------------------------------------------------------------------
+Term
+=
+Factor {Mulop Factor}.
+//-------------------------------------------------------------------------
+Factor
+=
+( Designator [ActPars]
+| intCon
+| floatCon
+| charCon
+| "read" "(" ")"
+| "-" Factor
+| IF (isCast())
+  "(" Type ")" Factor
+| "(" Expr ")"
+).
+//-------------------------------------------------------------------------
+Designator
+=
+ident {"." ident | "[" Expr "]"}.
+//-------------------------------------------------------------------------
+Addop
+=
+"+" | "-".
+//-------------------------------------------------------------------------
+Mulop
+=
+"*" | "/" | "%".
 
-
-Parameters  = Type ident{","Type ident}.
-
-Constant    = "const" Type ident.
-
-Type        = ident{"["intCon"]"}.
-
-Assignment  = Variable "=" Expression ";".
-Variable    = ident {"." ident | "[" Expression "]"}.
-Expression  = Term {('+'|'-')Term}.
-Term        = Factor {('*'|'/') Factor}.
-Factor      = ['='] (ident|intCon).
-
-END Cmm.
+END CMM.
