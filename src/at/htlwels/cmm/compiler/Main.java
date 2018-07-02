@@ -18,6 +18,8 @@ public class Main {
         System.out.println("Number of Errors: " + parser.errors.count);
     }
 
+
+
     @Test
     public void tokenTest() throws UnsupportedEncodingException {
         System.out.println("Der TokenTest");
