@@ -21,12 +21,12 @@ public class Tests {
     public void tokenTest() throws UnsupportedEncodingException {
         System.out.println("Der TokenTest");
         // Initialize
-        String sContent = "<";
+        String sContent = "434.3";
         InputStream is = new ByteArrayInputStream(sContent.getBytes("UTF-8"));
 
         Scanner instance = new Scanner(is);
         Token expected = new Token();
-        expected.kind = Parser._lss;
+        expected.kind = Parser._floatCon;
         expected.val = sContent;
         // Test
         Token result = instance.Scan();
