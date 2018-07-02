@@ -1,4 +1,7 @@
+package at.htlwels.cmm.compiler;
+
 // Set the name of your grammar here (and at the end of this grammar):
+
 COMPILER Cmm
 
 // Add auxiliary methods and declaration here.
@@ -18,6 +21,9 @@ TOKENS
   intCon    = digit { digit }.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
   charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
+
+
+  testCompiler="COMPILER".
 
   //--- token definitions for lookahead peeking
   lpar      = "(".
@@ -40,15 +46,17 @@ IGNORE "\t\r\n"
 
 PRODUCTIONS
 
-// Add your productions here, one must have the same name as the grammar,
-// it will be the start symbol (entry point of your compiler).
-// Example:
-//   Cmm = "BEGIN" { Statement } "END".
-//   Statement = ident "=" number { "+" number } .
+Cmm=testCompiler ident.
+//{
+//constDecl
+//}.
 
-Cmm=
-.
 
-// End of your compiler specification, make sure the name here matches
-// the grammar name at the start of this grammar.
+number      = (intCon|floatCon).
+
+
+Statement   = ident "=" number { "+" number }.
+
+constDecl   = "const" ident (. System.out.println("test"); .).
+
 END Cmm.
