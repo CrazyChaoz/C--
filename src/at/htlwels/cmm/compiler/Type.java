@@ -1,7 +1,7 @@
 package at.htlwels.cmm.compiler;
 
-public enum KempType{
-    NONE, INT, FLOAT, CHAR, BOOL, ARR, STRUCT,VOID;
+public enum Type {
+    NONE, INT, FLOAT, CHAR, BOOL, ARR, STRUCT;
 
     //testing the values
     public static void main(String[] args) {
