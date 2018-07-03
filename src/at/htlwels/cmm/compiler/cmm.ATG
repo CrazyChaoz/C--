@@ -5,7 +5,7 @@ CMM Compiler description for C--
 
 COMPILER CMM
 
-  public  Tab       tab;                     // symbol table
+  public  KempTable       tab;                     // symbol table
   public  boolean[] debug = new boolean[10]; // switches for trace output
 
 //--- LL(1) conflict resolvers
@@ -39,24 +39,76 @@ COMPILER CMM
 	// Returns true if the next input is a type cast (requires symbol table)
 	boolean isCast() {
 		Token x = scanner.Peek();
-		if (x.kind != _ident) return false;
-		Obj obj = tab.find(x.val);
-		return obj.kind == Obj.TYPE;
+		if (x.kind != _ident)
+		    return false;
+
+        try{
+            KempType.valueOf(x.val.toUpperCase());
+            return true;
+        }catch (IllegalArgumentException e){
+            return false;
+        }
 	}
 
 
-
-	String read1Ahead(){
-        Token x = scanner.Peek();
-        return x.val;
-    }
-
 	String read2Ahead(){
+        scanner.ResetPeek();
         scanner.Peek();
-        Token x = scanner.Peek();
-        return x.val;
+        return scanner.Peek().val;
     }
 
+    void readNext5Values(){
+        scanner.ResetPeek();
+        System.out.println("Current Token Value: "+scanner.t.val);
+        for(int i = 0; i < 4; i++) {
+	        System.out.println("Value: "+scanner.Peek().val);
+        }
+     }
+
+
+
+    void variableDecleration(){
+        System.out.println("---------");
+        System.out.println("Variable declaration");
+        readNext5Values();
+        System.out.println("---------");
+    }
+
+    void constantDecleration(){
+        System.out.println("---------");
+        System.out.println("Constant declaration");
+        readNext5Values();
+        System.out.println("---------");
+    }
+
+    void procedureDecleration(){
+        System.out.println("---------");
+        System.out.println("Procedure declaration");
+        readNext5Values();
+        System.out.println("---------");
+    }
+
+    void structDecleration(){
+        System.out.println("---------");
+        System.out.println("Struct declaration");
+        readNext5Values();
+        System.out.println("---------");
+    }
+
+    void statementDecleration(){
+        System.out.println("---------");
+        System.out.println("Statement declaration");
+        readNext5Values();
+        System.out.println("---------");
+    }
+
+    void openScope(){
+        System.out.println("Opening Scope");
+    }
+
+    void closeScope(){
+        System.out.println("Closing Scope");
+    }
 
 /*-------------------------------------------------------------------------*/
 
@@ -70,7 +122,9 @@ TOKENS
   intCon    = digit { digit }.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
   charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
-  whitespace = ' ' | '\t' | '\r' | '\n'.
+  whitespace = '\t' | '\r' | '\n'.
+
+
 
   //--- token definitions for lookahead peeking
   lpar      = "(".
@@ -95,35 +149,37 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 CMM
-=	                                (. tab = new Tab(this); .)
+=	                                (. tab = new KempTable(); .)
 { ConstDecl
 | StructDecl
 | IF(isVarDecl()) VarDecl
 | ProcDecl
-}                                   (. if (debug[0]) tab.dumpScope(tab.curScope.locals, 0); .)
+}                                   (. tab.dumpTable(); .)
 .
 //-------------------------------------------------------------------------
 ConstDecl
-=
+=                                   (. constantDecleration(); .)
 "const" Type ident "=" (intCon | floatCon | charCon) ";".
 //-------------------------------------------------------------------------
 VarDecl
-=                                   (. tab.insert(Obj.VAR,scanner.Peek(),); .)
+=                                   (. variableDecleration(); .)
 Type ident {"," ident} ";".
 //-------------------------------------------------------------------------
-StructDecl
+StructDecl                          (. structDecleration(); .)
 =
 "struct" ident "{" { VarDecl} "}".
 //-------------------------------------------------------------------------
-ProcDecl                          (. Obj curProc; .)
+ProcDecl                            (. procedureDecleration(); .)
 =
 (Type | "void") ident "(" [ FormPars ] ")"
+                                    (. openScope(); .)
 "{"
 { ConstDecl
 | IF(isVarDecl()) VarDecl
 | Statement
 }
-"}"                               (. if (debug[1]) Node.dump(curProc.ast, 0); .)
+"}"
+                                    (. closeScope(); .)
 | ";" "forward" ";".
 //-------------------------------------------------------------------------
 FormPars
@@ -139,7 +195,7 @@ Type
 ident {"[" intCon "]"}.
 //-------------------------------------------------------------------------
 Statement
-=
+=                               (. statementDecleration(); .)
 ( Designator
   ( "=" Expr
   | ActPars
@@ -147,7 +203,11 @@ Statement
 | "if" "(" Condition ")" Statement ["else" Statement]
 | "while" "(" Condition ")" Statement
 | "print" "(" Expr ")" ";"
-| "{" {Statement} "}"
+| "{"
+                                    (. openScope(); .)
+   {Statement}
+                                    (. closeScope(); .)
+   "}"
 | "return" Expr ";"
 | ";"
 ).
@@ -177,9 +237,7 @@ CondFact
 | "(" Condition ")"
 ).
 //-------------------------------------------------------------------------
-Relop
-=
-"==" | "!=" | ">" | ">=" | "<" | "<=".
+Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
 //-------------------------------------------------------------------------
 Expr
 =
