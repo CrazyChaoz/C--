@@ -1,7 +1,7 @@
 package at.htlwels.cmm.compiler;
 
 public enum Type {
-    NONE, INT, FLOAT, CHAR, BOOL, ARR, STRUCT;
+    NONE, INT, FLOAT, CHAR, BOOL, ARR, STRUCT,VOID;
 
     //testing the values
     public static void main(String[] args) {
