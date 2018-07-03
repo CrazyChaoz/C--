@@ -61,6 +61,7 @@ class KempScope{
     }
 
     public void printMe(){
+        System.out.println("Printing scope");
         for (KempScope scope :innerScopes) {
             System.out.print("\t");
             KempNode node=scope.head;
