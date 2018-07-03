@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.compiler.old;
 
 /*--------------------------------------------------------------------------------
 Node   Node of the abstract syntax tree (AST) of a C-- program

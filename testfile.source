@@ -1,6 +1,25 @@
 const int asdf=12;
+const int sdfg=13;
+const int dfgh=14;
+
+struct definierung{
+    int i;
+    char c;
+}
+
+void main(){
+    print(123);
+}
 
 int asdf(int i,char c){
     int asd;
+    int i;
     i=i+3;
 }
+
+char asdf(char c){
+    int asd;
+    int i;
+    i=i+3;
+}
+

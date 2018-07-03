@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.compiler.old;
 
 /*--------------------------------------------------------------------------------
 Strings   String storage of a C-- program

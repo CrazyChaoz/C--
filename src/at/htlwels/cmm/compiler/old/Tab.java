@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.compiler.old;
 
 /*--------------------------------------------------------------------------------
 Tab   Symbol table for C--
@@ -15,6 +15,8 @@ The symbol table has methods for
 - utilities for converting strings to constants
 --------------------------------------------------------------------------------*/
 
+
+import at.htlwels.cmm.compiler.Parser;
 
 public class Tab {
     public Scope curScope;             // current scope
