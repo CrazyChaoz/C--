@@ -7,14 +7,18 @@ public class KempTable {
     KempScope globalScope=new KempScope();
     KempScope currentScope=globalScope;
 
-    //Create a new scope inside the current one and add it to the list of inner scopes.
+    /**
+     * Create a new scope inside the current one and add it to the list of inner scopes.
+     * */
     public void openScope(){
         KempScope newScope=new KempScope();
         currentScope.innerScopes.add(newScope);
         currentScope=newScope;
     }
 
-    //Exit out of the current scope and return one level up the scope hierarchy
+    /**
+     * Exit out of the current scope and return one level up the scope hierarchy
+     * */
     public void closeScope(){
         currentScope=currentScope.outerScope;
     }
