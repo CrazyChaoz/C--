@@ -201,7 +201,7 @@ CMM
 | StructDecl
 | IF(isVarDecl()) VarDecl
 | ProcDecl
-}                                   (. /*symbolTable.dumpTable();*/globalTree.dumpTree();.)
+}                                   (. /*symbolTable.dumpTable();*/ globalTree.dumpTree();.)
 .
 //-------------------------------------------------------------------------
 ConstDecl
