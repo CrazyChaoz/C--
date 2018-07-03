@@ -53,9 +53,9 @@ class SymbolScope {
 
     // Append a new node at the end of the node list.
     public void addNode(SymbolNode x) {
-        System.out.println("Addnode");
-        System.out.println("Name: "+x.name);
-        System.out.println("Value: "+x.value);
+//        System.out.println("Addnode");
+//        System.out.println("Name: "+x.name);
+//        System.out.println("Value: "+x.value);
         if (x != null) {
             if (head == null)
                 head = x;
@@ -73,7 +73,7 @@ class SymbolScope {
 
         System.out.print(einrueckung);
 
-        System.out.println("Printing scope");
+//        System.out.println("Printing scope");
         SymbolNode symbolNode =this.head;
 
         while (symbolNode !=null){

@@ -110,11 +110,10 @@ COMPILER CMM
 
         symbolTable.addNode(read2Ahead(),read4Ahead(),read1Ahead());
 
-        currentTree.addNode(Kind.CONSTANT);
-        currentTree.openScope();
+        currentTree.addNodeAndStepInto(Kind.CONSTANT);
         currentTree.addNode(Kind.IDENT,read2Ahead());
         currentTree.addNode(Kind.VALUE,read4Ahead());
-        currentTree.closeScope();
+        currentTree.stepOut();
     }
 
     void procedureDecleration(){
@@ -144,11 +143,12 @@ COMPILER CMM
 
     void openProcedureTree(SyntaxTree tree){
         currentTree=tree;
-        currentTree.addNode(Kind.STATSEQ);
+        currentTree.addNodeAndStepInto(Kind.STATSEQ);
     }
 
     void closeProcedureTree(){
         currentTree.addNode(Kind.TRAP);
+        currentTree.stepOut();
         currentTree=globalTree;
     }
 
@@ -246,7 +246,7 @@ Type
 ident {"[" intCon "]"}.
 //-------------------------------------------------------------------------
 Statement
-=                               (. statementDecleration(); .)
+=                                   (. statementDecleration(); .)
 ( Designator
   ( "=" Expr
   | ActPars
@@ -291,21 +291,21 @@ CondFact
 Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
 //-------------------------------------------------------------------------
 Expr
-=                           (.currentTree.openScope();.)
-Term {Addop Term}           (.currentTree.closeScope();.)
+=
+Term {Addop Term}           (.currentTree.stepOut();.)
 .
 //-------------------------------------------------------------------------
 Term
-=                           (.currentTree.openScope();.)
-Factor {Mulop Factor}       (.currentTree.closeScope();.)
+=
+Factor {Mulop Factor}       (.currentTree.stepOut();.)
 .
 //-------------------------------------------------------------------------
 Factor
 =
 ( Designator [ActPars]
-| intCon                    (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
-| floatCon                  (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
-| charCon                   (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
+| intCon
+| floatCon
+| charCon
 | "read" "(" ")"
 | "-" Factor
 | IF (isCast())
@@ -319,13 +319,13 @@ ident {"." ident | "[" Expr "]"}.
 //-------------------------------------------------------------------------
 Addop
 =
-"+"(.currentTree.addNode(Kind.PLUS);.)
-| "-"(.currentTree.addNode(Kind.MINUS);.).
+"+"(.currentTree.addNodeAndStepInto(Kind.PLUS);.)
+| "-"(.currentTree.addNodeAndStepInto(Kind.MINUS);.).
 //-------------------------------------------------------------------------
 Mulop
 =
-"*" (.currentTree.addNode(Kind.TIMES);.)
-| "/" (.currentTree.addNode(Kind.DIV);.)
-| "%" (.currentTree.addNode(Kind.REM);.).
+"*" (.currentTree.addNodeAndStepInto(Kind.TIMES);.)
+| "/" (.currentTree.addNodeAndStepInto(Kind.DIV);.)
+| "%" (.currentTree.addNodeAndStepInto(Kind.REM);.).
 
 END CMM.
