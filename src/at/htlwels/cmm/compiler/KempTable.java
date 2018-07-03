@@ -24,7 +24,7 @@ public class KempTable {
     }
 
     //Create a new node, define its name and type based on the parameters and add it to the current scope
-    public void addNode(String type, String name){
+    public void addNode(String type, String name, String value,KempKind kind){
         KempNode node=new KempNode();
 
         node.name=name;
@@ -33,6 +33,8 @@ public class KempTable {
         }catch (IllegalArgumentException e){
             throw new RuntimeException(e);
         }
+        node.value=value;
+        node.kind=kind;
 
 
         currentScope.addNode(node);
@@ -41,7 +43,7 @@ public class KempTable {
     //Dump the contents of the Symbol Table for debugging purposes.
     public void dumpTable(){
         System.out.println("Symbol Table gets dumped");
-        globalScope.printMe();
+        globalScope.printMe("#");
     }
 }
 
@@ -49,13 +51,10 @@ class KempScope{
     KempScope outerScope;
     List<KempScope> innerScopes=new ArrayList<>();
 
-    private KempNode head, tail;
+    private KempNode head=null, tail=null;
 
     // Append a new node at the end of the node list.
     public void addNode(KempNode x) {
-        System.out.println("Addnode");
-        System.out.println("Name: "+x.name);
-        System.out.println("Value: "+x.name);
         if (x != null) {
             if (head == null)
                 head = x;
@@ -67,16 +66,20 @@ class KempScope{
     }
 
     //Traverse through all inner scopes recursively and print their nodes.
-    public void printMe(){
+    public void printMe(String einrueckung){
+
+        System.out.print(einrueckung+"|");
         System.out.println("Printing scope");
+        KempNode node=this.head;
+
+        while (node!=null){
+            System.out.print(einrueckung+"|");
+            node.printMe();
+            node=node.next;
+        }
+
         for (KempScope scope :innerScopes) {
-            System.out.print("\t");
-            KempNode node=scope.head;
-            while (node!=null){
-                node.printMe();
-                node=node.next;
-            }
-            scope.printMe();
+            scope.printMe(einrueckung+"___");
         }
     }
 }
@@ -84,11 +87,13 @@ class KempScope{
 class KempNode{
     KempNode next;
     String name;
+    String value;
     KempType type;
-    //TODO procedure, structs, variables
+    KempKind kind;
+
 
     public void printMe(){
-        System.out.print(name+": "+type);
+        System.out.println(kind+" "+name+"("+type+"): "+value);
     }
 }
 

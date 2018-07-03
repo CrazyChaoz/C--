@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.compiler.old;
 
 /*--------------------------------------------------------------------------------
 Tab   Symbol table for C--
@@ -16,6 +16,7 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
+import at.htlwels.cmm.compiler.Parser;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
 public class Tab {

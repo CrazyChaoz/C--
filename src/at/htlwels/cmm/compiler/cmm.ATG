@@ -50,6 +50,14 @@ COMPILER CMM
         }
 	}
 
+    String readCurrent(){
+        return this.la.val;
+    }
+
+    String read1Ahead(){
+        scanner.ResetPeek();
+        return scanner.Peek().val;
+    }
 
 	String read2Ahead(){
         scanner.ResetPeek();
@@ -57,7 +65,22 @@ COMPILER CMM
         return scanner.Peek().val;
     }
 
-    void readNext5Values(){
+    String read3Ahead(){
+        scanner.ResetPeek();
+        scanner.Peek();
+        scanner.Peek();
+        return scanner.Peek().val;
+    }
+
+    String read4Ahead(){
+        scanner.ResetPeek();
+        scanner.Peek();
+        scanner.Peek();
+        scanner.Peek();
+        return scanner.Peek().val;
+    }
+
+    void printNext5Values(){
         scanner.ResetPeek();
         System.out.println("Current Token Value: "+this.la.val);
         for(int i = 0; i < 4; i++) {
@@ -65,50 +88,57 @@ COMPILER CMM
         }
      }
 
+//    tab.addNode(type,name,value,kind);
 
 
     void variableDecleration(){
         System.out.println("---------");
         System.out.println("Variable declaration");
-        readNext5Values();
+//        readNext5Values();
+        tab.addNode(readCurrent(),read1Ahead(),null,KempKind.VARIABLE);
         System.out.println("---------");
     }
 
     void constantDecleration(){
         System.out.println("---------");
         System.out.println("Constant declaration");
-        readNext5Values();
+//        readNext5Values();
+        tab.addNode(read1Ahead(),read2Ahead(),read4Ahead(),KempKind.CONSTANT);
         System.out.println("---------");
     }
 
     void procedureDecleration(){
         System.out.println("---------");
         System.out.println("Procedure declaration");
-        readNext5Values();
+//        readNext5Values();
+        tab.addNode(readCurrent(),read1Ahead(),null,KempKind.PROCEDURE);
         System.out.println("---------");
     }
 
     void structDecleration(){
         System.out.println("---------");
         System.out.println("Struct declaration");
-        readNext5Values();
+//        readNext5Values();
+
+        tab.addNode(KempType.STRUCT.name(),read1Ahead(),read4Ahead(),KempKind.STRUCT);
         System.out.println("---------");
     }
 
     void statementDecleration(){
         System.out.println("---------");
         System.out.println("Statement declaration");
-        readNext5Values();
+        printNext5Values();
         System.out.println("---------");
     }
 
     void openScope(){
         System.out.println("Opening Scope");
-
+        tab.openScope();
     }
 
     void closeScope(){
         System.out.println("Closing Scope");
+        tab.openScope();
     }
 
 /*-------------------------------------------------------------------------*/
@@ -168,7 +198,11 @@ Type ident {"," ident} ";".
 //-------------------------------------------------------------------------
 StructDecl                          (. structDecleration(); .)
 =
-"struct" ident "{" { VarDecl} "}".
+"struct" ident "{"
+                                    (. openScope(); .)
+{ VarDecl}
+                                    (. closeScope(); .)
+"}".
 //-------------------------------------------------------------------------
 ProcDecl                            (. procedureDecleration(); .)
 =
