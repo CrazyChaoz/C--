@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Table {
-    KempScope globalScope=new KempScope();
-    KempScope currentScope=globalScope;
+    Scope globalScope=new Scope();
+    Scope currentScope=globalScope;
 
     /**
      * Create a new scope inside the current one and add it to the list of inner scopes.
      */
     public void openScope(){
-        KempScope newScope=new KempScope();
+        Scope newScope=new Scope();
         currentScope.innerScopes.add(newScope);
         currentScope=newScope;
     }
@@ -27,7 +27,7 @@ public class Table {
      * Create a new node, define its name and type based on the parameters and add it to the current scope.
      */
     public void addNode(String type, String name){
-        KempNode node=new KempNode();
+        Node node=new Node();
 
         node.name=name;
         try{
@@ -49,16 +49,16 @@ public class Table {
     }
 }
 
-class KempScope{
-    KempScope outerScope;
-    List<KempScope> innerScopes=new ArrayList<>();
+class Scope {
+    Scope outerScope;
+    List<Scope> innerScopes=new ArrayList<>();
 
-    private KempNode head, tail;
+    private Node head, tail;
 
     /**
      * Append a new node at the end of the node list.
      */
-    public void addNode(KempNode x) {
+    public void addNode(Node x) {
         System.out.println("Addnode");
         System.out.println("Name: "+x.name);
         System.out.println("Value: "+x.name);
@@ -78,9 +78,9 @@ class KempScope{
 
     public void printMe(){
         System.out.println("Printing scope");
-        for (KempScope scope :innerScopes) {
+        for (Scope scope :innerScopes) {
             System.out.print("\t");
-            KempNode node=scope.head;
+            Node node=scope.head;
             while (node!=null){
                 node.printMe();
                 node=node.next;
@@ -90,8 +90,8 @@ class KempScope{
     }
 }
 
-class KempNode{
-    KempNode next;
+class Node {
+    Node next;
     String name;
     Type type;
     //TODO procedure, structs, variables
