@@ -1,31 +1,31 @@
 package at.htlwels.cmm.compiler;
 
 public class Interpreter {
-    private Table vTab;
-    private Table fTab;
+    private SymbolTable vTab;
+    private SymbolTable fTab;
 
-    public Interpreter(Table vTab, Table fTab) {
+    public Interpreter(SymbolTable vTab, SymbolTable fTab) {
         this.vTab = vTab;
         this.fTab = fTab;
     }
 
-    void StatSeq(Node p) {
+    void StatSeq(SyntaxNode p) {
 
     }
 
-    public Table getvTab() {
+    public SymbolTable getvTab() {
         return vTab;
     }
 
-    public void setvTab(Table vTab) {
+    public void setvTab(SymbolTable vTab) {
         this.vTab = vTab;
     }
 
-    public Table getfTab() {
+    public SymbolTable getfTab() {
         return fTab;
     }
 
-    public void setfTab(Table fTab) {
+    public void setfTab(SymbolTable fTab) {
         this.fTab = fTab;
     }
 }
