@@ -7,17 +7,19 @@ public class KempTable {
     KempScope globalScope=new KempScope();
     KempScope currentScope=globalScope;
 
+    //Create a new scope inside the current one and add it to the list of inner scopes.
     public void openScope(){
         KempScope newScope=new KempScope();
         currentScope.innerScopes.add(newScope);
         currentScope=newScope;
     }
 
+    //Exit out of the current scope and return one level up the scope hierarchy
     public void closeScope(){
         currentScope=currentScope.outerScope;
     }
 
-
+    //Create a new node, define its name and type based on the parameters and add it to the current scope
     public void addNode(String type, String name){
         KempNode node=new KempNode();
 
@@ -32,7 +34,7 @@ public class KempTable {
         currentScope.addNode(node);
     }
 
-
+    //Dump the contents of the Symbol Table for debugging purposes.
     public void dumpTable(){
         System.out.println("Symbol Table gets dumped");
         globalScope.printMe();
@@ -45,7 +47,7 @@ class KempScope{
 
     private KempNode head, tail;
 
-    // Append x to the list
+    // Append a new node at the end of the node list.
     public void addNode(KempNode x) {
         System.out.println("Addnode");
         System.out.println("Name: "+x.name);
@@ -60,6 +62,7 @@ class KempScope{
         }
     }
 
+    //Traverse through all inner scopes recursively and print their nodes.
     public void printMe(){
         for (KempScope scope :innerScopes) {
             System.out.print("\t");
