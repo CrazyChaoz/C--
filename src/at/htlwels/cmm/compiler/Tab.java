@@ -16,6 +16,8 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+
 public class Tab {
     public Scope curScope;             // current scope
     public int curLevel;             // nesting level of current scope
@@ -47,12 +49,12 @@ public class Tab {
 
     // Create a new object with the given kind, name and type
     // and insert it into the current scope.
-    public Obj insert(int kind, String name, String type) {
-        return null;
-    }
-
     public Obj insert(int kind, String name, Type type) {
-        return null;
+
+        Obj object = new Obj(kind, name, type);
+        curScope.locals.next = object;
+        curScope.size += ObjectSizeCalculator.getObjectSize(object);
+        return object;
     }
 
     // Look up the object with the given name in all open scopes.

@@ -15,7 +15,7 @@ public class Obj {
 		PROC   = 3;
 	public int     kind;      // CON, VAR, TYPE, PROC
 	public String  name;      // object name
-	public Type type;      // object type
+	public Type    type;      // object type
 	public Obj     next;      // next local object in this scope
 
 	public int     val;       // CON: int or char value
