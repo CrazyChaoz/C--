@@ -5,9 +5,12 @@ CMM Compiler description for C--
 
 COMPILER CMM
 
-  public  KempTable       tab;                     // symbol table
-  public  boolean[] debug = new boolean[10]; // switches for trace output
+    public  SymbolTable     symbolTable;                     // symbol table
+    public  SyntaxTree      globalTree;                      // syntax tree
+    public  SyntaxTree      currentTree;                     // current syntax tree
 
+
+    private SyntaxTree procedureTree;
 //--- LL(1) conflict resolvers
 
 	// Returns true if a VarDecl comes next in the input
@@ -43,12 +46,15 @@ COMPILER CMM
 		    return false;
 
         try{
-            KempType.valueOf(x.val.toUpperCase());
+            Type.valueOf(x.val.toUpperCase());
             return true;
         }catch (IllegalArgumentException e){
             return false;
         }
 	}
+
+
+	//###### personal implementation
 
     String readCurrent(){
         return this.la.val;
@@ -91,37 +97,40 @@ COMPILER CMM
 //    tab.addNode(type,name,value,kind);
 
 
+
     void variableDecleration(){
-        System.out.println("---------");
-        System.out.println("Variable declaration");
-//        readNext5Values();
-        tab.addNode(readCurrent(),read1Ahead(),null,KempKind.VARIABLE);
-        System.out.println("---------");
+        symbolTable.addNode(read1Ahead(),read1Ahead(), readCurrent());
+//        currentTree.addNode(Kind.IDENT);
+//        currentTree.openScope();
+//        currentTree.addNode(Kind.IDENT,readCurrent());
+//        currentTree.closeScope();
     }
 
     void constantDecleration(){
-        System.out.println("---------");
-        System.out.println("Constant declaration");
-//        readNext5Values();
-        tab.addNode(read1Ahead(),read2Ahead(),read4Ahead(),KempKind.CONSTANT);
-        System.out.println("---------");
+
+        symbolTable.addNode(read2Ahead(),read4Ahead(),read1Ahead());
+
+        currentTree.addNode(Kind.CONSTANT);
+        currentTree.openScope();
+        currentTree.addNode(Kind.IDENT,read2Ahead());
+        currentTree.addNode(Kind.VALUE,read4Ahead());
+        currentTree.closeScope();
     }
 
     void procedureDecleration(){
-        System.out.println("---------");
-        System.out.println("Procedure declaration");
-//        readNext5Values();
-        tab.addNode(readCurrent(),read1Ahead(),null,KempKind.PROCEDURE);
-        System.out.println("---------");
+
+        SyntaxTree procTree=new SyntaxTree();
+
+        SymbolNode symbolNode=new SymbolNode(read1Ahead(),procTree,readCurrent());
+
+        currentTree.addNode(Kind.CALL,symbolNode);
+        symbolTable.addNode(symbolNode);
+        openProcedureTree(procTree);
+
     }
 
     void structDecleration(){
-        System.out.println("---------");
-        System.out.println("Struct declaration");
-//        readNext5Values();
-
-        tab.addNode(KempType.STRUCT.name(),read1Ahead(),read4Ahead(),KempKind.STRUCT);
-        System.out.println("---------");
+        symbolTable.addNode(Type.STRUCT.name(),read1Ahead(),read4Ahead());
     }
 
     void statementDecleration(){
@@ -131,15 +140,18 @@ COMPILER CMM
         System.out.println("---------");
     }
 
-    void openScope(){
-        System.out.println("Opening Scope");
-        tab.openScope();
+
+
+    void openProcedureTree(SyntaxTree tree){
+        currentTree=tree;
+        currentTree.addNode(Kind.STATSEQ);
     }
 
-    void closeScope(){
-        System.out.println("Closing Scope");
-        tab.openScope();
+    void closeProcedureTree(){
+        currentTree.addNode(Kind.TRAP);
+        currentTree=globalTree;
     }
+
 
 /*-------------------------------------------------------------------------*/
 
@@ -169,6 +181,10 @@ TOKENS
   gtr       = ">".
   geq       = ">=".
   bang      = "!".
+  mul       = "*".
+  div       = "/".
+  add       = "+".
+  substr    = "-".
 
 COMMENTS FROM "/*" TO "*/" NESTED
 COMMENTS FROM "//" TO '\n'
@@ -180,12 +196,12 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 CMM
-=	                                (. tab = new KempTable(); .)
+=	                                (. symbolTable = new SymbolTable();globalTree=currentTree=new SyntaxTree(); .)
 { ConstDecl
 | StructDecl
 | IF(isVarDecl()) VarDecl
 | ProcDecl
-}                                   (. tab.dumpTable(); .)
+}                                   (. /*symbolTable.dumpTable();*/globalTree.dumpTree();.)
 .
 //-------------------------------------------------------------------------
 ConstDecl
@@ -199,22 +215,22 @@ Type ident {"," ident} ";".
 StructDecl                          (. structDecleration(); .)
 =
 "struct" ident "{"
-                                    (. openScope(); .)
+                                    (. symbolTable.openScope(); .)
 { VarDecl}
-                                    (. closeScope(); .)
+                                    (. symbolTable.closeScope(); .)
 "}".
 //-------------------------------------------------------------------------
 ProcDecl                            (. procedureDecleration(); .)
 =
 (Type | "void") ident "(" [ FormPars ] ")"
-                                    (. openScope(); .)
+                                    (. symbolTable.openScope(); .)
 "{"
 { ConstDecl
 | IF(isVarDecl()) VarDecl
 | Statement
 }
 "}"
-                                    (. closeScope(); .)
+                                    (. closeProcedureTree();symbolTable.closeScope(); .)
 | ";" "forward" ";".
 //-------------------------------------------------------------------------
 FormPars
@@ -239,9 +255,9 @@ Statement
 | "while" "(" Condition ")" Statement
 | "print" "(" Expr ")" ";"
 | "{"
-                                    (. openScope(); .)
+                                    (. symbolTable.openScope(); .)
    {Statement}
-                                    (. closeScope(); .)
+                                    (. symbolTable.closeScope(); .)
    "}"
 | "return" Expr ";"
 | ";"
@@ -275,19 +291,21 @@ CondFact
 Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
 //-------------------------------------------------------------------------
 Expr
-=
-Term {Addop Term}.
+=                           (.currentTree.openScope();.)
+Term {Addop Term}           (.currentTree.closeScope();.)
+.
 //-------------------------------------------------------------------------
 Term
-=
-Factor {Mulop Factor}.
+=                           (.currentTree.openScope();.)
+Factor {Mulop Factor}       (.currentTree.closeScope();.)
+.
 //-------------------------------------------------------------------------
 Factor
 =
 ( Designator [ActPars]
-| intCon
-| floatCon
-| charCon
+| intCon                    (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
+| floatCon                  (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
+| charCon                   (./*currentTree.addNode(Kind.IDENT,this.la.val);*/.)
 | "read" "(" ")"
 | "-" Factor
 | IF (isCast())
@@ -301,10 +319,13 @@ ident {"." ident | "[" Expr "]"}.
 //-------------------------------------------------------------------------
 Addop
 =
-"+" | "-".
+"+"(.currentTree.addNode(Kind.PLUS);.)
+| "-"(.currentTree.addNode(Kind.MINUS);.).
 //-------------------------------------------------------------------------
 Mulop
 =
-"*" | "/" | "%".
+"*" (.currentTree.addNode(Kind.TIMES);.)
+| "/" (.currentTree.addNode(Kind.DIV);.)
+| "%" (.currentTree.addNode(Kind.REM);.).
 
 END CMM.
