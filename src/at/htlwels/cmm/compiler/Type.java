@@ -1,6 +1,6 @@
 package at.htlwels.cmm.compiler;
 
-public enum KempType{
+public enum Type {
     NONE, INT, FLOAT, CHAR, BOOL, ARR, STRUCT;
 
     //testing the values
