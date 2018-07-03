@@ -26,7 +26,7 @@ public class Table {
     /**
      * Create a new node, define its name and type based on the parameters and add it to the current scope.
      */
-    public void addNode(String type, String name){
+    public void addNode(String type, String name, String value, Kind kind){
         Node node=new Node();
 
         node.name=name;
@@ -73,7 +73,7 @@ class Scope {
     }
 
     /**
-     * Traverse through all inner scopes recursively and print their nodes.
+     * Traverse through all scopes recursively and print their nodes.
      */
     public void printMe(String einrueckung){
 
@@ -98,8 +98,8 @@ class Node {
     Node next;
     String name;
     String value;
-    KempType type;
-    KempKind kind;
+    Type type;
+    Kind kind;
 
 
     public void printMe(){

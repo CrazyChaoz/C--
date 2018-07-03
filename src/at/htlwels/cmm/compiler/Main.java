@@ -1,5 +1,6 @@
 package at.htlwels.cmm.compiler;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -19,6 +20,25 @@ public class Main {
 
     }
 
+
+    @Test
+    @DisplayName("String Test")
+    public void stringTest() {
+        System.out.println("String Test");
+        Strings strings = new Strings();
+
+        System.out.println(strings.put("test"));
+        System.out.println(strings.put("te\ts\rt"));
+        System.out.println(strings.put("testtest"));
+        System.out.println(strings.put("string"));
+        System.out.println(strings.charAt(0));
+        System.out.println(strings.charAt(1));
+        System.out.println(strings.charAt(2));
+        System.out.println(strings.charAt(3));
+        System.out.println(strings.get(0));
+        System.out.println(strings.get(5));
+        System.out.println(strings.get(14));
+    }
 
 
     @Test
