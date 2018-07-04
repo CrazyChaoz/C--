@@ -1,8 +1,6 @@
 package at.htlwels.cmm.compiler;
 
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class SyntaxTree {
 
@@ -45,7 +43,7 @@ public class SyntaxTree {
     public void addNodeAndStepInto(Kind kind, Object value) {
         SyntaxNode newSyntaxNode = new SyntaxNode(value,kind);
 
-        currentNode.children.add(newSyntaxNode);
+        currentNode.addChild(newSyntaxNode);
         newSyntaxNode.parent = currentNode;
         currentNode = newSyntaxNode;
     }
@@ -72,7 +70,7 @@ public class SyntaxTree {
 
         SyntaxNode syntaxNode = new SyntaxNode(value,kind);
 
-        currentNode.children.add(syntaxNode);
+        currentNode.addChild(syntaxNode);
     }
 
 

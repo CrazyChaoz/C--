@@ -88,7 +88,7 @@ COMPILER CMM
 
     void printNext5Values(){
         scanner.ResetPeek();
-        System.out.println("Current Token Value: "+this.la.val);
+        System.out.println("Value: "+this.la.val);
         for(int i = 0; i < 4; i++) {
 	        System.out.println("Value: "+scanner.Peek().val);
         }
@@ -135,7 +135,14 @@ COMPILER CMM
     void statementDecleration(){
         System.out.println("---------");
         System.out.println("Statement declaration");
-        printNext5Values();
+
+        Token x=this.la;
+
+        while (x.kind!=_semicolon){
+            System.out.println("Value: "+x.val);
+            x=scanner.Peek();
+        }
+
         System.out.println("---------");
     }
 
@@ -198,134 +205,113 @@ PRODUCTIONS
 CMM
 =	                                (. symbolTable = new SymbolTable();globalTree=currentTree=new SyntaxTree(); .)
 { ConstDecl
-| StructDecl
 | IF(isVarDecl()) VarDecl
-| ProcDecl
-}                                   (. /*symbolTable.dumpTable();*/ globalTree.dumpTree();.)
+| Assignment
+}                                   (. symbolTable.dumpTable(); globalTree.dumpTree();.)
 .
+
+
+
+Ident<out String name>
+=
+ident (.name=this.t.val;.).
 //-------------------------------------------------------------------------
 ConstDecl
-=                                   (. constantDecleration(); .)
-"const" Type ident "=" (intCon | floatCon | charCon) ";".
+=                                   (. constantDecleration(); /*constant type setzen*/.)
+"const" Type<out Type type> Ident<out String name> "=" (intCon | floatCon | charCon)(.currentTree.addNode(Kind.CONSTANT,(new SymbolNode(name,t.val,type)));.) ";".
 //-------------------------------------------------------------------------
 VarDecl
 =                                   (. variableDecleration(); .)
-Type ident {"," ident} ";".
+Type<out Type type> ident {"," ident} ";".
 //-------------------------------------------------------------------------
-StructDecl                          (. structDecleration(); .)
+Type<out Type typ>
 =
-"struct" ident "{"
-                                    (. symbolTable.openScope(); .)
-{ VarDecl}
-                                    (. symbolTable.closeScope(); .)
-"}".
-//-------------------------------------------------------------------------
-ProcDecl                            (. procedureDecleration(); .)
-=
-(Type | "void") ident "(" [ FormPars ] ")"
-                                    (. symbolTable.openScope(); .)
-"{"
-{ ConstDecl
-| IF(isVarDecl()) VarDecl
-| Statement
+Ident<out String name>
+(.
+try {
+    typ = Type.valueOf(name.toUpperCase());
+} catch (IllegalArgumentException e) {
+    throw new RuntimeException(e);
 }
-"}"
-                                    (. closeProcedureTree();symbolTable.closeScope(); .)
-| ";" "forward" ";".
-//-------------------------------------------------------------------------
-FormPars
+.)
+.
+
+Assignment
 =
-FormPar {"," FormPar}.
+Statement<out SyntaxNode statement> (. currentTree.addNode(Kind.ASSIGN,statement);.).
 //-------------------------------------------------------------------------
-FormPar
+Statement<out SyntaxNode parentOperation>         (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
 =
-["ref"] Type ident.
-//-------------------------------------------------------------------------
-Type
-=
-ident {"[" intCon "]"}.
-//-------------------------------------------------------------------------
-Statement
-=                                   (. statementDecleration(); .)
-( Designator
-  ( "=" Expr
-  | ActPars
-  ) ";"
-| "if" "(" Condition ")" Statement ["else" Statement]
-| "while" "(" Condition ")" Statement
-| "print" "(" Expr ")" ";"
-| "{"
-                                    (. symbolTable.openScope(); .)
-   {Statement}
-                                    (. symbolTable.closeScope(); .)
-   "}"
-| "return" Expr ";"
+( Ident<out String name>                    (. parentOperation.addChild(new SyntaxNode(name,Kind.IDENT));.)
+   "=" Expr<out SyntaxNode expression>      (. parentOperation.addChild(expression);.)";"
+| "return" Expr<out SyntaxNode expression>  (. SyntaxNode aReturn=new SyntaxNode("return",Kind.RETURN);aReturn.addChild(expression);parentOperation.addChild(aReturn);.)";"
 | ";"
 ).
-//-------------------------------------------------------------------------
-ActPars
+Expr<out SyntaxNode parentOperation>                 (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
 =
-"(" [ActPar {"," ActPar}] ")".
-//-------------------------------------------------------------------------
-ActPar
-=
-Expr | "ref" Expr.
-//-------------------------------------------------------------------------
-Condition
-=
-CondTerm {"||" CondTerm}.
-//-------------------------------------------------------------------------
-CondTerm
-=
-CondFact {"&&" CondFact}.
-//-------------------------------------------------------------------------
-CondFact
-=
-( IF (isExpr()) Expr
-  Relop
-  Expr
-| "!" "(" Condition ")"
-| "(" Condition ")"
-).
-//-------------------------------------------------------------------------
-Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
-//-------------------------------------------------------------------------
-Expr
-=
-Term {Addop Term}           (.currentTree.stepOut();.)
+Term<out SyntaxNode term>                       (.parentOperation.addChild(term);.)
+{
+Addop<out Kind kind>                                 (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
+Term<out SyntaxNode term1>                       (. parentOperation.addChild(term1);.)
+}
 .
 //-------------------------------------------------------------------------
-Term
+Term<out SyntaxNode parentOperation>                       (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
 =
-Factor {Mulop Factor}       (.currentTree.stepOut();.)
+Factor<out SymbolNode faktor>                   (.parentOperation.addChild(faktor);.)
+{
+Mulop<out Kind kind>                                 (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
+Factor<out SymbolNode faktor1>                   (. parentOperation.addChild(faktor1); .)
+}
 .
 //-------------------------------------------------------------------------
-Factor
+Factor <out SymbolNode faktor>  (.faktor=null;.)
 =
-( Designator [ActPars]
-| intCon
-| floatCon
-| charCon
-| "read" "(" ")"
-| "-" Factor
-| IF (isCast())
-  "(" Type ")" Factor
-| "(" Expr ")"
+(
+intCon                      (. faktor=new SymbolNode("intVal",t.val,"INT"); .)
+| floatCon                  (. faktor=new SymbolNode("floatVal",t.val,"FLOAT"); .)
+| charCon                   (. faktor=new SymbolNode("charVal",t.val,"CHAR"); .)
 ).
 //-------------------------------------------------------------------------
-Designator
-=
-ident {"." ident | "[" Expr "]"}.
 //-------------------------------------------------------------------------
-Addop
+Addop<out Kind kind>         (.kind=null;.)
 =
-"+"(.currentTree.addNodeAndStepInto(Kind.PLUS);.)
-| "-"(.currentTree.addNodeAndStepInto(Kind.MINUS);.).
+"+"                         (. kind=Kind.PLUS;.)
+| "-"                       (.kind=Kind.MINUS; .).
 //-------------------------------------------------------------------------
-Mulop
+Mulop<out Kind kind>        (.kind=null;.)
 =
-"*" (.currentTree.addNodeAndStepInto(Kind.TIMES);.)
-| "/" (.currentTree.addNodeAndStepInto(Kind.DIV);.)
-| "%" (.currentTree.addNodeAndStepInto(Kind.REM);.).
+"*"                         (.kind=Kind.TIMES;.)
+| "/"                       (.kind=Kind.DIV;.)
+| "%"                       (.kind=Kind.REM;.).
 
 END CMM.
+
+//new SymbolNode(String name, Object value, String type);
+
+
+
+//-------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------
+//Condition<out boolean truefalse>
+//=
+//CondTerm<out boolean truefalse1> (.truefalse=truefalse1;.)
+//{"||" CondTerm<out boolean truefalse2> (.truefalse=truefalse&&truefalse2;.)}.
+////-------------------------------------------------------------------------
+//CondTerm<out boolean truefalse>
+//=
+//CondFact<out boolean truefalse1>(.truefalse=truefalse1;.)
+//{"&&" CondFact<out boolean truefalse2>(.truefalse=truefalse&&truefalse2;.) }.
+////-------------------------------------------------------------------------
+//CondFact<out boolean truefalse>
+//=
+//( IF (isExpr()) Expr<out SyntaxNode expr1>
+//  Relop<out int which>
+//  Expr<out SyntaxNode expr2>
+//| "!" "(" Condition<out boolean cond> ")"   (.truefalse=!cond;.)
+//| "(" Condition<out boolean cond> ")"       (.truefalse=cond;.)
+//).
+////-------------------------------------------------------------------------
+//Relop<out int which> = "==" | "!=" | ">" | ">=" | "<" | "<=" (.which=t.kind;.).
+//-------------------------------------------------------------------------
