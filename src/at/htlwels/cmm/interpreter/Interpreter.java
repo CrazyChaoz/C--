@@ -6,8 +6,6 @@ import java.io.IOException;
 
 public class Interpreter {
     private SymbolTable vTab;
-    private int stackPointer;
-    private int framePointer;
     private ProcedureStack procedureStack = new ProcedureStack();
     private GlobalData globalData = new GlobalData();
 
@@ -24,39 +22,39 @@ public class Interpreter {
 
     }
 
-    void statSeq(SyntaxNode p) {
+    public void statSeq(SyntaxNode p) {
 
     }
 
-    void statement(SyntaxNode p) {
+    public void statement(SyntaxNode p) {
 
     }
 
-    int intExpr(SyntaxNode p) {
+    public int intExpr(SyntaxNode p) {
         return 0;
     }
 
-    boolean condition(SyntaxNode p) {
+    public boolean condition(SyntaxNode p) {
         return true;
     }
 
-    void call(SyntaxNode p) {
+    public void call(SyntaxNode p) {
 
     }
 
-    int adr(SyntaxNode p) {
+    public int adr(SyntaxNode p) {
         return 0;
     }
 
-    int identAdr() {
+    public int identAdr() {
         return 0;
     }
 
-    void createFrame() {
-
+    public void createFrame() {
+        //procedureStack.storeInt(procedureStack.stack[procedureStack.getFramePointer()]++, 2);
     }
 
-    void disposeFrame() {
+    public void disposeFrame() {
 
     }
 

@@ -1,8 +1,7 @@
 package at.htlwels.cmm.interpreter;
 
 public class ProcedureStack {
-    private int stackPointer;
-    private int framePointer;
+    private int stackPointer, framePointer = 0;
 
     byte[] stack = new byte[32768];
 
@@ -34,4 +33,27 @@ public class ProcedureStack {
         stack[adr] = (byte) val;
     }
 
+    public int getStackPointer() {
+        return stackPointer;
+    }
+
+    public void setStackPointer(int stackPointer) {
+        this.stackPointer = stackPointer;
+    }
+
+    public int getFramePointer() {
+        return framePointer;
+    }
+
+    public void setFramePointer(int framePointer) {
+        this.framePointer = framePointer;
+    }
+
+    public byte[] getStack() {
+        return stack;
+    }
+
+    public void setStack(byte[] stack) {
+        this.stack = stack;
+    }
 }
