@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Strings {
-	private int storageSize = 4096;
-	private byte[] data = new byte[storageSize]; // grows automatically
+	private final int GROW_INCREMENT = 4096;
+	private int storageSize = GROW_INCREMENT;
+	private byte[] data = new byte[GROW_INCREMENT]; // grows automatically
 	private int top = 0;
 	private Map<String, Integer> map = new HashMap<>();
 
@@ -24,7 +25,7 @@ public class Strings {
 	// the existing string is returned.
 	// s may still contain escape sequences (such as \t or \r) that must be converted first.
 	public int put(String s) {
-		//TODO: convert escape sequences + grow data automatically
+		//TODO: convert escape sequences
 		byte[] sByte = null;
 		int adr;
 		int i = 0;
@@ -37,18 +38,17 @@ public class Strings {
 				e.printStackTrace();
 			}
 
-			//Grow the array if the next string doesn't fit.
+			/**
+			 * Grow the array if the next String to be appended to it can't fit.
+			 */
 			if((data.length-top) <= sByte.length) {
-				byte temp[] = data;
-				storageSize *= 2;
-
-				data = new byte[storageSize];
-
-				for(i = 0; i < top; i++) {
-					data[i] = temp[i];
-				}
+				growData();
 			}
 
+			/**
+			 * Copy the contents of the string into the byte array, then append a null terminator
+			 * to denote the end of the string.
+			 */
 			adr = top;
 			top += sByte.length;
 
@@ -83,5 +83,22 @@ public class Strings {
 	// Returns the character at adr in the string storage
 	public char charAt(int adr) {
 		return (char) data[adr];
+	}
+
+	/**
+	 * Create a new byte array and point the data-variable to it, then copy the contents of the old array
+	 * to the new and bigger one. Since temp[] is a variable declared in the scope of this function, once it exits
+	 * there will be no more references to the old array left and the garbage collector will deallocate it.
+	 */
+	public void growData(){
+		int i;
+		byte temp[] = data;
+		storageSize +=  GROW_INCREMENT;
+
+		data = new byte[storageSize];
+
+		for(i = 0; i < top; i++) {
+			data[i] = temp[i];
+		}
 	}
 }
