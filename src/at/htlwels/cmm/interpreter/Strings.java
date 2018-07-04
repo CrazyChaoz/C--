@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.interpreter;
 
 /*--------------------------------------------------------------------------------
 Strings   String storage of a C-- program
@@ -33,7 +33,7 @@ public class Strings {
 
 		if(!map.containsKey(s)) {
 			try {
-				sByte = s.getBytes("UTF-8");
+				sByte = s.getBytes("ASCII");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
