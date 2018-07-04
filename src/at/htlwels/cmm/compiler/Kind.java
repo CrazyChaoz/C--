@@ -1,11 +1,10 @@
 package at.htlwels.cmm.compiler;
 
 public enum Kind {
-//    CONSTANT,
-//    VARIABLE,
-//    PROCEDURE,
-//    STRUCT,
-//    LOOPCONDITION,
+
+    //The Parent Node Type
+    PARENT,
+
 
     STATSEQ,   // statement sequence
     ASSIGN,   // assignment

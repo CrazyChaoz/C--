@@ -5,111 +5,114 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SyntaxTree {
-    SyntaxScope globalSymbolScope =new SyntaxScope();
-    SyntaxScope currentScope = globalSymbolScope;
+//
+//    public static void main(String[] args) {
+//        SyntaxTree tree=new SyntaxTree();
+//
+//        tree.addNodeAndStepInto(Kind.CONSTANT);
+//        tree.addNode(Kind.IDENT,"asd");
+//        tree.addNode(Kind.VALUE,12);
+//        tree.stepOut();
+//
+//
+//        tree.addNodeAndStepInto(Kind.CONSTANT);
+//        tree.addNode(Kind.IDENT,"asd");
+//        tree.addNode(Kind.VALUE,12);
+//        tree.stepOut();
+//
+//        tree.dumpTree();
+//    }
+
+
+    SyntaxNode globalNode, currentNode;
+
+
+    public SyntaxTree() {
+        globalNode = new SyntaxNode();
+        currentNode = globalNode;
+        globalNode.parent = new SyntaxNode();
+        globalNode.parent.kind = Kind.PARENT;
+        globalNode.parent.value = Kind.PARENT;
+    }
 
     /**
      * Create a new scope inside the current one and add it to the list of inner scopes.
      */
-    public void openScope(){
-        SyntaxScope newSymbolScope =new SyntaxScope();
-        currentScope.innerScopes.add(newSymbolScope);
-        newSymbolScope.outerScope= currentScope;
-        currentScope = newSymbolScope;
+
+    public void addNodeAndStepInto(Kind kind) {
+        addNodeAndStepInto(kind,null);
     }
+
+    public void addNodeAndStepInto(Kind kind, Object value) {
+        SyntaxNode newSyntaxNode = new SyntaxNode();
+        newSyntaxNode.kind=kind;
+        newSyntaxNode.value=value;
+
+        currentNode.children.add(newSyntaxNode);
+        newSyntaxNode.parent = currentNode;
+        currentNode = newSyntaxNode;
+    }
+
 
     /**
      * Exit out of the current scope and return one level up the scope hierarchy.
      */
-    public void closeScope(){
-        currentScope = currentScope.outerScope;
+    public void stepOut() {
+        currentNode = currentNode.parent;
     }
 
     /**
      * Create a new node, define its name and type based on the parameters and add it to the current scope.
      */
-    public void addNode(Kind kind, Object value){
-        SyntaxNode syntaxNode =new SyntaxNode();
 
-        syntaxNode.kind=kind;
-        syntaxNode.value=value;
 
-        currentScope.addNode(syntaxNode);
+    public void addNode(Kind kind) {
+        addNode(kind,null);
     }
 
-    public void addNode(Kind kind){
-        SyntaxNode syntaxNode =new SyntaxNode();
+    public void addNode(Kind kind, Object value) {
+//        System.out.println("New Node, Kind." + kind + ", Value: " + value);
 
-        syntaxNode.kind=kind;
-        syntaxNode.value=null;
+        SyntaxNode syntaxNode = new SyntaxNode();
 
-        currentScope.addNode(syntaxNode);
+
+        syntaxNode.kind = kind;
+        syntaxNode.value = value;
+
+        currentNode.children.add(syntaxNode);
     }
+
 
 
     /**
      * Dump the contents of the Symbol Table for debugging purposes.
      */
     public void dumpTree() {
-        System.out.println("Syntax Tree gets dumped");
-        globalSymbolScope.printMe("");
+//        System.out.println("Syntax Tree gets dumped");
+
+        globalNode.printMe("");
     }
 }
 
-class SyntaxScope {
-    SyntaxScope outerScope;
-    List<SyntaxScope> innerScopes=new ArrayList<>();
-
-    private SyntaxNode head, tail;
-
-    // Append a new node at the end of the node list.
-    public void addNode(SyntaxNode x) {
-
-        if (x != null) {
-            if (head == null)
-                head = x;
-            else
-                tail.next = x;
-
-            tail = x;
-        }
-    }
-
-    /**
-     * Traverse through all inner scopes recursively and print their nodes.
-     */
-    public void printMe(String einrueckung){
-
-        SyntaxNode symbolNode =this.head;
-
-        while (symbolNode !=null){
-            System.out.print(einrueckung);
-            symbolNode.printMe();
-            symbolNode = symbolNode.next;
-        }
-
-        for (SyntaxScope scope :innerScopes) {
-            scope.printMe(einrueckung+"\t");
-        }
-    }
-}
 
 class SyntaxNode {
-    SyntaxNode next;
+    SyntaxNode parent;
+    List<SyntaxNode> children = new ArrayList<>();
 
     Object value;
     Kind kind;
 
 
-    public void printMe() {
-
-
+    public void printMe(String einrueckung) {
+        System.out.print(einrueckung);
         if (value instanceof SymbolNode)
             ((SymbolNode) value).printMe();
-        else if (value instanceof String)
-            System.out.println(kind+", "+value);
         else
-            System.out.println(kind);
+            System.out.println(kind + ", " + value);
+
+        for (SyntaxNode child : children) {
+            child.printMe(einrueckung+"\t");
+        }
 
     }
 }
