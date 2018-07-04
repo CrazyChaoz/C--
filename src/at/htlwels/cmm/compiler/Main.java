@@ -1,5 +1,6 @@
 package at.htlwels.cmm.compiler;
 
+import at.htlwels.cmm.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
