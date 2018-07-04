@@ -92,11 +92,11 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 CMM
-=	                                (. symbolTable = new Tab(); .)
+=	                                            (. symbolTable = new Tab();.)
 { ConstDecl
-| IF(isVarDecl()) VarDecl
-| Assignment
-}                                   (. symbolTable.dumpTable();.)
+//| IF(isVarDecl()) VarDecl
+| Statement<out Node statement>                 (. Node.dump(statement,0);.)
+}                                               (. symbolTable.dumpTable();.)
 .
 
 
@@ -106,12 +106,12 @@ Ident<out String name>
 ident (.name=this.t.val;.).
 //-------------------------------------------------------------------------
 ConstDecl
-=                                                   (. /*constant type setzen*/.)
-"const" Type<out Type type> Ident<out String name> "=" (intCon | floatCon | charCon)(.symbolTable.insert();.) ";".
+=
+"const" Type<out Type type> Ident<out String name> "=" (intCon | floatCon | charCon)(.symbolTable.insert(ObjKind.CON,name,type);.) ";".
 //-------------------------------------------------------------------------
 VarDecl
-=                                                   (. variableDecleration(); .)
-Type<out Type type> ident {"," ident} ";".
+=
+Type<out Type type> Ident<out String name> (.symbolTable.insert(ObjKind.VAR,name,type);.) {"," Ident<out String name1> (.symbolTable.insert(ObjKind.VAR,name1,type);.)} ";".
 //-------------------------------------------------------------------------
 Type<out Type typ>
 =
@@ -125,59 +125,57 @@ try {
 .)
 .
 
-Assignment
-=
-Statement<out SyntaxNode statement>                 (. currentTree.addNode(Kind.ASSIGN,statement);.).
 //-------------------------------------------------------------------------
-Statement<out SyntaxNode parentOperation>           (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
-=
-( Ident<out String name>                            (. parentOperation.addChild(new SyntaxNode(name,Kind.IDENT));.)
-   "=" Expr<out SyntaxNode expression>              (. parentOperation.addChild(expression);.)";"
-| "return" Expr<out SyntaxNode expression>          (. SyntaxNode aReturn=new SyntaxNode("return",Kind.RETURN);aReturn.addChild(expression);parentOperation.addChild(aReturn);.)";"
-| ";"
-).
-Expr<out SyntaxNode parentOperation>                (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
-=
-Term<out SyntaxNode term>                           (.parentOperation.addChild(term);.)
-{
-Addop<out Kind kind>                                (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
-Term<out SyntaxNode term1>                          (. parentOperation.addChild(term1);.)
-}
-.
-//-------------------------------------------------------------------------
-Term<out Node term>       (.term=null;NodeList nodeList=new NodeList();.)
-=
-Factor<out Node faktor>                    (.nodeList.add(faktor);.)
-{
-Mulop<out Kind kind>                       (. nodeList.add(new Node(kind,)) .)
-Factor<out Node faktor1>                   (. parentOperation.addChild(faktor1); .)
-}
-(.term=.)
-.
-//-------------------------------------------------------------------------
-Factor <out Node faktor>  (.faktor=null;.)
+Statement<out Node statement>                   (. statement=null; .)
 =
 (
-intCon                      (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
-| floatCon                  (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
-| charCon                   (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
+Ident<out String name>
+"=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,0);.)";"
+| "return" Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)";"
+| ";"
+).
+
+//-------------------------------------------------------------------------
+Expr<out Node expr>
+=
+Term<out Node term>                           (.expr=term;.)
+{
+Addop<out NodeKind kind>
+Term<out Node term1>                          (. expr=new Node(kind,term,term1,term1.type==term.type?term1.type:null); .)
+}
+.
+//-------------------------------------------------------------------------
+Term<out Node term>                           (.term=null;.)
+=
+Factor<out Node faktor>                       (.term=faktor;.)
+{
+Mulop<out NodeKind kind>
+Factor<out Node faktor1>                      (. term=new Node(kind,faktor,faktor1,faktor1.type==faktor.type?faktor1.type:null); .)
+}
+.
+//-------------------------------------------------------------------------
+Factor <out Node faktor>        (.faktor=null;.)
+=
+(
+intCon                          (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
+| floatCon                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
+| charCon                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
 ).
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-Addop<out Kind kind>         (.kind=null;.)
+Addop<out NodeKind kind>        (.kind=null;.)
 =
-"+"                         (. kind=Kind.PLUS;.)
-| "-"                       (.kind=Kind.MINUS; .).
+"+"                             (. kind=NodeKind.PLUS;.)
+| "-"                           (.kind=NodeKind.MINUS; .).
 //-------------------------------------------------------------------------
-Mulop<out Kind kind>        (.kind=null;.)
+Mulop<out NodeKind kind>        (.kind=null;.)
 =
-"*"                         (.kind=Kind.TIMES;.)
-| "/"                       (.kind=Kind.DIV;.)
-| "%"                       (.kind=Kind.REM;.).
+"*"                             (.kind=NodeKind.TIMES;.)
+| "/"                           (.kind=NodeKind.DIV;.)
+| "%"                           (.kind=NodeKind.REM;.).
 
 END CMM.
 
-//new SymbolNode(String name, Object value, String type);
 
 
 

@@ -34,7 +34,7 @@ public class Tab {
         Node rem1=new Node(NodeKind.REM,x1,y1,0);
         Node assign=new Node(NodeKind.ASSIGN,rest1,rem1,0);
 
-        o.ast=new Node(NodeKind.STATSEQ,assign,null,0);
+        o.ast=new Node(NodeKind.STATSEQ,assign,new Node(NodeKind.TRAP,null,null,0),0);
         table.insert(ObjKind.VAR, "asasd", Type.CHAR);
         table.closeScope();
 
@@ -110,7 +110,7 @@ public class Tab {
             scope=scope.outer;
         }
 
-        return null;
+        throw new RuntimeException(new IllegalArgumentException(name+" is not in the reachable Scopes."));
     }
 
     // Retrieve a struct field with the given name from the fields of "type"

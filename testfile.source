@@ -3,8 +3,9 @@ const int sdfg=13;
 const int dfgh=14;
 const char c=23;
 
-//i=asdf+12-123;
-//int i=0;;
+//int i;
+asdf=asdf+12-123;
+
 
 /*struct definierung{
     int i;
