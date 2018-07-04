@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler.old;
+package at.htlwels.cmm.compiler;
 
 /*--------------------------------------------------------------------------------
 Scope   Scope in the C-- symbol table
@@ -9,6 +9,8 @@ There are 3 scopes in the C-- symbol table:
 - local scope: contains local names of a procedure
 The scopes are linked by the "outer" pointer.
 --------------------------------------------------------------------------------*/
+
+
 
 public class Scope {
 	public Scope outer;		// to outer scope
