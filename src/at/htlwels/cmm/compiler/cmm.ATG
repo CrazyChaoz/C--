@@ -5,12 +5,9 @@ CMM Compiler description for C--
 
 COMPILER CMM
 
-    public  SymbolTable     symbolTable;                     // symbol table
-    public  SyntaxTree      globalTree;                      // syntax tree
-    public  SyntaxTree      currentTree;                     // current syntax tree
+    public  Tab     symbolTable;                     // symbol table
 
 
-    private SyntaxTree procedureTree;
 //--- LL(1) conflict resolvers
 
 	// Returns true if a VarDecl comes next in the input
@@ -52,114 +49,6 @@ COMPILER CMM
             return false;
         }
 	}
-
-
-	//###### personal implementation
-
-    String readCurrent(){
-        return this.la.val;
-    }
-
-    String read1Ahead(){
-        scanner.ResetPeek();
-        return scanner.Peek().val;
-    }
-
-	String read2Ahead(){
-        scanner.ResetPeek();
-        scanner.Peek();
-        return scanner.Peek().val;
-    }
-
-    String read3Ahead(){
-        scanner.ResetPeek();
-        scanner.Peek();
-        scanner.Peek();
-        return scanner.Peek().val;
-    }
-
-    String read4Ahead(){
-        scanner.ResetPeek();
-        scanner.Peek();
-        scanner.Peek();
-        scanner.Peek();
-        return scanner.Peek().val;
-    }
-
-    void printNext5Values(){
-        scanner.ResetPeek();
-        System.out.println("Value: "+this.la.val);
-        for(int i = 0; i < 4; i++) {
-	        System.out.println("Value: "+scanner.Peek().val);
-        }
-     }
-
-//    tab.addNode(type,name,value,kind);
-
-
-
-    void variableDecleration(){
-        symbolTable.addNode(read1Ahead(),read1Ahead(), readCurrent());
-//        currentTree.addNode(Kind.IDENT);
-//        currentTree.openScope();
-//        currentTree.addNode(Kind.IDENT,readCurrent());
-//        currentTree.closeScope();
-    }
-
-    void constantDecleration(){
-
-        symbolTable.addNode(read2Ahead(),read4Ahead(),read1Ahead());
-
-        currentTree.addNodeAndStepInto(Kind.CONSTANT);
-        currentTree.addNode(Kind.IDENT,read2Ahead());
-        currentTree.addNode(Kind.VALUE,read4Ahead());
-        currentTree.stepOut();
-    }
-
-    void procedureDecleration(){
-
-        SyntaxTree procTree=new SyntaxTree();
-
-        SymbolNode symbolNode=new SymbolNode(read1Ahead(),procTree,readCurrent());
-
-        currentTree.addNode(Kind.CALL,symbolNode);
-        symbolTable.addNode(symbolNode);
-        openProcedureTree(procTree);
-
-    }
-
-    void structDecleration(){
-        symbolTable.addNode(Type.STRUCT.name(),read1Ahead(),read4Ahead());
-    }
-
-    void statementDecleration(){
-        System.out.println("---------");
-        System.out.println("Statement declaration");
-
-        Token x=this.la;
-
-        while (x.kind!=_semicolon){
-            System.out.println("Value: "+x.val);
-            x=scanner.Peek();
-        }
-
-        System.out.println("---------");
-    }
-
-
-
-    void openProcedureTree(SyntaxTree tree){
-        currentTree=tree;
-        currentTree.addNodeAndStepInto(Kind.STATSEQ);
-    }
-
-    void closeProcedureTree(){
-        currentTree.addNode(Kind.TRAP);
-        currentTree.stepOut();
-        currentTree=globalTree;
-    }
-
-
 /*-------------------------------------------------------------------------*/
 
 CHARACTERS
@@ -203,11 +92,11 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 CMM
-=	                                (. symbolTable = new SymbolTable();globalTree=currentTree=new SyntaxTree(); .)
+=	                                (. symbolTable = new Tab(); .)
 { ConstDecl
 | IF(isVarDecl()) VarDecl
 | Assignment
-}                                   (. symbolTable.dumpTable(); globalTree.dumpTree();.)
+}                                   (. symbolTable.dumpTable();.)
 .
 
 
@@ -217,11 +106,11 @@ Ident<out String name>
 ident (.name=this.t.val;.).
 //-------------------------------------------------------------------------
 ConstDecl
-=                                   (. constantDecleration(); /*constant type setzen*/.)
-"const" Type<out Type type> Ident<out String name> "=" (intCon | floatCon | charCon)(.currentTree.addNode(Kind.CONSTANT,(new SymbolNode(name,t.val,type)));.) ";".
+=                                                   (. /*constant type setzen*/.)
+"const" Type<out Type type> Ident<out String name> "=" (intCon | floatCon | charCon)(.symbolTable.insert();.) ";".
 //-------------------------------------------------------------------------
 VarDecl
-=                                   (. variableDecleration(); .)
+=                                                   (. variableDecleration(); .)
 Type<out Type type> ident {"," ident} ";".
 //-------------------------------------------------------------------------
 Type<out Type typ>
@@ -238,39 +127,40 @@ try {
 
 Assignment
 =
-Statement<out SyntaxNode statement> (. currentTree.addNode(Kind.ASSIGN,statement);.).
+Statement<out SyntaxNode statement>                 (. currentTree.addNode(Kind.ASSIGN,statement);.).
 //-------------------------------------------------------------------------
-Statement<out SyntaxNode parentOperation>         (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
+Statement<out SyntaxNode parentOperation>           (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
 =
-( Ident<out String name>                    (. parentOperation.addChild(new SyntaxNode(name,Kind.IDENT));.)
-   "=" Expr<out SyntaxNode expression>      (. parentOperation.addChild(expression);.)";"
-| "return" Expr<out SyntaxNode expression>  (. SyntaxNode aReturn=new SyntaxNode("return",Kind.RETURN);aReturn.addChild(expression);parentOperation.addChild(aReturn);.)";"
+( Ident<out String name>                            (. parentOperation.addChild(new SyntaxNode(name,Kind.IDENT));.)
+   "=" Expr<out SyntaxNode expression>              (. parentOperation.addChild(expression);.)";"
+| "return" Expr<out SyntaxNode expression>          (. SyntaxNode aReturn=new SyntaxNode("return",Kind.RETURN);aReturn.addChild(expression);parentOperation.addChild(aReturn);.)";"
 | ";"
 ).
-Expr<out SyntaxNode parentOperation>                 (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
+Expr<out SyntaxNode parentOperation>                (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
 =
-Term<out SyntaxNode term>                       (.parentOperation.addChild(term);.)
+Term<out SyntaxNode term>                           (.parentOperation.addChild(term);.)
 {
-Addop<out Kind kind>                                 (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
-Term<out SyntaxNode term1>                       (. parentOperation.addChild(term1);.)
+Addop<out Kind kind>                                (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
+Term<out SyntaxNode term1>                          (. parentOperation.addChild(term1);.)
 }
 .
 //-------------------------------------------------------------------------
-Term<out SyntaxNode parentOperation>                       (.parentOperation=new SyntaxNode(Kind.PARENT,Kind.PARENT);.)
+Term<out Node term>       (.term=null;NodeList nodeList=new NodeList();.)
 =
-Factor<out SymbolNode faktor>                   (.parentOperation.addChild(faktor);.)
+Factor<out Node faktor>                    (.nodeList.add(faktor);.)
 {
-Mulop<out Kind kind>                                 (. parentOperation.addChild(new SyntaxNode(null,kind)); .)
-Factor<out SymbolNode faktor1>                   (. parentOperation.addChild(faktor1); .)
+Mulop<out Kind kind>                       (. nodeList.add(new Node(kind,)) .)
+Factor<out Node faktor1>                   (. parentOperation.addChild(faktor1); .)
 }
+(.term=.)
 .
 //-------------------------------------------------------------------------
-Factor <out SymbolNode faktor>  (.faktor=null;.)
+Factor <out Node faktor>  (.faktor=null;.)
 =
 (
-intCon                      (. faktor=new SymbolNode("intVal",t.val,"INT"); .)
-| floatCon                  (. faktor=new SymbolNode("floatVal",t.val,"FLOAT"); .)
-| charCon                   (. faktor=new SymbolNode("charVal",t.val,"CHAR"); .)
+intCon                      (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
+| floatCon                  (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
+| charCon                   (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
 ).
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------

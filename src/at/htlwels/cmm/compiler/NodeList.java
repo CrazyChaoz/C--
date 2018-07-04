@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler.old;
+package at.htlwels.cmm.compiler;
 
 /*--------------------------------------------------------------------------------
 NodeList   Builds lists of AST nodes
