@@ -17,6 +17,7 @@ int asdf(int i,char c){
     int asd;
     int i;
     i=i+3;
+    //i=i+3*4-5;
     const int inEinerFunktion=124;
 }
 

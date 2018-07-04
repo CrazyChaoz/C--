@@ -5,34 +5,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SyntaxTree {
-//
-//    public static void main(String[] args) {
-//        SyntaxTree tree=new SyntaxTree();
-//
-//        tree.addNodeAndStepInto(Kind.CONSTANT);
-//        tree.addNode(Kind.IDENT,"asd");
-//        tree.addNode(Kind.VALUE,12);
-//        tree.stepOut();
-//
-//
-//        tree.addNodeAndStepInto(Kind.CONSTANT);
-//        tree.addNode(Kind.IDENT,"asd");
-//        tree.addNode(Kind.VALUE,12);
-//        tree.stepOut();
-//
-//        tree.dumpTree();
-//    }
+
+    public static void main(String[] args) {
+        SyntaxTree tree=new SyntaxTree();
+
+        tree.addNodeAndStepInto(Kind.CONSTANT);
+        tree.addNode(Kind.IDENT,"asd");
+        tree.addNode(Kind.VALUE,12);
+        tree.stepOut();
+
+
+        tree.addNodeAndStepInto(Kind.CONSTANT);
+        tree.addNode(Kind.IDENT,"dasd");
+        tree.addNode(Kind.VALUE,12);
+        tree.stepOut();
+
+
+        tree.dumpTree();
+    }
 
 
     SyntaxNode globalNode, currentNode;
 
 
     public SyntaxTree() {
-        globalNode = new SyntaxNode();
+        globalNode = new SyntaxNode(Kind.PARENT,Kind.PARENT);
         currentNode = globalNode;
-        globalNode.parent = new SyntaxNode();
-        globalNode.parent.kind = Kind.PARENT;
-        globalNode.parent.value = Kind.PARENT;
+        globalNode.parent = new SyntaxNode(Kind.PARENT,Kind.PARENT);
     }
 
     /**
@@ -44,9 +43,7 @@ public class SyntaxTree {
     }
 
     public void addNodeAndStepInto(Kind kind, Object value) {
-        SyntaxNode newSyntaxNode = new SyntaxNode();
-        newSyntaxNode.kind=kind;
-        newSyntaxNode.value=value;
+        SyntaxNode newSyntaxNode = new SyntaxNode(value,kind);
 
         currentNode.children.add(newSyntaxNode);
         newSyntaxNode.parent = currentNode;
@@ -73,11 +70,7 @@ public class SyntaxTree {
     public void addNode(Kind kind, Object value) {
 //        System.out.println("New Node, Kind." + kind + ", Value: " + value);
 
-        SyntaxNode syntaxNode = new SyntaxNode();
-
-
-        syntaxNode.kind = kind;
-        syntaxNode.value = value;
+        SyntaxNode syntaxNode = new SyntaxNode(value,kind);
 
         currentNode.children.add(syntaxNode);
     }
@@ -95,27 +88,7 @@ public class SyntaxTree {
 }
 
 
-class SyntaxNode {
-    SyntaxNode parent;
-    List<SyntaxNode> children = new ArrayList<>();
 
-    Object value;
-    Kind kind;
-
-
-    public void printMe(String einrueckung) {
-        System.out.print(einrueckung);
-        if (value instanceof SymbolNode)
-            ((SymbolNode) value).printMe();
-        else
-            System.out.println(kind + ", " + value);
-
-        for (SyntaxNode child : children) {
-            child.printMe(einrueckung+"\t");
-        }
-
-    }
-}
 
 
 
