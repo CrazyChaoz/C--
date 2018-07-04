@@ -3,6 +3,7 @@ const int sdfg=13;
 const int dfgh=14;
 const char c=23;
 
+//int i=0;;
 
 /*struct definierung{
     int i;
@@ -11,7 +12,7 @@ const char c=23;
 
 void main(){
     print(123);
-}*/
+}
 
 int asdf(int i,char c){
     int asd;
@@ -21,7 +22,6 @@ int asdf(int i,char c){
     const int inEinerFunktion=124;
 }
 
-/*
 char asdf(char c){
     int asd;
     int i;
