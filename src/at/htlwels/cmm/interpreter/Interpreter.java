@@ -8,6 +8,8 @@ public class Interpreter {
     private SymbolTable vTab;
     private int stackPointer;
     private int framePointer;
+    private ProcedureStack procedureStack = new ProcedureStack();
+    private GlobalData globalData = new GlobalData();
 
 
     public Interpreter(SymbolTable vTab) {

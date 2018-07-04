@@ -6,6 +6,10 @@ public class ProcedureStack {
 
     byte[] stack = new byte[32768];
 
+    public ProcedureStack() {
+
+    }
+
     public int loadInt(int adr) {
         return (int) stack[adr];
     }

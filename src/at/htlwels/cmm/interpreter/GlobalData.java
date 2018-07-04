@@ -5,6 +5,10 @@ public class GlobalData {
     
     private byte[] globalData = new byte[32768];
 
+    public GlobalData() {
+
+    }
+
     public int loadInt(int adr) {
         return (int) globalData[adr];
     }
