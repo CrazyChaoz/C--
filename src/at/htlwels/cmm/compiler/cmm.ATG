@@ -92,10 +92,10 @@ IGNORE "\t\r\n"
 PRODUCTIONS
 
 CMM
-=	                                            (. symbolTable = new Tab();.)
+=	                                            (. symbolTable = new Tab(this);.)
 { ConstDecl
 //| IF(isVarDecl()) VarDecl
-| Statement<out Node statement>                 (. Node.dump(statement,0);.)
+| ProcDecl<out Obj procedure>                 (. symbolTable.insert(procedure);.)
 }                                               (. symbolTable.dumpTable();.)
 .
 
@@ -111,7 +111,10 @@ ConstDecl
 //-------------------------------------------------------------------------
 VarDecl
 =
-Type<out Type type> Ident<out String name> (.symbolTable.insert(ObjKind.VAR,name,type);.) {"," Ident<out String name1> (.symbolTable.insert(ObjKind.VAR,name1,type);.)} ";".
+Type<out Type type>
+Ident<out String name> (.symbolTable.insert(ObjKind.VAR,name,type);.)
+{"," Ident<out String name1> (.symbolTable.insert(ObjKind.VAR,name1,type);.)}
+";".
 //-------------------------------------------------------------------------
 Type<out Type typ>
 =
@@ -125,39 +128,68 @@ try {
 .)
 .
 
+ProcDecl<out Obj procedure>             (.NodeList nodeList=new NodeList();.)
+=
+Type<out Type type>
+Ident<out String name>                  (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure); .)
+"("
+[
+    Parameter<out Obj param1> (. symbolTable.insert(param1);.)
+    {
+        ',' Parameter<out Obj paramN>(. symbolTable.insert(paramN);.)
+    }
+]
+")""{"
+{
+IF(isVarDecl())VarDecl
+|Statement<out Node statement>          (.nodeList.add(statement);.)
+}
+"}"                                     (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.head,new Node(NodeKind.TRAP,null,null,0),0);symbolTable.closeScope();.)
+.
+
+
+Parameter<out Obj obj>
+=
+Type<out Type type> Ident<out String name>      (.obj=new Obj(ObjKind.VAR,name,type);.).
 //-------------------------------------------------------------------------
 Statement<out Node statement>                   (. statement=null; .)
 =
 (
 Ident<out String name>
-"=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,0);.)";"
-| "return" Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)";"
+"=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,0);/*Node.dump(expression,0);*/.)";"
+| ReturnStatement<out Node retstat>             (.statement=retstat;.)
 | ";"
 ).
 
-//-------------------------------------------------------------------------
-Expr<out Node expr>
+
+ReturnStatement<out Node statement>             (.statement=null;.)
 =
-Term<out Node term>                           (.expr=term;.)
+"return" [Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)]";".
+
+//-------------------------------------------------------------------------
+Expr<out Node expr>                     (.Node term;NodeKind kind;.)
+=
+Term<out expr>
 {
-Addop<out NodeKind kind>
-Term<out Node term1>                          (. expr=new Node(kind,term,term1,term1.type==term.type?term1.type:null); .)
+Addop<out kind>
+Term<out term>                          (. expr=new Node(kind,expr,term,term.type==expr.type?term.type:null);.)
 }
 .
 //-------------------------------------------------------------------------
-Term<out Node term>                           (.term=null;.)
+Term<out Node term>                           (.Node faktor;NodeKind kind;.)
 =
-Factor<out Node faktor>                       (.term=faktor;.)
+Factor<out term>
 {
-Mulop<out NodeKind kind>
-Factor<out Node faktor1>                      (. term=new Node(kind,faktor,faktor1,faktor1.type==faktor.type?faktor1.type:null); .)
+Mulop<out kind>
+Factor<out faktor>                      (. term=new Node(kind,term,faktor,faktor.type==term.type?faktor.type:null); .)
 }
 .
 //-------------------------------------------------------------------------
-Factor <out Node faktor>        (.faktor=null;.)
+Factor <out Node faktor>        (.faktor=null;String name;.)
 =
 (
-intCon                          (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
+Ident<out name>          (. faktor=new Node(symbolTable.find(name));.)
+| intCon                        (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
 | floatCon                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
 | charCon                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
 ).
@@ -174,14 +206,13 @@ Mulop<out NodeKind kind>        (.kind=null;.)
 | "/"                           (.kind=NodeKind.DIV;.)
 | "%"                           (.kind=NodeKind.REM;.).
 
-END CMM.
 
 
 
-
-//-------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------
+//
+////-------------------------------------------------------------------------
+////Boolean Operation
+////-------------------------------------------------------------------------
 //Condition<out boolean truefalse>
 //=
 //CondTerm<out boolean truefalse1> (.truefalse=truefalse1;.)
@@ -194,12 +225,20 @@ END CMM.
 ////-------------------------------------------------------------------------
 //CondFact<out boolean truefalse>
 //=
-//( IF (isExpr()) Expr<out SyntaxNode expr1>
+//( IF (isExpr()) Expr<out Node expr1>
 //  Relop<out int which>
-//  Expr<out SyntaxNode expr2>
+//  Expr<out Node expr2>
 //| "!" "(" Condition<out boolean cond> ")"   (.truefalse=!cond;.)
 //| "(" Condition<out boolean cond> ")"       (.truefalse=cond;.)
 //).
 ////-------------------------------------------------------------------------
 //Relop<out int which> = "==" | "!=" | ">" | ">=" | "<" | "<=" (.which=t.kind;.).
+////-------------------------------------------------------------------------
+
+
+END CMM.
+
+
+
+
 //-------------------------------------------------------------------------

@@ -7,6 +7,8 @@ Every declared name in a C-- program is represented by an Obj node holding
 information about this object.
 --------------------------------------------------------------------------------*/
 
+import java.util.HashMap;
+
 public class Obj {
 
     public ObjKind kind;        // CON, VAR, TYPE, PROC
@@ -31,6 +33,7 @@ public class Obj {
         this.kind = kind;
         this.name = name;
         this.type = type;
+
         if(kind==ObjKind.PROC){
             localScope=new Scope();
         }
