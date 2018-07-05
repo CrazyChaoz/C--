@@ -16,13 +16,15 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
+import at.htlwels.cmm.interpreter.Interpreter;
+
 public class Tab {
 
     public static void main(String[] args) {
         Tab table = new Tab(new Parser(null));
         table.insert(ObjKind.VAR, "asd", Type.INT);
         table.insert(ObjKind.VAR, "asasd", Type.INT);
-        table.insert(ObjKind.VAR, "asasd", Type.INT);
+        //table.insert(ObjKind.VAR, "asasd", Type.INT);
 
 
         Obj o = table.insert(ObjKind.PROC, "main", Type.INT);
@@ -34,7 +36,7 @@ public class Tab {
 
         Node rest1 = new Node(table.find("asasd"));
         Node x1 = new Node(table.find("x"));
-        Node y1 = new Node(table.find("x"));
+        Node y1 = new Node(table.find("y"));
         Node rem1 = new Node(NodeKind.REM, x1, y1, 0);
         Node assign = new Node(NodeKind.ASSIGN, rest1, rem1, 0);
 
@@ -45,6 +47,8 @@ public class Tab {
 //        Node.dump(o.ast, 0);
 
         table.dumpTable();
+
+        Interpreter it = new Interpreter(table, o);
 
     }
 
@@ -64,12 +68,19 @@ public class Tab {
 
     //------------------ scope management ---------------------
 
+    /**
+     * Jump into a local scope, setting the current scope as the outer scope.
+     * @param o
+     */
     public void openScope(Obj o) {
         o.localScope.outer = curScope;
         curScope = o.localScope;
         curLevel++;
     }
 
+    /**
+     * Leaves the current scope and jumps to the next outer scope.
+     */
     public void closeScope() {
         curScope = curScope.outer;
         curLevel--;
