@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Interpreter {
-    private Tab vTab;
+    private Tab tab;
+    private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
 
-    private int stackPointer, framePointer = 0;
+    private int stackPointer, framePointer, globalData = 0;
 
     byte[] stack = new byte[32768];
 
@@ -58,8 +59,11 @@ public class Interpreter {
     }
 
 
-    public Interpreter(Tab vTab) {
-        this.vTab = vTab;
+    public Interpreter(Tab tab, Obj obj) {
+        this.tab = tab;
+        this.obj = obj;
+
+        statSeq(obj.ast);
     }
 
     /**
@@ -71,7 +75,9 @@ public class Interpreter {
     }
 
     public void statSeq(Node p) {
-
+        for(p = p.left; p!= null; p=p.next) {
+            p.toString();
+        }
     }
 
     public void statement(Node p) {
@@ -94,8 +100,11 @@ public class Interpreter {
         return 0;
     }
 
-    public int identAdr() {
+    public int identAdr(Obj obj) {
+        if(obj.level == 0) return globalData + obj.adr;
+
         return 0;
+
     }
 
     public void createFrame(Obj proc) {
@@ -113,17 +122,17 @@ public class Interpreter {
 
     }
 
-    public Tab getvTab() {
-        return vTab;
+    public Tab gettab() {
+        return tab;
     }
 
-    public void setvTab(Tab vTab) {
-        this.vTab = vTab;
+    public void settab(Tab tab) {
+        this.tab = tab;
     }
 
     //Predeclared standard procedures
     public char read() {
-        char ch = '0';
+        char ch = '\0';
 
         try {
             ch = (char) System.in.read();

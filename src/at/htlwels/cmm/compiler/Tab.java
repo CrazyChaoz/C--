@@ -16,13 +16,14 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
+import at.htlwels.cmm.interpreter.Interpreter;
+
 public class Tab {
 
     public static void main(String[] args) {
         Tab table = new Tab();
-        table.insert(ObjKind.VAR, "asd", Type.INT);
-        table.insert(ObjKind.VAR, "asasd", Type.INT);
-        table.insert(ObjKind.VAR, "asasd", Type.INT);
+        table.insert(ObjKind.CON, "asd", Type.INT);
+        table.find("asd").val=213231;
 
 
         Obj o=table.insert(ObjKind.PROC,"main",Type.INT);
@@ -39,6 +40,8 @@ public class Tab {
         table.closeScope();
 
         Node.dump(o.ast,0);
+
+        Interpreter it = new Interpreter(table, o);
 
 //        table.dumpTable();
 
