@@ -7,9 +7,10 @@ const char c=23;
 int procedure(int i,char c){
     int asd;
     int si;
+
     i=i+3;
-    i=asdasdasdsadsadsadsadsa*4+3*4-5*i+7+8+9;
-    return si;
+    i=si*4+3*4-5*i+7+8+9;
+    return;
 }
 
 

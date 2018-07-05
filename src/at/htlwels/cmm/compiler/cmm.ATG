@@ -159,12 +159,16 @@ Ident<out String name>
 "=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,0);/*Node.dump(expression,0);*/.)";"
 | ReturnStatement<out Node retstat>             (.statement=retstat;.)
 | ";"
+| "print" "(" Expr<out Node expression> ")" ";" (. Node.dump(expression,0);.)
+|"{"
+{Statement<out Node innerStatements>            (.if(statement==null)statement=innerStatements;else .)}
+"}"
 ).
 
 
-ReturnStatement<out Node statement>             (.statement=null;.)
+ReturnStatement<out Node statement>             (.statement=null; Node expression=null;.)
 =
-"return" [Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)]";".
+"return" [Expr<out expression>]  (. statement=new Node(NodeKind.RETURN,expression,null,expression!=null?expression.type:null);.)";".
 
 //-------------------------------------------------------------------------
 Expr<out Node expr>                     (.Node term;NodeKind kind;.)
