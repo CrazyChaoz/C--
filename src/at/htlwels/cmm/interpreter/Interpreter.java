@@ -1,16 +1,64 @@
+
 package at.htlwels.cmm.interpreter;
 
 import at.htlwels.cmm.compiler.*;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class Interpreter {
-    private SymbolTable vTab;
-    private ProcedureStack procedureStack = new ProcedureStack();
-    private GlobalData globalData = new GlobalData();
+    private Tab vTab;
+   // private ProcedureStack procedureStack = new ProcedureStack();
+   // private GlobalData globalData = new GlobalData();
+
+    private int stackPointer, framePointer = 0;
+
+    byte[] stack = new byte[32768];
+
+    public int loadInt(int adr) {
+        byte[] b = new byte[4];
+
+        for(int i = 0; i < 4; i++) {
+            b[i] = stack[adr+i];
+        }
+
+        return ByteBuffer.wrap(b).getInt();
+    }
+
+    public float loadFloat(int adr) {
+        byte[] b = new byte[4];
+
+        for(int i = 0; i < 4; i++) {
+            b[i] = stack[adr+i];
+        }
+
+        return ByteBuffer.wrap(b).getFloat();
+    }
+
+    public char loadChar(int adr) {
+        return (char) stack[adr];
+    }
+
+    public void storeInt(int adr, int val) {
+        byte[] b = ByteBuffer.allocate(4).putInt(val).array();
+        for(int i = 0; i < 4; i++) {
+            stack[adr+i] = b[i];
+        }
+    }
+
+    public void storeFloat(int adr, float val) {
+        byte[] b = ByteBuffer.allocate(4).putFloat(val).array();
+        for(int i = 0; i < 4; i++) {
+            stack[adr+i] = b[i];
+        }
+    }
+
+    public void storeChar(int adr, char val) {
+        stack[adr] = (byte) val;
+    }
 
 
-    public Interpreter(SymbolTable vTab) {
+    public Interpreter(Tab vTab) {
         this.vTab = vTab;
     }
 
@@ -22,27 +70,27 @@ public class Interpreter {
 
     }
 
-    public void statSeq(SyntaxNode p) {
+    public void statSeq(Node p) {
 
     }
 
-    public void statement(SyntaxNode p) {
+    public void statement(Node p) {
 
     }
 
-    public int intExpr(SyntaxNode p) {
+    public int intExpr(Node p) {
         return 0;
     }
 
-    public boolean condition(SyntaxNode p) {
+    public boolean condition(Node p) {
         return true;
     }
 
-    public void call(SyntaxNode p) {
+    public void call(Node p) {
 
     }
 
-    public int adr(SyntaxNode p) {
+    public int adr(Node p) {
         return 0;
     }
 
@@ -50,19 +98,26 @@ public class Interpreter {
         return 0;
     }
 
-    public void createFrame() {
-        //procedureStack.storeInt(procedureStack.stack[procedureStack.getFramePointer()]++, 2);
+    public void createFrame(Obj proc) {
+        storeInt(stackPointer, 4);
+        stackPointer +=4;
+        storeInt(stackPointer, proc.val);
+        stackPointer +=4;
+        storeInt(stackPointer, framePointer);
+        stackPointer +=4;
+        framePointer = stackPointer;
+        stackPointer += 5;
     }
 
     public void disposeFrame() {
 
     }
 
-    public SymbolTable getvTab() {
+    public Tab getvTab() {
         return vTab;
     }
 
-    public void setvTab(SymbolTable vTab) {
+    public void setvTab(Tab vTab) {
         this.vTab = vTab;
     }
 
