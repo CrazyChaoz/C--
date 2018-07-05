@@ -16,6 +16,8 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
+import java.util.HashMap;
+
 public class Tab {
 
     public static void main(String[] args) {
@@ -29,7 +31,6 @@ public class Tab {
         table.openScope(o);
         table.insert(ObjKind.VAR, "x", Type.INT);
         table.insert(ObjKind.VAR, "y", Type.INT);
-
 
 
         Node rest1 = new Node(table.find("asasd"));
@@ -122,7 +123,7 @@ public class Tab {
             scope = scope.outer;
         }
 
-        parser.errors.count++;
+//        parser.errors.count++;
         //Detailed error messages
         return noObj;
     }

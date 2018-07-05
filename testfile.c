@@ -8,7 +8,8 @@ int procedure(int i,char c){
     int asd;
     int si;
 
-    i=i+3;
+    if(si>asd&&si>0)
+        i=i+3;
     i=si*4+3*4-5*i+7+8+9;
     return;
 }

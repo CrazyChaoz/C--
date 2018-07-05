@@ -36,7 +36,7 @@ COMPILER CMM
 		} else return true;
 	}
 
-	// Returns true if the next input is a type cast (requires symbol table)
+	// Returns true if the next input is a type cast
 	boolean isCast() {
 		Token x = scanner.Peek();
 		if (x.kind != _ident)
@@ -131,7 +131,7 @@ try {
 ProcDecl<out Obj procedure>             (.NodeList nodeList=new NodeList();.)
 =
 Type<out Type type>
-Ident<out String name>                  (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure); .)
+Ident<out String name>                  (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure); int startLine=scanner.line;.)
 "("
 [
     Parameter<out Obj param1> (. symbolTable.insert(param1);.)
@@ -144,7 +144,8 @@ Ident<out String name>                  (.procedure=new Obj(ObjKind.PROC,name,ty
 IF(isVarDecl())VarDecl
 |Statement<out Node statement>          (.nodeList.add(statement);.)
 }
-"}"                                     (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.head,new Node(NodeKind.TRAP,null,null,0),0);symbolTable.closeScope();.)
+(.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.head,new Node(NodeKind.TRAP,null,null,scanner.line),startLine);symbolTable.closeScope();.)
+"}"
 .
 
 
@@ -152,47 +153,50 @@ Parameter<out Obj obj>
 =
 Type<out Type type> Ident<out String name>      (.obj=new Obj(ObjKind.VAR,name,type);.).
 //-------------------------------------------------------------------------
-Statement<out Node statement>                   (. statement=null; .)
+Statement<out Node statement>                   (. statement=null; NodeList innerStatements=new NodeList();.)
 =
 (
 Ident<out String name>
-"=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,0);/*Node.dump(expression,0);*/.)";"
+"=" Expr<out Node expression>                   (. statement=new Node(NodeKind.ASSIGN,new Node(symbolTable.find(name)),expression,scanner.line);/*Node.dump(expression,0);*/.)";"
 | ReturnStatement<out Node retstat>             (.statement=retstat;.)
 | ";"
 | "print" "(" Expr<out Node expression> ")" ";" (. Node.dump(expression,0);.)
-|"{"
-{Statement<out Node innerStatements>            (.if(statement==null)statement=innerStatements;else .)}
+| "while""("Condition<out Node condition>")" Statement<out Node innerStatement>(.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
+| "if""("Condition<out Node condition>")" Statement<out Node innerStatement>(.statement=new Node(NodeKind.IF,condition,innerStatement,scanner.line);.)
+| "{"
+{Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
+}                                               (. statement=innerStatements.get(); .)
 "}"
 ).
 
 
 ReturnStatement<out Node statement>             (.statement=null; Node expression=null;.)
 =
-"return" [Expr<out expression>]  (. statement=new Node(NodeKind.RETURN,expression,null,expression!=null?expression.type:null);.)";".
+"return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)";".
 
 //-------------------------------------------------------------------------
-Expr<out Node expr>                     (.Node term;NodeKind kind;.)
+Expr<out Node expr>                             (.Node term;NodeKind kind;.)
 =
 Term<out expr>
 {
 Addop<out kind>
-Term<out term>                          (. expr=new Node(kind,expr,term,term.type==expr.type?term.type:null);.)
+Term<out term>                                  (. expr=new Node(kind,expr,term,term.type==expr.type?term.type:null);.)
 }
 .
 //-------------------------------------------------------------------------
-Term<out Node term>                           (.Node faktor;NodeKind kind;.)
+Term<out Node term>                             (.Node faktor;NodeKind kind;.)
 =
 Factor<out term>
 {
 Mulop<out kind>
-Factor<out faktor>                      (. term=new Node(kind,term,faktor,faktor.type==term.type?faktor.type:null); .)
+Factor<out faktor>                              (. term=new Node(kind,term,faktor,faktor.type==term.type?faktor.type:null); .)
 }
 .
 //-------------------------------------------------------------------------
 Factor <out Node faktor>        (.faktor=null;String name;.)
 =
 (
-Ident<out name>          (. faktor=new Node(symbolTable.find(name));.)
+Ident<out name>                 (. faktor=new Node(symbolTable.find(name));.)
 | intCon                        (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
 | floatCon                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
 | charCon                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
@@ -213,31 +217,33 @@ Mulop<out NodeKind kind>        (.kind=null;.)
 
 
 
-//
-////-------------------------------------------------------------------------
-////Boolean Operation
-////-------------------------------------------------------------------------
-//Condition<out boolean truefalse>
-//=
-//CondTerm<out boolean truefalse1> (.truefalse=truefalse1;.)
-//{"||" CondTerm<out boolean truefalse2> (.truefalse=truefalse&&truefalse2;.)}.
-////-------------------------------------------------------------------------
-//CondTerm<out boolean truefalse>
-//=
-//CondFact<out boolean truefalse1>(.truefalse=truefalse1;.)
-//{"&&" CondFact<out boolean truefalse2>(.truefalse=truefalse&&truefalse2;.) }.
-////-------------------------------------------------------------------------
-//CondFact<out boolean truefalse>
-//=
-//( IF (isExpr()) Expr<out Node expr1>
-//  Relop<out int which>
-//  Expr<out Node expr2>
-//| "!" "(" Condition<out boolean cond> ")"   (.truefalse=!cond;.)
-//| "(" Condition<out boolean cond> ")"       (.truefalse=cond;.)
-//).
-////-------------------------------------------------------------------------
-//Relop<out int which> = "==" | "!=" | ">" | ">=" | "<" | "<=" (.which=t.kind;.).
-////-------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------
+//Boolean Operation
+//-------------------------------------------------------------------------
+Condition<out Node cond>
+=
+CondTerm<out cond>
+{"||" CondTerm<out Node cond2> (.cond=new Node(NodeKind.OR,cond,cond2,Type.BOOL); .)}.
+//-------------------------------------------------------------------------
+CondTerm<out Node cond>
+=
+CondFact<out cond>
+{"&&" CondFact<out Node cond2> (.cond=new Node(NodeKind.AND,cond,cond2,Type.BOOL); .)}.
+//-------------------------------------------------------------------------
+CondFact<out Node cond>         (.cond=null;.)
+=
+( IF (isExpr()) Expr<out Node expr1>
+  Relop<out NodeKind which>
+  Expr<out Node expr2>                      (.cond=new Node(which,expr1,expr2,Type.BOOL); .)
+| "!" "(" Condition<out Node cond1> ")"   (. cond=new Node(NodeKind.NOT,cond1,null,Type.BOOL);.)
+| "(" Condition<out Node cond1> ")"       (.cond=cond1;.)
+).
+//-------------------------------------------------------------------------
+Relop<out NodeKind which>                   (.which=null;.)
+=
+("==" | "!=" | ">" | ">=" | "<" | "<=") (.which=NodeKind.get(t.kind);.).
+//-------------------------------------------------------------------------
 
 
 END CMM.
