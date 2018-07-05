@@ -85,9 +85,10 @@ public class Tab {
 
     public Obj insert(Obj object) {
 
-//        if (find(object.name) != noObj) {
-//            parser.errors.count++;
-//        }
+        if (find(object.name) != noObj) {
+            parser.errors.count++;
+            System.err.println(object.name);
+        }
 
         Obj nxt = curScope.locals;
         if (nxt == null)

@@ -7,8 +7,6 @@ Every declared name in a C-- program is represented by an Obj node holding
 information about this object.
 --------------------------------------------------------------------------------*/
 
-import java.util.HashMap;
-
 public class Obj {
 
     public ObjKind kind;        // CON, VAR, TYPE, PROC
