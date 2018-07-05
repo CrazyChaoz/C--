@@ -1,6 +1,9 @@
 package at.htlwels.cmm.compiler;
 
 public enum  NodeKind {
+
+
+    HELPER,
     //------------ statements
     STATSEQ ,   // statement sequence
     ASSIGN ,   // assignment

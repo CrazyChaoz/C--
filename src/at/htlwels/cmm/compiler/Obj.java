@@ -31,6 +31,7 @@ public class Obj {
         this.kind = kind;
         this.name = name;
         this.type = type;
+
         if(kind==ObjKind.PROC){
             localScope=new Scope();
         }

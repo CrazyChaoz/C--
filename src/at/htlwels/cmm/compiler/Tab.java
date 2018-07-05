@@ -19,28 +19,32 @@ The symbol table has methods for
 public class Tab {
 
     public static void main(String[] args) {
-        Tab table = new Tab();
+        Tab table = new Tab(new Parser(null));
         table.insert(ObjKind.VAR, "asd", Type.INT);
         table.insert(ObjKind.VAR, "asasd", Type.INT);
         table.insert(ObjKind.VAR, "asasd", Type.INT);
 
 
-        Obj o=table.insert(ObjKind.PROC,"main",Type.INT);
+        Obj o = table.insert(ObjKind.PROC, "main", Type.INT);
         table.openScope(o);
+        table.insert(ObjKind.VAR, "x", Type.INT);
+        table.insert(ObjKind.VAR, "y", Type.INT);
 
-        Node rest1=new Node(table.find("asasd"));
-        Node x1=new Node(12);
-        Node y1=new Node(6);
-        Node rem1=new Node(NodeKind.REM,x1,y1,0);
-        Node assign=new Node(NodeKind.ASSIGN,rest1,rem1,0);
 
-        o.ast=new Node(NodeKind.STATSEQ,assign,new Node(NodeKind.TRAP,null,null,0),0);
+
+        Node rest1 = new Node(table.find("asasd"));
+        Node x1 = new Node(table.find("x"));
+        Node y1 = new Node(table.find("x"));
+        Node rem1 = new Node(NodeKind.REM, x1, y1, 0);
+        Node assign = new Node(NodeKind.ASSIGN, rest1, rem1, 0);
+
+        o.ast = new Node(NodeKind.STATSEQ, assign, new Node(NodeKind.TRAP, null, null, 0), 0);
         table.insert(ObjKind.VAR, "asasd", Type.CHAR);
         table.closeScope();
 
-        Node.dump(o.ast,0);
+//        Node.dump(o.ast, 0);
 
-//        table.dumpTable();
+        table.dumpTable();
 
     }
 
@@ -55,11 +59,14 @@ public class Tab {
     public static Obj noObj;                // predefined objects
 
 
+
+    public Parser parser;
+
     //------------------ scope management ---------------------
 
     public void openScope(Obj o) {
-        o.localScope.outer=curScope;
-        curScope=o.localScope;
+        o.localScope.outer = curScope;
+        curScope = o.localScope;
         curLevel++;
     }
 
@@ -73,8 +80,14 @@ public class Tab {
     // Create a new object with the given kind, name and type
     // and insert it into the current scope.
     public Obj insert(ObjKind kind, String name, Type type) {
+        return insert(new Obj(kind, name, type));
+    }
 
-        Obj object = new Obj(kind, name, type);
+    public Obj insert(Obj object) {
+
+//        if (find(object.name) != noObj) {
+//            parser.errors.count++;
+//        }
 
         Obj nxt = curScope.locals;
         if (nxt == null)
@@ -85,33 +98,35 @@ public class Tab {
 
             nxt.next = object;
         }
-
-        curScope.size += 1;
         return object;
     }
-
 
 
     // Look up the object with the given name in all open scopes.
     // Report an error if not found.
     public Obj find(String name) {
-        Scope scope=curScope;
+        Scope scope = curScope;
         Obj obj;
 
 
-        while (scope!=null){
-            obj=scope.locals;
 
-            while (obj!=null){
-                if(obj.name.equals(name))
+        while (scope != null) {
+            obj = scope.locals;
+
+            while (obj != null) {
+                if (obj.name.equals(name))
                     return obj;
-                obj=obj.next;
+                obj = obj.next;
             }
-            scope=scope.outer;
+            scope = scope.outer;
         }
 
-        throw new RuntimeException(new IllegalArgumentException(name+" is not in the reachable Scopes."));
+        parser.errors.count++;
+        //Detailed error messages
+        return noObj;
     }
+
+
 
     // Retrieve a struct field with the given name from the fields of "type"
     public Obj findField(String name, Type type) {
@@ -211,6 +226,7 @@ public class Tab {
             case PROC:
                 System.out.println("Procedure " + o.name + " size=" + o.size + " nPars=" + o.nPars + " isForw=" + o.isForward + " {");
                 dumpScope(o.localScope.locals, indent + 1);
+                Node.dump(o.ast,0);
                 System.out.print("}");
                 break;
             default:
@@ -237,7 +253,11 @@ public class Tab {
 
     //-------------- initialization of the symbol table ------------
 
-    public Tab() {
+    public Tab(Parser parser) {
+
+
+        this.parser=parser;
+
 
         curScope = new Scope();
         curScope.outer = null;

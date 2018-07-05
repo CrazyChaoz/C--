@@ -3,8 +3,13 @@ const int sdfg=13;
 const int dfgh=14;
 const char c=23;
 
-//int i;
-asdf=asdf+12-123;
+
+int procedure(int i,char c){
+    int asd;
+    int si;
+    i=i+3;
+    i=asdasdasdsadsadsadsadsa*4+3*4-5*i+7+8+9;
+}
 
 
 /*struct definierung{
@@ -14,19 +19,7 @@ asdf=asdf+12-123;
 
 void main(){
     print(123);
-}
-
-int asdf(int i,char c){
-    int asd;
-    int i;
-    i=i+3;
-    //i=i+3*4-5;
-    const int inEinerFunktion=124;
-}
-
-char asdf(char c){
-    int asd;
-    int i;
-    i=i+3;
 }*/
+
+
 
