@@ -20,6 +20,109 @@ public class Interpreter {
     byte[] stack = new byte[32768];
 
 
+
+
+
+    public Interpreter(Tab tab, Obj obj) {
+        this.tab = tab;
+        this.obj = obj;
+
+        createFrame(tab.find("main"));
+    }
+
+    public void statSeq(Node p) {
+        for(p = p.left; p!= null; p=p.next) {
+            p.toString();
+        }
+    }
+
+    public void statement(Node p) {
+        switch(p.kind) {
+            case ASSIGN:
+                switch(p.right.kind) {
+                    //TODO: FINISH
+
+                }
+                break;
+            case IF:
+                if(condition(p.left)) statement(p.right);
+                break;
+            case IFELSE:
+                if(condition(p.left)) {
+                    statement(p.right);
+                } else {
+                    statement(p.right);
+                }
+                break;
+            case WHILE:
+                while(condition(p.left)) {
+                    statement(p.right);
+                }
+                break;
+                //TODO: FINISH
+        }
+    }
+
+    public int intExpr(Node p) {
+        return 0;
+    }
+
+    public boolean condition(Node p) {
+        return true;
+    }
+
+    public void call(Node p) {
+
+    }
+
+    public int adr(Node p) {
+        switch(p.kind) {
+            case IDENT:
+                return identAdr(p.obj);
+            case DOT:
+                return adr(p.left) + p.right.val;
+            case INDEX:
+                return adr(p.left) + intExpr(p.right);
+            default:
+                return framePointer;
+        }
+    }
+
+    public int identAdr(Obj obj) {
+        if(obj.level == 0) return globalData + obj.adr;
+
+        return 0;
+
+    }
+
+    public void createFrame(Obj proc) {
+        storeInt(stackPointer, proc.ast.line);
+        stackPointer +=4;
+        storeInt(stackPointer, proc.val);
+        stackPointer +=4;
+        storeInt(stackPointer, framePointer);
+        stackPointer +=4;
+        framePointer = stackPointer;
+        stackPointer += proc.size;
+    }
+
+    public void disposeFrame() {
+
+    }
+
+    public Tab gettab() {
+        return tab;
+    }
+
+    public void settab(Tab tab) {
+        this.tab = tab;
+    }
+
+
+    /**
+     * Stack operations
+     */
+
     /**
      * Loads 4 bytes from the stack starting at adr and returns them as an integer.
      * @param adr
@@ -83,78 +186,6 @@ public class Interpreter {
         stack[adr] = (byte) val;
     }
 
-
-    public Interpreter(Tab tab, Obj obj) {
-        this.tab = tab;
-        this.obj = obj;
-
-        createFrame(tab.find("main"));
-    }
-
-    public void statSeq(Node p) {
-        for(p = p.left; p!= null; p=p.next) {
-            p.toString();
-        }
-    }
-
-    public void statement(Node p) {
-
-    }
-
-    public int intExpr(Node p) {
-        return 0;
-    }
-
-    public boolean condition(Node p) {
-        return true;
-    }
-
-    public void call(Node p) {
-
-    }
-
-    public int adr(Node p) {
-        switch(p.kind) {
-            case IDENT:
-                return identAdr(p.obj);
-            case DOT:
-                return adr(p.left) + p.right.val;
-            case INDEX:
-                return adr(p.left) + intExpr(p.right);
-            default:
-                return framePointer;
-        }
-    }
-
-    public int identAdr(Obj obj) {
-        if(obj.level == 0) return globalData + obj.adr;
-
-        return 0;
-
-    }
-
-    public void createFrame(Obj proc) {
-        storeInt(stackPointer, proc.ast.line);
-        stackPointer +=4;
-        storeInt(stackPointer, proc.val);
-        stackPointer +=4;
-        storeInt(stackPointer, framePointer);
-        stackPointer +=4;
-        framePointer = stackPointer;
-        //TODO: SP += proc.varSize
-    }
-
-    public void disposeFrame() {
-
-    }
-
-    public Tab gettab() {
-        return tab;
-    }
-
-    public void settab(Tab tab) {
-        this.tab = tab;
-    }
 
     /**
      * Pre-declared standard procedures
