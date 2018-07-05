@@ -7,14 +7,24 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Interpreter {
-    private Tab vTab;
+    private Tab tab;
+    private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
 
-    private int stackPointer, framePointer = 0;
+    private int stackPointer, framePointer, globalData = 0;
 
+    /**
+     * Procedure stack
+     */
     byte[] stack = new byte[32768];
 
+
+    /**
+     * Loads 4 bytes from the stack starting at adr and returns them as an integer.
+     * @param adr
+     * @return
+     */
     public int loadInt(int adr) {
         byte[] b = new byte[4];
 
@@ -25,6 +35,11 @@ public class Interpreter {
         return ByteBuffer.wrap(b).getInt();
     }
 
+    /**
+     * Loads 4 bytes from the stack starting at adr and returns them as a float
+     * @param adr
+     * @return
+     */
     public float loadFloat(int adr) {
         byte[] b = new byte[4];
 
@@ -35,10 +50,21 @@ public class Interpreter {
         return ByteBuffer.wrap(b).getFloat();
     }
 
+    /**
+     * Loads a single byte from the stack at address adr and returns it as a casted char.
+     * Keep in mind that the chars are strictly ASCII and not the java standard UTF-16.
+     * @param adr
+     * @return
+     */
     public char loadChar(int adr) {
         return (char) stack[adr];
     }
 
+    /**
+     * Stores an integer in the stack starting at adr.
+     * @param adr
+     * @param val
+     */
     public void storeInt(int adr, int val) {
         byte[] b = ByteBuffer.allocate(4).putInt(val).array();
         for(int i = 0; i < 4; i++) {
@@ -58,20 +84,17 @@ public class Interpreter {
     }
 
 
-    public Interpreter(Tab vTab) {
-        this.vTab = vTab;
-    }
+    public Interpreter(Tab tab, Obj obj) {
+        this.tab = tab;
+        this.obj = obj;
 
-    /**
-     * Dummy constructor without parameters
-     */
-
-    public Interpreter() {
-
+        createFrame(tab.find("main"));
     }
 
     public void statSeq(Node p) {
-
+        for(p = p.left; p!= null; p=p.next) {
+            p.toString();
+        }
     }
 
     public void statement(Node p) {
@@ -91,39 +114,53 @@ public class Interpreter {
     }
 
     public int adr(Node p) {
-        return 0;
+        switch(p.kind) {
+            case IDENT:
+                return identAdr(p.obj);
+            case DOT:
+                return adr(p.left) + p.right.val;
+            case INDEX:
+                return adr(p.left) + intExpr(p.right);
+            default:
+                return framePointer;
+        }
     }
 
-    public int identAdr() {
+    public int identAdr(Obj obj) {
+        if(obj.level == 0) return globalData + obj.adr;
+
         return 0;
+
     }
 
     public void createFrame(Obj proc) {
-        storeInt(stackPointer, 4);
+        storeInt(stackPointer, proc.ast.line);
         stackPointer +=4;
         storeInt(stackPointer, proc.val);
         stackPointer +=4;
         storeInt(stackPointer, framePointer);
         stackPointer +=4;
         framePointer = stackPointer;
-        stackPointer += 5;
+        //TODO: SP += proc.varSize
     }
 
     public void disposeFrame() {
 
     }
 
-    public Tab getvTab() {
-        return vTab;
+    public Tab gettab() {
+        return tab;
     }
 
-    public void setvTab(Tab vTab) {
-        this.vTab = vTab;
+    public void settab(Tab tab) {
+        this.tab = tab;
     }
 
-    //Predeclared standard procedures
+    /**
+     * Pre-declared standard procedures
+     */
     public char read() {
-        char ch = '0';
+        char ch = '\0';
 
         try {
             ch = (char) System.in.read();
