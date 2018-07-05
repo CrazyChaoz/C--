@@ -162,9 +162,9 @@ Ident<out String name>
 ).
 
 
-ReturnStatement<out Node statement>
+ReturnStatement<out Node statement>             (.statement=null;.)
 =
-"return" Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)";".
+"return" [Expr<out Node expression>            (. statement=new Node(NodeKind.RETURN,expression,null,0);.)]";".
 
 //-------------------------------------------------------------------------
 Expr<out Node expr>                     (.Node term;NodeKind kind;.)
