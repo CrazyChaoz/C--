@@ -1,5 +1,6 @@
 package at.htlwels.cmm.compiler;
 
+import at.htlwels.cmm.interpreter.Interpreter;
 import at.htlwels.cmm.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,30 @@ public class Main {
         System.out.println("Number of Errors: " + parser.errors.count);
 
     }
+
+
+    @Test
+    @DisplayName("Interpreter Test")
+    public void interpreterTest() {
+        Interpreter it = new Interpreter();
+
+        it.storeChar(0, 't');
+        it.storeChar(1, 'e');
+        it.storeChar(2, 's');
+        it.storeChar(3, 't');
+
+        for(int i = 0; i <=3; i++) {
+            System.out.print(it.loadChar(i));
+        }
+        System.out.print('\n');
+
+        it.storeInt(4, 344);
+        System.out.println(it.loadInt(4));
+
+        it.storeFloat(8, 32.3f);
+        System.out.println(it.loadFloat(8));
+    }
+
 
 
     @Test
