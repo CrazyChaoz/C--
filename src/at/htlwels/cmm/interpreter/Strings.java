@@ -87,7 +87,7 @@ public class Strings {
 
 	/**
 	 * Create a temporal byte-array variable and point it to the old array, then copy the contents of the old array
-	 * to the new and bigger one. Since temp[] is a variable declared in the scope of this function, once it exits
+	 * to the new, bigger one. Since temp[] is a variable declared in the scope of this function, once it exits
 	 * there will be no more references to the old array left and the garbage collector will deallocate it.
 	 */
 	public void growData(){
