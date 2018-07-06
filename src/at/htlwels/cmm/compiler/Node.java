@@ -50,21 +50,21 @@ public final class Node {
     // a int Node
     public Node(int val) {
         this.kind = INTCON;
-        this.type = Tab.intType;
+        this.type = SymbolTable.intType;
         this.val = val;
     }
 
     // a float Node
     public Node(float fValue) {
         this.kind = FLOATCON;
-        this.type = Tab.floatType;
+        this.type = SymbolTable.floatType;
         this.fVal = fVal;
     }
 
     // a char Node
     public Node(char ch) {
         this.kind = CHARCON;
-        this.type = Tab.charType;
+        this.type = SymbolTable.charType;
         this.val = ch;
     }
 

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Interpreter {
-    private Tab tab;
+    private SymbolTable symbolTable;
     private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
@@ -84,11 +84,11 @@ public class Interpreter {
     }
 
 
-    public Interpreter(Tab tab, Obj obj) {
-        this.tab = tab;
+    public Interpreter(SymbolTable symbolTable, Obj obj) {
+        this.symbolTable = symbolTable;
         this.obj = obj;
 
-        createFrame(tab.find("main"));
+        createFrame(symbolTable.find("main"));
     }
 
     public void statSeq(Node p) {
@@ -148,12 +148,12 @@ public class Interpreter {
 
     }
 
-    public Tab gettab() {
-        return tab;
+    public SymbolTable gettab() {
+        return symbolTable;
     }
 
-    public void settab(Tab tab) {
-        this.tab = tab;
+    public void settab(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
     }
 
     /**

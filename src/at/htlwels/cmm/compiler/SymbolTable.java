@@ -1,7 +1,7 @@
 package at.htlwels.cmm.compiler;
 
 /*--------------------------------------------------------------------------------
-Tab   Symbol table for C--
+SymbolTable   Symbol table for C--
 ===   ====================
 The symbol table is a stack of scopes
 - universe: contains predeclared names
@@ -16,42 +16,9 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
-import at.htlwels.cmm.interpreter.Interpreter;
+public class SymbolTable {
 
 
-public class Tab {
-
-    public static void main(String[] args) {
-        Tab table = new Tab(new Parser(null));
-        table.insert(ObjKind.VAR, "asd", Type.INT);
-        table.insert(ObjKind.VAR, "asasd", Type.INT);
-        //table.insert(ObjKind.VAR, "asasd", Type.INT);
-
-
-        Obj o = table.insert(ObjKind.PROC, "main", Type.INT);
-        table.openScope(o);
-        table.insert(ObjKind.VAR, "x", Type.INT);
-        table.insert(ObjKind.VAR, "y", Type.INT);
-
-
-
-        Node rest1 = new Node(table.find("asasd"));
-        Node x1 = new Node(table.find("x"));
-        Node y1 = new Node(table.find("y"));
-        Node rem1 = new Node(NodeKind.REM, x1, y1, 0);
-        Node assign = new Node(NodeKind.ASSIGN, rest1, rem1, 0);
-
-        o.ast = new Node(NodeKind.STATSEQ, assign, new Node(NodeKind.TRAP, null, null, 0), 0);
-        table.insert(ObjKind.VAR, "asasd", Type.CHAR);
-        table.closeScope();
-
-//        Node.dump(o.ast, 0);
-
-        table.dumpTable();
-
-        Interpreter it = new Interpreter(table, o);
-
-    }
 
     public Scope curScope;                  // current scope
     public int curLevel;                    // nesting level of current scope
@@ -64,20 +31,21 @@ public class Tab {
     public static Obj noObj;                // predefined objects
 
 
-
     public Parser parser;
 
     //------------------ scope management ---------------------
 
     /**
      * Jump into a local scope, setting the current scope as the outer scope.
-     * @param o
+     *
+     * @param scope
      */
-    public void openScope(Obj o) {
-        o.localScope.outer = curScope;
-        curScope = o.localScope;
+    public void openScope(Scope scope) {
+        scope.outer = curScope;
+        curScope = scope;
         curLevel++;
     }
+
 
     /**
      * Leaves the current scope and jumps to the next outer scope.
@@ -122,7 +90,6 @@ public class Tab {
         Obj obj;
 
 
-
         while (scope != null) {
             obj = scope.locals;
 
@@ -140,18 +107,20 @@ public class Tab {
     }
 
 
-
     // Retrieve a struct field with the given name from the fields of "type"
     public Obj findField(String name, Type type) {
-        // TODO
-        return null;
+        Obj retval;
+        openScope(type.fields);
+        retval=find(name);
+        closeScope();
+        return retval;
     }
 
     // Look up the object with the given name in the current scope.
     // Return noObj if not found.
     public Obj lookup(String name) {
-        // TODO
-        return null;
+
+        return noObj;
     }
 
     //----------------- handling of forward declaration  -----------------
@@ -186,29 +155,30 @@ public class Tab {
     //---------------- methods for dumping the symbol table --------------
 
     // Print a type
-    public void dumpStruct(Type type, int indent) {
-        switch (type) {
-            case INT:
+    public void dumpType(Type type, int indent) {
+        switch (type.kind) {
+            case Type.INT:
                 System.out.print("Int(" + type.size + ")");
                 break;
-            case FLOAT:
+            case Type.FLOAT:
                 System.out.print("Float(" + type.size + ")");
                 break;
-            case CHAR:
+            case Type.CHAR:
                 System.out.print("Char(" + type.size + ")");
                 break;
-            case BOOL:
+            case Type.BOOL:
                 System.out.print("Bool(" + type.size + ")");
                 break;
-            case ARR:
+            case Type.ARR:
                 System.out.print("Arr[" + type.elements + "(" + type.size + ")] of ");
-                dumpStruct(type.elemType, indent);
+                dumpType(type.elemType, indent);
                 break;
-            case STRUCT:
+            case Type.STRUCT:
                 System.out.println("Type(" + type.size + ") {");
-                for (Obj o = type.fields; o != null; o = o.next)
-                    dumpObj(o, indent + 1);
+                dumpScope(type.fields.locals, indent + 1);
+
                 for (int i = 0; i < indent; i++) System.out.print("  ");
+
                 System.out.print("}");
                 break;
             default:
@@ -224,7 +194,7 @@ public class Tab {
         switch (o.kind) {
             case CON:
                 System.out.print("Constant " + o.name);
-                if (o.type == Tab.floatType)
+                if (o.type == SymbolTable.floatType)
                     System.out.print(" fVal=" + o.fVal);
                 else
                     System.out.print(" val=" + o.val);
@@ -239,7 +209,7 @@ public class Tab {
             case PROC:
                 System.out.println("Procedure " + o.name + " size=" + o.size + " nPars=" + o.nPars + " isForw=" + o.isForward + " {");
                 dumpScope(o.localScope.locals, indent + 1);
-                Node.dump(o.ast,0);
+                Node.dump(o.ast, 0);
                 System.out.print("}");
                 break;
             default:
@@ -247,7 +217,7 @@ public class Tab {
                 break;
         }
         System.out.print("\t");
-        dumpStruct(o.type, indent);
+        dumpType(o.type, indent);
         System.out.println();
     }
 
@@ -266,10 +236,10 @@ public class Tab {
 
     //-------------- initialization of the symbol table ------------
 
-    public Tab(Parser parser) {
+    public SymbolTable(Parser parser) {
 
 
-        this.parser=parser;
+        this.parser = parser;
 
 
         curScope = new Scope();
@@ -277,11 +247,11 @@ public class Tab {
         curLevel = -1;
 
         // create predeclared types
-        intType = Type.INT;
-        floatType = Type.FLOAT;
-        charType = Type.CHAR;
-        boolType = Type.BOOL;
-        noType = Type.NONE;
+        intType = new Type(Type.INT);
+        floatType = new Type(Type.FLOAT);
+        charType = new Type(Type.CHAR);
+        boolType = new Type(Type.BOOL);
+        noType = new Type(Type.NONE);
         noObj = new Obj(ObjKind.VAR, "???", noType);
 
         // insert predeclared types into universe
