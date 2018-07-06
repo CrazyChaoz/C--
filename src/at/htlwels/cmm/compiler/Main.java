@@ -5,9 +5,7 @@ import at.htlwels.cmm.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +24,7 @@ public class Main {
     @Test
     @DisplayName("Interpreter Test")
     public void interpreterTest() {
-        Interpreter it = new Interpreter();
+        Interpreter it = new Interpreter(new Tab(new Parser(new Scanner("testfile.c"))), new Obj(ObjKind.CON, "lel", Type.INT));
 
         it.storeChar(0, 't');
         it.storeChar(1, 'e');

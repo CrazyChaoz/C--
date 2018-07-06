@@ -15,7 +15,7 @@ public class Interpreter {
     private int stackPointer, framePointer, globalData = 0;
 
     /**
-     * Procedure stack
+     * call stack
      */
     byte[] stack = new byte[32768];
 
@@ -27,7 +27,6 @@ public class Interpreter {
         this.tab = tab;
         this.obj = obj;
 
-        createFrame(tab.find("main"));
     }
 
     public void statSeq(Node p) {
@@ -72,7 +71,7 @@ public class Interpreter {
     }
 
     public void call(Node p) {
-
+        //if(p.obj.name == "");
     }
 
     public int adr(Node p) {
@@ -104,11 +103,37 @@ public class Interpreter {
         stackPointer +=4;
         framePointer = stackPointer;
         stackPointer += proc.size;
+       // storeLocals(proc);
     }
 
     public void disposeFrame() {
-
+        stackPointer = framePointer - 12;
+        framePointer = loadInt(stackPointer + 8);
     }
+
+  /*  public void storeLocals(Obj proc) {
+        Obj var;
+        int curVarAdr = framePointer;
+        for(var = proc.localScope.locals; (var != null) && (curVarAdr <= stackPointer); var = proc.localScope.locals.next) {
+            switch(var.type) {
+                case INT:
+                    storeInt(curVarAdr, tab.find(var.name).val);
+                    curVarAdr += 4;
+                    break;
+                case FLOAT:
+                    storeFloat(curVarAdr, tab.find(var.name).fVal);
+                    curVarAdr += 4;
+                    break;
+                case CHAR:
+                    storeChar(curVarAdr, (char) tab.find(var.name).val);
+                    curVarAdr++;
+                    break;
+                default:
+                    break;
+
+            }
+        }
+    }*/
 
     public Tab gettab() {
         return tab;

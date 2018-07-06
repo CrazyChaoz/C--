@@ -21,7 +21,7 @@ int procedure(int i,char c){
 
 void main(){
     print(123);
-}*/
+}
 
 
 

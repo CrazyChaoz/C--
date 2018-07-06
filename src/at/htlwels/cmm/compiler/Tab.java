@@ -48,7 +48,39 @@ public class Tab {
 
         table.dumpTable();
 
+        o.ast.line = 32;
+        o.val = 1;
+        o.size = 20;
+
+
+        Obj o2 = table.insert(ObjKind.PROC, "procedure1", Type.INT);
+        table.openScope(o);
+        table.insert(ObjKind.VAR, "summand1", Type.INT);
+        table.insert(ObjKind.VAR, "summand2", Type.INT);
+        table.insert(ObjKind.VAR, "sum", Type.INT);
+
+
+
+        Node sum = new Node(table.find("sum"));
+        Node summand1 = new Node(table.find("summand1"));
+        Node summand2 = new Node(table.find("summand2"));
+        Node plus = new Node(NodeKind.PLUS, summand1, summand2, 3);
+        Node assignSum = new Node(NodeKind.ASSIGN, sum, plus, 3);
+
+        o2.ast = new Node(NodeKind.STATSEQ, assignSum, new Node(NodeKind.TRAP, null, null, 4), 5);
+        table.closeScope();
+
+        o.ast.line = 32;
+        o.val = 1;
+        o.size = 20;
+
+
         Interpreter it = new Interpreter(table, o);
+        it.createFrame(o);
+        it.createFrame(o2);
+        it.disposeFrame();
+        it.disposeFrame();
+
 
     }
 
