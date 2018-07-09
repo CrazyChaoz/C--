@@ -68,7 +68,12 @@ public class Interpreter {
     }
 
     public int intExpr(Node p) {
-        return 0;
+        switch(p.kind) {
+            case ASSIGN:
+                switch(p.right.type.kind){
+                }
+                break;
+        }
     }
 
     public boolean condition(Node p) {
