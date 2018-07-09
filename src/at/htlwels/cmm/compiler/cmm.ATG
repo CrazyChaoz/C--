@@ -173,7 +173,7 @@ Obj forwardProc=symbolTable.find(name);
 if(forwardProc!=symbolTable.noObj){
     /*forward declerated or error*/
     if(!symbolTable.checkForwardParams(forwardProc,procedure));
-        this.error.count++;
+        this.errors.count++;
 }
 .)
 "{"
@@ -204,7 +204,7 @@ IF(isCall())ProcCall<out statement>
 | "while""("Condition<out Node condition>")" Statement<out Node innerStatement>(.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
 | "if""("Condition<out Node condition>")"
   Statement<out Node innerStatement>(.statement=new Node(NodeKind.IF,condition,innerStatement,scanner.line);.)
-  {"else" Statement<out innerStatement>(.statement=new Node(NodeKind.IFELSE,condition,innerStatement,scanner.line);.)}
+  ["else" Statement<out innerStatement>(.statement=new Node(NodeKind.IFELSE,condition,innerStatement,scanner.line);.)]
 | "{"
 {Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
 }                                               (. statement=innerStatements.get(); .)
