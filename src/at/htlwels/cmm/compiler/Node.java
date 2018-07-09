@@ -9,9 +9,11 @@ Nodes representing a statement have a line number, whereas nodes representing
 a part of an expression have a type.
 --------------------------------------------------------------------------------*/
 
+import java.io.Serializable;
+
 import static at.htlwels.cmm.compiler.NodeKind.*;
 
-public final class Node {
+public final class Node implements Serializable {
 
 
     public NodeKind kind;       // STATSEQ, ASSIGN, ...

@@ -16,7 +16,9 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
-public class SymbolTable {
+import java.io.Serializable;
+
+public class SymbolTable implements Serializable {
 
 
 
@@ -31,7 +33,7 @@ public class SymbolTable {
     public static Obj noObj;                // predefined objects
 
 
-    public Parser parser;
+    public transient Parser parser;
 
     //------------------ scope management ---------------------
 
@@ -79,6 +81,11 @@ public class SymbolTable {
 
             nxt.next = object;
         }
+
+        object.level=curLevel;
+        object.adr=curScope.size;
+        curScope.size+=object.size;
+
         return object;
     }
 
@@ -126,8 +133,16 @@ public class SymbolTable {
     //----------------- handling of forward declaration  -----------------
 
     // Check if parameters of forward declaration and actual declaration match
-    public void checkForwardParams(Obj oldPar, Obj newPar) {
-        // TODO
+    public boolean checkForwardParams(Obj oldPar, Obj newPar) {
+
+        for(Obj localOldVar=oldPar.localScope.locals,localNewVar=newPar.localScope.locals;
+            localOldVar!=null && localNewVar!=null;
+            localOldVar=localOldVar.next,localNewVar=localNewVar.next){
+
+            if(!localNewVar.equals(localOldVar))
+                return false;
+        }
+        return true;
     }
 
     // Check if all forward declarations were resolved at the end of the program
@@ -258,5 +273,7 @@ public class SymbolTable {
         insert(ObjKind.TYPE, "int", intType);
         insert(ObjKind.TYPE, "float", floatType);
         insert(ObjKind.TYPE, "char", charType);
+
+        curLevel+=1;
     }
 }

@@ -57,6 +57,7 @@ COMPILER CMM
         return true;
     }
 
+    //just a helperfunction
     void printNext5Values(){
         scanner.ResetPeek();
         System.out.println("-------");
@@ -110,8 +111,9 @@ PRODUCTIONS
 
 CMM
 =	                                            (. symbolTable = new SymbolTable(this);.)
-{ ConstDecl
-//| IF(isVarDecl()) VarDecl
+{
+IF(isVarDecl()) VarDecl
+| ConstDecl
 | StructDecl
 | ProcDecl<out Obj procedure>                   (. symbolTable.insert(procedure);.)
 }                                               (. symbolTable.dumpTable();.)
@@ -164,13 +166,25 @@ Ident<out String name>                  (.procedure=new Obj(ObjKind.PROC,name,ty
         ',' Parameter<out Obj paramN>   (. symbolTable.insert(paramN);.)
     }
 ]
-")""{"
+")"
+(
+(./*Either new or forward declerated*/
+Obj forwardProc=symbolTable.find(name);
+if(forwardProc!=symbolTable.noObj){
+    /*forward declerated or error*/
+    if(!symbolTable.checkForwardParams(forwardProc,procedure));
+        this.error.count++;
+}
+.)
+"{"
 {
 IF(isVarDecl())VarDecl
 |Statement<out Node statement>          (.nodeList.add(statement);.)
 }
-(.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),startLine);symbolTable.closeScope();.)
+                                        (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),startLine);.)
 "}"
+|";" "forward" ";"
+)                                       (.symbolTable.closeScope();.)
 .
 
 
@@ -188,7 +202,9 @@ IF(isCall())ProcCall<out statement>
 
 | "print" "(" Expr<out expression> ")" ";" (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
 | "while""("Condition<out Node condition>")" Statement<out Node innerStatement>(.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
-| "if""("Condition<out Node condition>")" Statement<out Node innerStatement>(.statement=new Node(NodeKind.IF,condition,innerStatement,scanner.line);.)
+| "if""("Condition<out Node condition>")"
+  Statement<out Node innerStatement>(.statement=new Node(NodeKind.IF,condition,innerStatement,scanner.line);.)
+  {"else" Statement<out innerStatement>(.statement=new Node(NodeKind.IFELSE,condition,innerStatement,scanner.line);.)}
 | "{"
 {Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
 }                                               (. statement=innerStatements.get(); .)

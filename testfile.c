@@ -3,6 +3,8 @@ const int sdfg=13;
 const int dfgh=14;
 const char c=23;
 
+int count;
+
 struct struktur{
     int a;
     char b;
