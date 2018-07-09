@@ -2,8 +2,6 @@ package at.htlwels.cmm.compiler;
 
 public enum  NodeKind {
 
-
-    HELPER,
     //------------ statements
     STATSEQ ,   // statement sequence
     ASSIGN ,   // assignment
@@ -44,4 +42,16 @@ public enum  NodeKind {
     NOT ,   // !
     OR ,   // ||
     AND ;   // &&
+
+    public static NodeKind get(int kind){
+        switch (kind){
+            case Parser._eql:return EQL;
+            case Parser._neq:return NEQ;
+            case Parser._lss:return LSS;
+            case Parser._leq:return LEQ;
+            case Parser._gtr: return GTR;
+            case Parser._geq:return GEQ;
+            default:  return null;
+        }
+    }
 }

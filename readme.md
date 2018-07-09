@@ -15,12 +15,10 @@
 
 ##### Krajnansky
 
-Compiler
+Low Level -ish Interpreter
 
 <br>
 
 
 ##### Kempinger
-<p align="center">
-Interpreter
-<p>
+Compiler

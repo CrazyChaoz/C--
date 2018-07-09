@@ -32,7 +32,7 @@ public class Obj {
         this.name = name;
         this.type = type;
 
-        if(kind==ObjKind.PROC){
+        if(kind==ObjKind.PROC||kind==ObjKind.TYPE){
             localScope=new Scope();
         }
     }
