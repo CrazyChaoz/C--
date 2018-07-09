@@ -147,7 +147,14 @@ public class SymbolTable implements Serializable {
 
     // Check if all forward declarations were resolved at the end of the program
     public void checkIfForwardsResolved(Scope scope) {
-        // TODO
+
+        for(Obj localVar=scope.locals;localVar!=null;localVar=localVar.next){
+            if(localVar.kind==ObjKind.PROC)
+                if(localVar.ast==null){
+                    System.err.println("Forward decleration not implemented");
+                    parser.errors.count++;
+            }
+        }
     }
 
     //---------------- conversion of strings to constants ----------------
