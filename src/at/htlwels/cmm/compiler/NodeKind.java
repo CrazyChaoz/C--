@@ -1,6 +1,8 @@
 package at.htlwels.cmm.compiler;
 
-public enum  NodeKind {
+import java.io.Serializable;
+
+public enum  NodeKind implements Serializable {
 
     //------------ statements
     STATSEQ ,   // statement sequence

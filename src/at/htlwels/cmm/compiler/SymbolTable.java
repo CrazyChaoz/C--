@@ -16,7 +16,9 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
-public class SymbolTable {
+import java.io.Serializable;
+
+public class SymbolTable implements Serializable {
 
 
 
@@ -31,7 +33,7 @@ public class SymbolTable {
     public static Obj noObj;                // predefined objects
 
 
-    public Parser parser;
+    public transient Parser parser;
 
     //------------------ scope management ---------------------
 
@@ -79,6 +81,11 @@ public class SymbolTable {
 
             nxt.next = object;
         }
+
+        object.level=curLevel;
+        object.adr=curScope.size;
+        curScope.size+=object.size;
+
         return object;
     }
 
@@ -258,5 +265,7 @@ public class SymbolTable {
         insert(ObjKind.TYPE, "int", intType);
         insert(ObjKind.TYPE, "float", floatType);
         insert(ObjKind.TYPE, "char", charType);
+
+        curLevel+=1;
     }
 }

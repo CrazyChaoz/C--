@@ -7,7 +7,9 @@ Every declared name in a C-- program is represented by an Obj node holding
 information about this object.
 --------------------------------------------------------------------------------*/
 
-public class Obj {
+import java.io.Serializable;
+
+public class Obj implements Serializable {
 
     public ObjKind kind;        // CON, VAR, TYPE, PROC
     public String name;         // object name
