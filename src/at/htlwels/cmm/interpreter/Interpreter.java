@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Interpreter {
-    private Tab tab;
+    private SymbolTable tab;
     private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
@@ -28,7 +28,7 @@ public class Interpreter {
 
 
 
-    public Interpreter(Tab tab, Obj obj) {
+    public Interpreter(SymbolTable tab, Obj obj) {
         this.tab = tab;
         this.obj = obj;
 
@@ -94,8 +94,8 @@ public class Interpreter {
 
     public int identAdr(Obj obj) {
         if(obj.level == 0) return GB + obj.adr;
-
-        return 0;
+        //else if (obj.kind == RefPar) return loadInt(framePointer + obj.adr);
+        else return framePointer + obj.adr;
 
     }
 
@@ -140,11 +140,11 @@ public class Interpreter {
         }
     }*/
 
-    public Tab gettab() {
+    public SymbolTable gettab() {
         return tab;
     }
 
-    public void settab(Tab tab) {
+    public void settab(SymbolTable tab) {
         this.tab = tab;
     }
 
