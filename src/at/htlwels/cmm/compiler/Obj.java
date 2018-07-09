@@ -8,6 +8,7 @@ information about this object.
 --------------------------------------------------------------------------------*/
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Obj implements Serializable {
 
@@ -39,4 +40,17 @@ public class Obj implements Serializable {
         }
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Obj obj = (Obj) o;
+        return adr == obj.adr &&
+                level == obj.level &&
+                isRef == obj.isRef &&
+                kind == obj.kind &&
+                Objects.equals(name, obj.name) &&
+                Objects.equals(type, obj.type);
+    }
 }

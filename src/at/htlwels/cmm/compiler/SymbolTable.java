@@ -133,8 +133,16 @@ public class SymbolTable implements Serializable {
     //----------------- handling of forward declaration  -----------------
 
     // Check if parameters of forward declaration and actual declaration match
-    public void checkForwardParams(Obj oldPar, Obj newPar) {
-        // TODO
+    public boolean checkForwardParams(Obj oldPar, Obj newPar) {
+
+        for(Obj localOldVar=oldPar.localScope.locals,localNewVar=newPar.localScope.locals;
+            localOldVar!=null && localNewVar!=null;
+            localOldVar=localOldVar.next,localNewVar=localNewVar.next){
+
+            if(!localNewVar.equals(localOldVar))
+                return false;
+        }
+        return true;
     }
 
     // Check if all forward declarations were resolved at the end of the program
