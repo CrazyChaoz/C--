@@ -12,12 +12,17 @@ public class Interpreter {
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
 
-    private int stackPointer, framePointer, globalData = 0;
+    private int stackPointer, framePointer, GB = 0;
 
     /**
      * call stack
      */
     byte[] stack = new byte[32768];
+
+    /**
+     * global data
+     */
+    byte[] globalData;
 
 
 
@@ -31,7 +36,7 @@ public class Interpreter {
 
     public void statSeq(Node p) {
         for(p = p.left; p!= null; p=p.next) {
-            p.toString();
+            statement(p);
         }
     }
 
@@ -88,7 +93,7 @@ public class Interpreter {
     }
 
     public int identAdr(Obj obj) {
-        if(obj.level == 0) return globalData + obj.adr;
+        if(obj.level == 0) return GB + obj.adr;
 
         return 0;
 

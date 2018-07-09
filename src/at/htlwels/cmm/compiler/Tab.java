@@ -79,7 +79,9 @@ public class Tab {
         it.createFrame(o);
         it.createFrame(o2);
         it.disposeFrame();
-        it.disposeFrame();
+
+        System.out.println("kek");
+        it.statement(o.ast);
 
 
     }
