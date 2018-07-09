@@ -34,6 +34,7 @@ public enum  NodeKind implements Serializable {
     F2I ,   // conversion from float to int
     I2C ,   // conversion from int to char
     C2I ,   // conversion from char to int
+    GENERIC_CAST,
     //------------ conditionals
     EQL ,   // ==
     NEQ ,   // !=

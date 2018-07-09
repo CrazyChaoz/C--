@@ -67,7 +67,14 @@ public class SymbolTable implements Serializable {
 
     public Obj insert(Obj object) {
 
-        if (find(object.name) != noObj) {
+
+        Obj found=find(object.name);
+
+
+        if(object.isForward){
+            found.ast=object.ast;
+            return found;
+        }else if (found != noObj) {
             parser.errors.count++;
             System.err.println(object.name);
         }
