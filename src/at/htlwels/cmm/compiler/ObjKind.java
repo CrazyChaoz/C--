@@ -7,5 +7,6 @@ public enum ObjKind implements Serializable {
             CON,
             VAR,
             TYPE,
-            PROC;
+            PROC,
+            REFPAR;
 }
