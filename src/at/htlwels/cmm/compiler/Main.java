@@ -1,6 +1,6 @@
 package at.htlwels.cmm.compiler;
 
-import at.htlwels.cmm.interpreter.Kemperpreter$;
+import at.htlwels.cmm.interpreter.NodeHandler$;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public class Main {
 //        ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream("CompleteSymbolTable.symTab"));
 //        outputStream.writeObject(parser.symbolTable);
 
-        Kemperpreter$.MODULE$.handleNode(null);
+        NodeHandler$.MODULE$.handleNode(null);
     }
 
 
