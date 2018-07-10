@@ -34,6 +34,7 @@ public enum  NodeKind implements Serializable {
     F2I ,   // conversion from float to int
     I2C ,   // conversion from int to char
     C2I ,   // conversion from char to int
+    GENERIC_CAST,
     //------------ conditionals
     EQL ,   // ==
     NEQ ,   // !=
@@ -44,16 +45,4 @@ public enum  NodeKind implements Serializable {
     NOT ,   // !
     OR ,   // ||
     AND ;   // &&
-
-    public static NodeKind get(int kind){
-        switch (kind){
-            case Parser._eql:return EQL;
-            case Parser._neq:return NEQ;
-            case Parser._lss:return LSS;
-            case Parser._leq:return LEQ;
-            case Parser._gtr: return GTR;
-            case Parser._geq:return GEQ;
-            default:  return null;
-        }
-    }
 }

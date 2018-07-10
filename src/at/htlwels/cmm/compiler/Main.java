@@ -9,8 +9,9 @@ public class Main {
         Parser parser = new Parser(new Scanner("testfile.c"));
         parser.Parse();
         System.out.println("Number of Errors: " + parser.errors.count);
-        ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream("CompleteSymbolTable.symTab"));
-        outputStream.writeObject(parser.symbolTable);
+        parser.symbolTable.dumpTable();
+//        ObjectOutputStream outputStream=new ObjectOutputStream(new FileOutputStream("CompleteSymbolTable.symTab"));
+//        outputStream.writeObject(parser.symbolTable);
     }
 
 
