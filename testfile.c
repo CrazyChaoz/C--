@@ -15,7 +15,6 @@ struct struktur{
 void main(){
     int i;
     i=(char)arrayProc();
-    baguette
     print(i);
 
 }

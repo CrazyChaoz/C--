@@ -49,7 +49,7 @@ public class Type implements Serializable {
         return kind == INT || kind == FLOAT || kind == CHAR || kind == BOOL;
     }
 
-    private static String name[]={
+    public static String name[]={
             "NONE","INT","FLOAT","CHAR","BOOL","ARR","STRUCT"
     };
 
