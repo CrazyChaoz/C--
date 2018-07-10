@@ -37,6 +37,7 @@ public class Obj implements Serializable {
 
         if(kind==ObjKind.PROC||kind==ObjKind.TYPE){
             localScope=new Scope();
+            nPars=0;
         }
     }
 

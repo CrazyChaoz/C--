@@ -4,8 +4,8 @@ const int dfgh=14;
 const char c=23;
 
 int count;
-int procedure(int i,char ch);forward;
-int arrayProc();forward;
+int procedure(int i,ref char ch);forward;
+int arrayProc(ref int i);forward;
 
 struct struktur{
     int a;
@@ -14,7 +14,7 @@ struct struktur{
 
 void main(){
     int i;
-    i=(char)arrayProc();
+    i=(char)arrayProc(ref i);
     print(i);
 
 }
@@ -37,7 +37,7 @@ void main(){
 //    return;
 //}
 
-int arrayProc(){
+int arrayProc(ref int i){
     int[4][4][4] arrayyy;
     arrayyy[1][1][1]=16;
 }
