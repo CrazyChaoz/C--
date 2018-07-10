@@ -71,9 +71,14 @@ public class Interpreter {
         switch(p.kind) {
             case ASSIGN:
                 switch(p.right.type.kind){
+                    case Type.INT:
+
+                        break;
                 }
                 break;
         }
+
+        return 0;
     }
 
     public boolean condition(Node p) {
@@ -81,7 +86,11 @@ public class Interpreter {
     }
 
     public void call(Node p) {
-        //if(p.obj.name == "");
+        createFrame(p.obj);
+        Obj formPar = p.obj.localScope.locals;
+        for(Node actPar = p.left; actPar != null; actPar = actPar.next) {
+
+        }
     }
 
     public int adr(Node p) {
@@ -99,7 +108,7 @@ public class Interpreter {
 
     public int identAdr(Obj obj) {
         if(obj.level == 0) return GB + obj.adr;
-        //else if (obj.kind == RefPar) return loadInt(framePointer + obj.adr);
+        else if (obj.kind == ObjKind.REFPAR) return loadInt(framePointer + obj.adr);
         else return framePointer + obj.adr;
 
     }
@@ -113,7 +122,6 @@ public class Interpreter {
         stackPointer +=4;
         framePointer = stackPointer;
         stackPointer += proc.size;
-       // storeLocals(proc);
     }
 
     public void disposeFrame() {
