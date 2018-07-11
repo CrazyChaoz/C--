@@ -7,10 +7,10 @@ Every declared name in a C-- program is represented by an Obj node holding
 information about this object.
 --------------------------------------------------------------------------------*/
 
-import java.io.Serializable;
+
 import java.util.Objects;
 
-public class Obj implements Serializable {
+public class Obj{
 
     public ObjKind kind;        // CON, VAR, TYPE, PROC
     public String name;         // object name
@@ -35,6 +35,8 @@ public class Obj implements Serializable {
         this.kind = kind;
         this.name = name;
         this.type = type;
+
+
 
         if(kind==ObjKind.PROC||kind==ObjKind.TYPE){
             localScope=new Scope();
