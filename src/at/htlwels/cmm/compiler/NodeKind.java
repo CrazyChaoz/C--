@@ -19,6 +19,7 @@ public enum  NodeKind implements Serializable {
     INTCON ,   // int constant
     FLOATCON ,   // float constant
     CHARCON ,   // char constant
+    STRINGCON,  // string constant
     //------------ designators and ref parameters
     DOT ,   // field selection (x.y)
     INDEX ,   // array element (a[i])

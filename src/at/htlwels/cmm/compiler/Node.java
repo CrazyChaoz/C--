@@ -27,6 +27,8 @@ public final class Node implements Serializable {
     public Obj      obj;        // object node of an IDENT
     public int      val;        // value of an INTCON or CHARCON
     public float    fVal;       // value of a FLOATCON
+    public String   strVal;
+
 
     // for expression nodes
     public Node(NodeKind kind, Node left, Node right, Type type) {
@@ -60,7 +62,7 @@ public final class Node implements Serializable {
     public Node(float fValue) {
         this.kind = FLOATCON;
         this.type = SymbolTable.floatType;
-        this.fVal = fVal;
+        this.fVal = fValue;
     }
 
     // a char Node
@@ -68,6 +70,13 @@ public final class Node implements Serializable {
         this.kind = CHARCON;
         this.type = SymbolTable.charType;
         this.val = ch;
+    }
+
+    // a string Node
+    public Node(String str) {
+        this.kind = STRINGCON;
+        this.type = SymbolTable.stringType;
+        this.strVal = str;
     }
 
     //----------------------- for dumping ASTs -----------------------------------

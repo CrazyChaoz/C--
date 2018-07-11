@@ -18,7 +18,8 @@ public class Type implements Serializable {
             CHAR   = 3,
             BOOL   = 4,
             ARR    = 5,
-            STRUCT = 6;
+            STRUCT = 6,
+            STRING = 7;
     public int    kind;		  // NONE, INT, FLOAT, CHAR, ARR, STRUCT
     public int    size;     // size of this type in bytes
     public int    elements; // ARR: number of elements
@@ -28,12 +29,12 @@ public class Type implements Serializable {
     public Type(int kind) {
         this.kind = kind;
         switch (kind) {
-            case INT:   size = 4; break;
-            case FLOAT: size = 4; break;
-            case CHAR:  size = 1; break;
-            case BOOL:  size = 1; break;
-            case STRUCT:fields=new Scope();
-            default:    size = 0; break;
+            case INT:    size = 4; break;
+            case FLOAT:  size = 4; break;
+            case CHAR:   size = 1; break;
+            case BOOL:   size = 1; break;
+            case STRUCT: fields=new Scope();
+            default:     size = 0; break;
         }
     }
 
@@ -50,7 +51,7 @@ public class Type implements Serializable {
     }
 
     public static String name[]={
-            "NONE","INT","FLOAT","CHAR","BOOL","ARR","STRUCT"
+            "NONE","INT","FLOAT","CHAR","BOOL","ARR","STRUCT","STRING"
     };
 
 

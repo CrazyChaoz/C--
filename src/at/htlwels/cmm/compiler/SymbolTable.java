@@ -29,6 +29,7 @@ public class SymbolTable implements Serializable {
     public static Type floatType;
     public static Type charType;
     public static Type boolType;
+    public static Type stringType;
     public static Type noType;
     public static Obj noObj;                // predefined objects
 
@@ -210,6 +211,9 @@ public class SymbolTable implements Serializable {
 
                 System.out.print("}");
                 break;
+            case Type.STRING:
+                System.out.print("String");
+                break;
             default:
                 System.out.print("None");
                 break;
@@ -280,6 +284,7 @@ public class SymbolTable implements Serializable {
         floatType = new Type(Type.FLOAT);
         charType = new Type(Type.CHAR);
         boolType = new Type(Type.BOOL);
+        stringType = new Type(Type.STRING);
         noType = new Type(Type.NONE);
         noObj = new Obj(ObjKind.VAR, "???", noType);
 
@@ -287,6 +292,7 @@ public class SymbolTable implements Serializable {
         insert(ObjKind.TYPE, "int", intType);
         insert(ObjKind.TYPE, "float", floatType);
         insert(ObjKind.TYPE, "char", charType);
+        insert(ObjKind.TYPE, "string", stringType);
 
         curLevel+=1;
     }
