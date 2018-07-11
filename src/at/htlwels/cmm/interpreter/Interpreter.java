@@ -8,11 +8,13 @@ import java.nio.ByteBuffer;
 
 public class Interpreter {
     private SymbolTable tab;
+    private int retAdr;
     //private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
 
     private int stackPointer, framePointer, GB = 0;
+    Strings stringStorage = new Strings();
 
     /**
      * call stack
@@ -22,7 +24,7 @@ public class Interpreter {
     /**
      * global data
      */
-    byte[] globalData;
+    byte[] globalData = new byte[32768];
 
 
 
@@ -43,12 +45,13 @@ public class Interpreter {
     public void statement(Node p) {
         switch(p.kind) {
             case ASSIGN:
+                System.out.println(p.right.type);
                 switch(p.right.type.kind) {
                     case Type.INT:
                         storeInt(adr(p.left), intExpr(p.right));
                         break;
                     case Type.FLOAT:
-                        storeFloat(adr(p.left), intExpr(p.right));
+                        storeFloat(adr(p.left), floatExpr(p.right));
                         break;
                     case Type.CHAR:
                         storeChar(adr(p.left), charExpr(p.right));
@@ -97,6 +100,7 @@ public class Interpreter {
                 return (int) floatExpr(p.left);
             case CALL:
                 call(p);
+                return loadInt(retAdr);
 
             default: return 0;
         }
@@ -122,6 +126,9 @@ public class Interpreter {
                 return floatExpr(p.left) * floatExpr(p.right);
             case I2F:
                 return (float) intExpr(p.left);
+            case CALL:
+                call(p);
+                return loadFloat(retAdr);
             default: return 0f;
         }
     }
@@ -134,6 +141,9 @@ public class Interpreter {
                 return (char) intExpr(p.left);
             case CHARCON:
                 return (char) p.val;
+            case CALL:
+                call(p);
+                return loadChar(retAdr);
             default:
                 return '0';
         }
@@ -144,9 +154,27 @@ public class Interpreter {
     }
 
     public void call(Node p) {
-        createFrame(p.obj);
-        Obj formPar = p.obj.localScope.locals;
+        createFrame(p.left.obj);
+        Obj formPar = p.left.obj.localScope.locals;
         for(Node actPar = p.left; actPar != null; actPar = actPar.next) {
+            if(formPar.isRef) {
+                storeInt(framePointer + formPar.adr, adr(actPar));
+            } else {
+                switch(formPar.type.kind) {
+                    case Type.INT:
+                        storeInt(framePointer + formPar.adr, intExpr(actPar));
+                        break;
+                    case Type.FLOAT:
+                        storeFloat(framePointer + formPar.adr, floatExpr(actPar));
+                        break;
+                    case Type.CHAR:
+                        storeChar(framePointer + formPar.adr, charExpr(actPar));
+                        break;
+                    case Type.STRING:
+                        stringStorage.put(formPar.strVal);
+                        break;
+                }
+            }
 
         }
     }
@@ -172,14 +200,14 @@ public class Interpreter {
     }
 
     public void createFrame(Obj proc) {
-        storeInt(stackPointer, proc.ast.line);
+      //  storeInt(stackPointer, proc.);
         stackPointer +=4;
-        storeInt(stackPointer, proc.val);
+//        storeInt(stackPointer, proc.val);
         stackPointer +=4;
         storeInt(stackPointer, framePointer);
         stackPointer +=4;
         framePointer = stackPointer;
-        stackPointer += proc.size;
+        stackPointer += proc.localScope.size;
     }
 
     public void disposeFrame() {

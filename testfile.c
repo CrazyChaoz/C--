@@ -1,16 +1,26 @@
+//
+//const int conA = 5;
+//const float conB = 5.4;
 
-
+int proc(); forward;
 void main() {
-const int conA = 5;
-const float conB = 5.4;
 
-int x = 3;
+int z;
+z = proc();
+}
+
+int proc() {
+int x;
 int y;
 y = 2;
+x=5;
 
 int z;
 
 z = x + y;
+
+return z;
+
 }
 
 
