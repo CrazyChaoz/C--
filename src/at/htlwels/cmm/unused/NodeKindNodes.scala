@@ -16,9 +16,9 @@ class STATSEQ extends NodeKindNode {
 
 class ASSIGN extends NodeKindNode {
   def exec(node: Node): Unit = {
-    println(getClass)
-    NodeHandler.handleNode(node.left)
-    NodeHandler.handleNode(node.right)
+    node.right.kind match {
+      case _ =>
+    }
   }
 }
 
