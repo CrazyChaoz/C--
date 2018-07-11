@@ -79,6 +79,7 @@ TOKENS
   intCon    = digit { digit }.
   floatCon  = digit {digit} '.' {digit} ['E' ['+'|'-'] digit {digit}].
   charCon   = '\'' ( charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )) '\''.
+  stringCon   = '\"' { charCh | '\\' ('r' | 'n' | 't' | '\'' | '\\' )} '\"'.
 
 
 
@@ -326,6 +327,7 @@ IF(isCall()) ProcCall<out faktor>
 | intCon                                        (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
 | floatCon                                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
 | charCon                                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
+| stringCon                                     (. faktor=new Node(this.t.val); .)
 | "read" "(" Designator<out Node designator>")" (. faktor=new Node(NodeKind.READ,designator,null,designator.type);.)
 | "-" Factor<out Node faktor1>                  (. faktor=new Node(NodeKind.MINUS,new Node(0),faktor1,faktor1.type);.)
 | IF (isCast())

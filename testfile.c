@@ -15,6 +15,8 @@ struct struktur{
 void main(){
     int i;
     i=(char)arrayProc(ref i);
+    string str;
+    str="asd";
     print(i);
 
 }
