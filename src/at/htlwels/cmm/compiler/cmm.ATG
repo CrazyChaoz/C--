@@ -40,7 +40,7 @@ COMPILER CMM
 	boolean isCast() {
     		Token x = scanner.Peek();
     		if (x.kind != _ident) return false;
-    		Obj obj = symbolTable.find(x.val);
+    		Obj obj = symbolTable.lookup(x.val);
     		return obj.kind == ObjKind.TYPE;
     	}
 
@@ -157,6 +157,7 @@ Type<out Type type> Ident<out String name>      (.Obj o=new Obj(ObjKind.CON,name
  (intCon                                        (.o.val=symbolTable.intVal(this.t.val);.)
  | floatCon                                     (.o.fVal=symbolTable.floatVal(this.t.val);.)
  | charCon                                      (.o.val=symbolTable.charVal(this.t.val);.)
+ | stringCon                                    (.o.strVal=this.t.val;.)
  )                                              (.symbolTable.insert(o);.)
  ";".
 //##################################################################################
@@ -204,14 +205,14 @@ Ident<out String name>                          (.procedure=new Obj(ObjKind.PROC
 ")"
 (
 (./*Either new or forward declerated*/
-Obj forwardProc=symbolTable.find(name);
+Obj forwardProc=symbolTable.lookup(name);
 if(forwardProc!=symbolTable.noObj){
     /*forward declerated or error*/
     if(!symbolTable.checkForwardParams(forwardProc,procedure)){
         System.err.println("Wrong Parameters");
         this.errors.count++;
-        }
-        procedure.isForward=true;
+    }
+    procedure.isForward=true;
 }
 .)
 "{"
@@ -389,8 +390,6 @@ Mulop<out NodeKind kind>                        (.kind=null;.)
 //Boolean Operations
 //##################################################################################
 
-
-
 //##################################################################################
 Condition<out Node cond>
 =
@@ -399,7 +398,6 @@ CondTerm<out cond>
 }.
 //##################################################################################
 
-
 //##################################################################################
 CondTerm<out Node cond>
 =
@@ -407,7 +405,6 @@ CondFact<out cond>
 {"&&" CondFact<out Node cond2>                  (.cond=new Node(NodeKind.AND,cond,cond2,Type.BOOL); .)
 }.
 //##################################################################################
-
 
 //##################################################################################
 CondFact<out Node cond>                         (.cond=null;.)
@@ -419,7 +416,6 @@ CondFact<out Node cond>                         (.cond=null;.)
 | "(" Condition<out Node cond1> ")"             (.cond=cond1;.)
 ).
 //##################################################################################
-
 
 //##################################################################################
 Relop<out NodeKind which>                       (.which=null;.)

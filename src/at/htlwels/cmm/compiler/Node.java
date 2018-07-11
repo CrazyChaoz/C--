@@ -87,15 +87,25 @@ public final class Node implements Serializable {
         if (x == null) System.out.println("-null-");
         else {
             System.out.print(x.kind);
-            if (x.kind == IDENT) System.out.print(" " + x.obj.name + " level=" + x.obj.level);
-            else if (x.kind == INTCON)
-                System.out.print(" " + x.val);
-            else if (x.kind == FLOATCON)
-                System.out.print(" " + x.fVal);
-            else if (x.kind == CHARCON)
-                System.out.print(" \'" + (char) x.val + "\'");
-            else if (x.kind == CALL && x.obj != null)
-                System.out.print(" " + x.obj.name);
+
+            switch(x.kind){
+                case IDENT:
+                    System.out.print(" " + x.obj.name + " level=" + x.obj.level);
+                    break;
+                case INTCON:
+                    System.out.print(" " + x.val);
+                    break;
+                case FLOATCON:
+                    System.out.print(" " + x.fVal);
+                    break;
+                case CHARCON:
+                    System.out.print(" \'" + (char) x.val + "\'");
+                    break;
+                case CALL:
+                    if (x.obj!=null)
+                        System.out.print(" " + x.obj.name);
+                    break;
+            }
 
             if (x.type != null)
                 System.out.print(" type=" + x.type);
@@ -104,10 +114,12 @@ public final class Node implements Serializable {
                 System.out.print(" line=" + x.line);
 
             System.out.println();
+
             if (x.left != null || x.right != null) {
                 dump(x.left, indent + 1);
                 dump(x.right, indent + 1);
             }
+
             if (x.next != null) {
                 for (int i = 0; i < indent; i++) System.out.print("  ");
                 System.out.println("--- next ---");

@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import static at.htlwels.cmm.compiler.SymbolTable.charType;
 import static at.htlwels.cmm.compiler.SymbolTable.intType;
+import static at.htlwels.cmm.compiler.SymbolTable.stringType;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -36,15 +37,51 @@ public class TESTS {
         table.insert(ObjKind.VAR, "x", intType);
         table.insert(ObjKind.VAR, "y", intType);
 
-
-        Node assign = new Node(NodeKind.ASSIGN, new Node(table.findField("var", table.find("struktur").type)), new Node(12), intType);
+        Obj var=table.findField("var", table.find("struktur").type);
+        Node dot=new Node(NodeKind.DOT,new Node(table.find("struuu")),new Node(var),var.type);
+        Node assign = new Node(NodeKind.ASSIGN, dot, new Node(12), intType);
 
         o.ast = new Node(NodeKind.STATSEQ, assign, new Node(NodeKind.TRAP, null, null, 0), 0);
         table.insert(ObjKind.VAR, "asasd", charType);
         table.closeScope();
 
 
-        table.dumpTable();
+//        table.dumpTable();
+
+        assertEquals(0,table.parser.errors.count);
+    }
+
+    @Test
+    @DisplayName("String in Structure Test")
+    public void stringInStructTest() {
+        SymbolTable table = new SymbolTable(new Parser(null));
+        Obj o1=new Obj(ObjKind.CON, "str", stringType);
+        o1.strVal="rofl";
+        table.insert(o1);
+
+
+        Type struktur = new Type(Type.STRUCT);
+        table.insert(ObjKind.TYPE, "struktur", struktur);
+        table.openScope(struktur.fields);
+        table.insert(ObjKind.VAR, "s", stringType);
+        table.closeScope();
+
+
+
+        Obj o2 = table.insert(ObjKind.PROC, "main", intType);
+        table.openScope(o2.localScope);
+        table.insert(ObjKind.VAR, "struuu", table.find("struktur").type);
+
+        Obj var=table.findField("s", table.find("struktur").type);
+        Node dot=new Node(NodeKind.DOT,new Node(table.find("struuu")),new Node(var),var.type);
+        Node assign = new Node(NodeKind.ASSIGN, dot, new Node("ASDF"), intType);
+
+
+        o2.ast = new Node(NodeKind.STATSEQ, assign, new Node(NodeKind.TRAP, null, null, 0), 0);
+        table.closeScope();
+
+
+//        table.dumpTable();
 
         assertEquals(0,table.parser.errors.count);
     }
@@ -103,6 +140,7 @@ public class TESTS {
         System.out.print('\n');
 
         it.storeInt(4, 344);
+        it.storeInt(16, 3442);
         System.out.println(it.loadInt(4));
 
         it.storeFloat(8, 32.3f);
@@ -152,6 +190,8 @@ public class TESTS {
         assertEquals(expected.kind, result.kind);
         assertEquals(expected.val, result.val);
     }
+
+
 
 }
 

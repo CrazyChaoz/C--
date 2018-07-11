@@ -4,7 +4,7 @@ import at.htlwels.cmm.compiler._
 
 
 object NodeHandler {
-  private val pathPrefix = "at.htlwels.cmm.interpreter."
+  private val pathPrefix = "at.htlwels.cmm.unused."
   private val functions: Map[NodeKind, Node => Unit] = Map()
 
 

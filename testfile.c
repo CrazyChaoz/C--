@@ -35,7 +35,7 @@ void main(){
     int i;
     i=(char)arrayProc(ref i);
     string str;
-    str="asd";
+    stsfdssdffcsdcssdffsdr="asd";
     print(i);
 
 }
