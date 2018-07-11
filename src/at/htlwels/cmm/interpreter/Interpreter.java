@@ -43,9 +43,15 @@ public class Interpreter {
     public void statement(Node p) {
         switch(p.kind) {
             case ASSIGN:
-                switch(p.right.kind) {
-                    //TODO: FINISH
-
+                switch(p.right.type.kind) {
+                    case Type.INT:
+                        storeInt(adr(p.left), intExpr(p.right));
+                        break;
+                    case Type.FLOAT:
+                        break;
+                    case Type.CHAR:
+                        storeChar(adr(p.left), charExpr(p.right));
+                        break;
                 }
                 break;
             case IF:
@@ -69,16 +75,66 @@ public class Interpreter {
 
     public int intExpr(Node p) {
         switch(p.kind) {
-            case ASSIGN:
-                switch(p.right.type.kind){
-                    case Type.INT:
+            case IDENT:
+                return loadInt(identAdr(p.obj));
+            case INTCON:
+                return p.val;
+            case DOT:
+                return loadInt(adr(p.left) + p.right.val);
+            case INDEX:
+                return loadInt(adr(p.left)) + intExpr(p.right);
+            case PLUS:
+                return intExpr(p.left) + intExpr(p.right);
+            case MINUS:
+                return intExpr(p.left) - intExpr(p.right);
+            case DIV:
+                return intExpr(p.left) / intExpr(p.right);
+            case TIMES:
+                return intExpr(p.left) * intExpr(p.right);
+            case C2I:
+                return (int) charExpr(p.left);
+            case CALL:
+                call(p);
 
-                        break;
-                }
-                break;
+            default: return 0;
         }
+    }
 
-        return 0;
+    public float floatExpr(Node p) {
+        switch(p.kind) {
+            case IDENT:
+                return loadFloat(identAdr(p.obj));
+            case FLOATCON:
+                return p.val;
+            case DOT:
+                return loadFloat(adr(p.left) + p.right.val);
+            case INDEX:
+                return loadFloat(adr(p.left)) + intExpr(p.right);
+            case PLUS:
+                return floatExpr(p.left) + floatExpr(p.right);
+            case MINUS:
+                return floatExpr(p.left) - floatExpr(p.right);
+            case DIV:
+                return floatExpr(p.left) / floatExpr(p.right);
+            case TIMES:
+                return floatExpr(p.left) * floatExpr(p.right);
+            case I2F:
+                return (float) intExpr(p.left);
+            default: return 0f;
+        }
+    }
+
+    public char charExpr(Node p) {
+        switch(p.kind) {
+            case IDENT:
+                return loadChar(identAdr(p.obj));
+            case I2C:
+                return (char) intExpr(p.left);
+            case CHARCON:
+                return (char) p.val;
+            default:
+                return '0';
+        }
     }
 
     public boolean condition(Node p) {
