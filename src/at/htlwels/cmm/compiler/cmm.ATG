@@ -220,7 +220,7 @@ if(forwardProc!=symbolTable.noObj){
 IF(isVarDecl())VarDecl
 |Statement<out Node statement>                  (.nodeList.add(statement);.)
 }
-                                                (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),startLine);.)
+                                                (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),procedure.type);.)
 "}"
 |";" "forward" ";"
 )                                               (.symbolTable.closeScope();symbolTable.insert(procedure);.)
@@ -274,7 +274,7 @@ Ident<out String name> "("
 ["ref"(.isRef=true;.)]
 Designator<out Node designator>                 (. nodeList.add(isRef?new Node(NodeKind.REF,designator,null,designator.type):designator);parCount++; .)
 }
-")"                                             (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);if(parCount!=proc.nPars)this.errors.count++;.)
+")"                                             (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
 .
 //##################################################################################
 
