@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 public class Interpreter {
     private SymbolTable tab;
-    private Obj obj;
+    //private Obj obj;
    // private ProcedureStack procedureStack = new ProcedureStack();
    // private GlobalData globalData = new GlobalData();
 
@@ -28,9 +28,9 @@ public class Interpreter {
 
 
 
-    public Interpreter(SymbolTable tab, Obj obj) {
+    public Interpreter(SymbolTable tab) {
         this.tab = tab;
-        this.obj = obj;
+        //this.obj = obj;
 
     }
 
@@ -48,6 +48,7 @@ public class Interpreter {
                         storeInt(adr(p.left), intExpr(p.right));
                         break;
                     case Type.FLOAT:
+                        storeFloat(adr(p.left), intExpr(p.right));
                         break;
                     case Type.CHAR:
                         storeChar(adr(p.left), charExpr(p.right));
@@ -69,7 +70,6 @@ public class Interpreter {
                     statement(p.right);
                 }
                 break;
-                //TODO: FINISH
         }
     }
 
@@ -93,6 +93,8 @@ public class Interpreter {
                 return intExpr(p.left) * intExpr(p.right);
             case C2I:
                 return (int) charExpr(p.left);
+            case F2I:
+                return (int) floatExpr(p.left);
             case CALL:
                 call(p);
 

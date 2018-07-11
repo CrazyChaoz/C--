@@ -1,4 +1,23 @@
-const int asdf=12;
+
+
+void main() {
+const int conA = 5;
+const float conB = 5.4;
+
+int x = 3;
+int y;
+y = 2;
+
+int z;
+
+z = x + y;
+}
+
+
+
+
+
+/*const int asdf=12;
 const int sdfg=13;
 const int dfgh=14;
 const char c=23;
@@ -44,6 +63,6 @@ int arrayProc(ref int i){
     arrayyy[1][1][1]=16;
 }
 
-
+*/
 
 

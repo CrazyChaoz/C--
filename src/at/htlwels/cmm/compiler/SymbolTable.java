@@ -294,6 +294,7 @@ public class SymbolTable implements Serializable {
         insert(ObjKind.TYPE, "char", charType);
         insert(ObjKind.TYPE, "string", stringType);
 
+
         curLevel+=1;
     }
 }
