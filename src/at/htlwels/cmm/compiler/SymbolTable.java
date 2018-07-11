@@ -91,7 +91,7 @@ public class SymbolTable implements Serializable {
 
         object.level = curLevel;
         object.adr = curScope.size;
-        curScope.size += object.size;
+        curScope.size += object.type.size;
 
         return object;
     }
