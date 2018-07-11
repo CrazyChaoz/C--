@@ -19,6 +19,7 @@ public class Obj implements Serializable {
 
     public int val;             // CON: int or char value
     public float fVal;          // CON: float value
+    public String strVal;       // CON: string value
 
     public int adr;             // VAR: address
     public int level;           // VAR: declaration level

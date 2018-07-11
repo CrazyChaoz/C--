@@ -21,7 +21,6 @@ import java.io.Serializable;
 public class SymbolTable implements Serializable {
 
 
-
     public Scope curScope;                  // current scope
     public int curLevel;                    // nesting level of current scope
 
@@ -69,13 +68,13 @@ public class SymbolTable implements Serializable {
     public Obj insert(Obj object) {
 
 
-        Obj found=find(object.name);
+        Obj found = lookup(object.name);
 
 
-        if(object.isForward){
-            found.ast=object.ast;
+        if (object.isForward) {
+            found.ast = object.ast;
             return found;
-        }else if (found != noObj) {
+        } else if (found != noObj) {
             parser.errors.count++;
             System.err.println(object.name);
         }
@@ -90,9 +89,9 @@ public class SymbolTable implements Serializable {
             nxt.next = object;
         }
 
-        object.level=curLevel;
-        object.adr=curScope.size;
-        curScope.size+=object.size;
+        object.level = curLevel;
+        object.adr = curScope.size;
+        curScope.size += object.size;
 
         return object;
     }
@@ -100,6 +99,7 @@ public class SymbolTable implements Serializable {
 
     // Look up the object with the given name in all open scopes.
     // Report an error if not found.
+    // Error ++ if not found
     public Obj find(String name) {
         Scope scope = curScope;
         Obj obj;
@@ -116,7 +116,9 @@ public class SymbolTable implements Serializable {
             scope = scope.outer;
         }
 
-        //parser.errors.count++;
+        System.out.println(name);
+
+        parser.errors.count++;
         //Detailed error messages
         return noObj;
     }
@@ -126,7 +128,7 @@ public class SymbolTable implements Serializable {
     public Obj findField(String name, Type type) {
         Obj retval;
         openScope(type.fields);
-        retval=find(name);
+        retval = find(name);
         closeScope();
         return retval;
     }
@@ -134,7 +136,22 @@ public class SymbolTable implements Serializable {
     // Look up the object with the given name in the current scope.
     // Return noObj if not found.
     public Obj lookup(String name) {
+        Scope scope = curScope;
+        Obj obj;
 
+
+        while (scope != null) {
+            obj = scope.locals;
+
+            while (obj != null) {
+                if (obj.name.equals(name))
+                    return obj;
+                obj = obj.next;
+            }
+            scope = scope.outer;
+        }
+
+        //Detailed error messages
         return noObj;
     }
 
@@ -143,11 +160,11 @@ public class SymbolTable implements Serializable {
     // Check if parameters of forward declaration and actual declaration match
     public boolean checkForwardParams(Obj oldPar, Obj newPar) {
 
-        for(Obj localOldVar=oldPar.localScope.locals,localNewVar=newPar.localScope.locals;
-            localOldVar!=null && localNewVar!=null;
-            localOldVar=localOldVar.next,localNewVar=localNewVar.next){
+        for (Obj localOldVar = oldPar.localScope.locals, localNewVar = newPar.localScope.locals;
+             localOldVar != null && localNewVar != null;
+             localOldVar = localOldVar.next, localNewVar = localNewVar.next) {
 
-            if(!localNewVar.equals(localOldVar))
+            if (!localNewVar.equals(localOldVar))
                 return false;
         }
         return true;
@@ -156,12 +173,12 @@ public class SymbolTable implements Serializable {
     // Check if all forward declarations were resolved at the end of the program
     public void checkIfForwardsResolved(Scope scope) {
 
-        for(Obj localVar=scope.locals;localVar!=null;localVar=localVar.next){
-            if(localVar.kind==ObjKind.PROC)
-                if(localVar.ast==null){
+        for (Obj localVar = scope.locals; localVar != null; localVar = localVar.next) {
+            if (localVar.kind == ObjKind.PROC)
+                if (localVar.ast == null) {
                     System.err.println("Forward decleration not implemented");
                     parser.errors.count++;
-            }
+                }
         }
     }
 
@@ -293,7 +310,8 @@ public class SymbolTable implements Serializable {
         insert(ObjKind.TYPE, "float", floatType);
         insert(ObjKind.TYPE, "char", charType);
         insert(ObjKind.TYPE, "string", stringType);
+        insert(ObjKind.TYPE, "void", noType);
 
-        curLevel+=1;
+        curLevel += 1;
     }
 }

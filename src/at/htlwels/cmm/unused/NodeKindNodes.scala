@@ -10,8 +10,7 @@ trait NodeKindNode {
 class STATSEQ extends NodeKindNode {
   def exec(node: Node): Unit = {
     println(getClass)
-    NodeHandler.handleNode(node.left)
-    NodeHandler.handleNode(node.right)
+    println("Swap asdasdasd")
   }
 }
 
