@@ -127,6 +127,8 @@ public class TESTS {
         it.statSeq(parser.symbolTable.find("main").ast);
     }
 
+
+
     @Test
     @DisplayName("Interpreter Test")
     public void interpreterTest() {
