@@ -9,7 +9,8 @@ int z;
 z = proc();
 z=z+conA;
 if(z > 10)
-    print(z);
+    if(z > 16)
+        print(z);
 else
     print('n');
 }
