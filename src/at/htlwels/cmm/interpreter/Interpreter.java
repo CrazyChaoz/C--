@@ -361,9 +361,4 @@ public class Interpreter {
         }
     }
 
-    public static void main(String[] args) {
-        Interpreter i=new Interpreter(null);
-        i.stackDump();
-        i.globalDataDump();
-    }
 }
