@@ -1,5 +1,5 @@
 //
-//const int conA = 5;
+const int conA = 5;
 //const float conB = 5.4;
 
 int proc(); forward;
@@ -7,6 +7,7 @@ void main() {
 
 int z;
 z = proc();
+z=z+5;
 }
 
 int proc() {
@@ -17,7 +18,7 @@ x=5;
 
 int z;
 
-z = x + y;
+z = x * y ;
 
 return z;
 

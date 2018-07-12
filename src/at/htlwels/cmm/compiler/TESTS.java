@@ -125,6 +125,8 @@ public class TESTS {
 
         Interpreter it = new Interpreter(parser.symbolTable);
         it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
     }
 
 

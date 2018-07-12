@@ -342,24 +342,43 @@ public class Interpreter {
     }
 
 
-    public void stackDump(){
+    public void dumpStack(){
+        System.out.println();
         System.out.println("#~#  DUMP  #~#  STACK");
+        System.out.println();
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < stack.length; i++) {
             if(stack[i]!=0)
-                System.out.println("Position "+i+"\t="+stack[i]);
+                System.out.println("Position "+i+"\t= "+stack[i]);
         }
         System.out.println("#~#  -------------  #~#");
+        System.out.println();
     }
 
-    public void globalDataDump(){
+    public void dumpGlobalData(){
+        System.out.println();
         System.out.println("#~#  DUMP  #~#  GLOBAL DATA");
+        System.out.println();
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < globalData.length; i++) {
             if(globalData[i]!=0)
-                System.out.println("Position "+i+"\t="+globalData[i]);
+                System.out.println("Position "+i+"\t= "+globalData[i]);
         }
         System.out.println("#~#  -------------  #~#");
+        System.out.println();
+    }
+
+    public void dumpStringStorage(){
+        System.out.println();
+        System.out.println("#~#  DUMP  #~#  STRING STORAGE");
+        System.out.println();
+        System.out.println("#~#  -------------  #~#");
+        for (int i = 0; i < globalData.length; i++) {
+            if(globalData[i]!=0)
+                System.out.println("Position "+i+"\t= "+globalData[i]);
+        }
+        System.out.println("#~#  -------------  #~#");
+        System.out.println();
     }
 
 }

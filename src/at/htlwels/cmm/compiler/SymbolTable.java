@@ -73,8 +73,8 @@ public class SymbolTable implements Serializable {
 
         if (object.isForward) {
             found.ast = object.ast;
-            found.localScope=object.localScope;
-            found.isForward=false;
+            found.localScope = object.localScope;
+            found.isForward = false;
             return found;
         } else if (found != noObj) {
             parser.errors.count++;
@@ -92,8 +92,11 @@ public class SymbolTable implements Serializable {
         }
 
         object.level = curLevel;
-        object.adr = curScope.size;
-        curScope.size += object.type.size;
+
+        if (object.kind == ObjKind.VAR || object.kind == ObjKind.CON) {
+            curScope.size += object.type.size;
+            object.adr = curScope.size;
+        }
 
         return object;
     }
