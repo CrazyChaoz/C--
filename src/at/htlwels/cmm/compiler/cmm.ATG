@@ -141,7 +141,7 @@ StructDecl
 =
 "struct" Ident<out String name> "{"             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
 { VarDecl}
-                                                (.symbolTable.closeScope();.)
+                                                (.symbolTable.closeScope();type.size=type.fields.size;.)
  "}".
 //##################################################################################
 
