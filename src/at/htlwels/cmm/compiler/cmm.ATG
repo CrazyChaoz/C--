@@ -254,7 +254,8 @@ IF(isCall())ProcCall<out statement>
     Statement<out Node innerStatement>          (.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
 | "if""("Condition<out Node condition>")"
   Statement<out Node innerStatement>            (.statement=new Node(NodeKind.IF,condition,innerStatement,scanner.line);.)
-  ["else" Statement<out innerStatement>         (.statement=new Node(NodeKind.IFELSE,condition,innerStatement,scanner.line);.)]
+  ["else" Statement<out innerStatement>         (.innerStatements.add(new Node(NodeKind.IFELSE,condition,innerStatement,scanner.line));.)]
+                                                (. statement.next=innerStatements.get();.)
 | "{"
 {Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
 }                                               (. statement=innerStatements.get(); .)
