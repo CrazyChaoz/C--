@@ -90,7 +90,7 @@ public class TESTS {
     @DisplayName("Example AST Test")
     public void procAstTest() {
 
-     /*   SymbolTable table = new SymbolTable(new Parser(null));
+        SymbolTable table = new SymbolTable(new Parser(null));
 
         Obj o = table.insert(ObjKind.PROC, "main", intType);
         table.openScope(o.localScope);
@@ -109,10 +109,14 @@ public class TESTS {
 
         table.dumpTable();
 
-//        assertNotEquals(0, table.parser.errors.count);
+        assertNotEquals(0, table.parser.errors.count);
 
-*/
+    }
 
+
+    @Test
+    @DisplayName("Basic Interpreter Execution")
+    public void basicInterpreterExecution() {
         Parser parser = new Parser(new Scanner("testfile.c"));
         parser.Parse();
 
@@ -122,7 +126,6 @@ public class TESTS {
         Interpreter it = new Interpreter(parser.symbolTable);
         it.statSeq(parser.symbolTable.find("main").ast);
     }
-
 
     @Test
     @DisplayName("Interpreter Test")
