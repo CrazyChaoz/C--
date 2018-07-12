@@ -1,9 +1,13 @@
-const int conA = 5;
+
 const float conB = 5.4;
 float gloooooo;
+const int conA = 5;
+int uwu;
 
 int proc(); forward;
 void main() {
+uwu = 5;
+
 
 int z;
 z = proc();
@@ -13,6 +17,12 @@ if(z > 10)
         print(z);
 else
     print('n');
+if(z > 10) {
+    print('g');
+    }
+else {
+    print('h');
+    }
 }
 
 int proc() {

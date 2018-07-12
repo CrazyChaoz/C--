@@ -10,8 +10,8 @@ public class Interpreter {
     private SymbolTable tab;
     private int retAdr;
     //private Obj obj;
-   // private ProcedureStack procedureStack = new ProcedureStack();
-   // private GlobalData globalData = new GlobalData();
+    // private ProcedureStack procedureStack = new ProcedureStack();
+    // private GlobalData globalData = new GlobalData();
 
     private int stackPointer, framePointer, GB = 0;
     Strings stringStorage = new Strings();
@@ -64,7 +64,7 @@ public class Interpreter {
                 if (condition(p.left)) {
                     statement(p.right);
                 } else {
-                    statement(p.right);
+                    statement(p.left);
                 }
                 break;
             case WHILE:
@@ -73,7 +73,24 @@ public class Interpreter {
                 }
                 break;
             case RETURN:
-
+                retAdr = framePointer + p.left.obj.adr;
+                break;
+            case PRINT:
+                switch(p.left.type.kind) {
+                    case Type.INT:
+                        print(intExpr(p.left));
+                        break;
+                    case Type.FLOAT:
+                        print(floatExpr(p.left));
+                        break;
+                    case Type.CHAR:
+                        print(charExpr(p.left));
+                        break;
+                    case Type.STRING:
+                        break;
+                    default:
+                        System.out.println("ErrrrrAwrXd");
+                }
                 break;
         }
     }
@@ -81,7 +98,10 @@ public class Interpreter {
     public int intExpr(Node p) {
         switch (p.kind) {
             case IDENT:
-                return loadInt(identAdr(p.obj));
+                if (p.obj.level > 0)
+                    return loadInt(identAdr(p.obj));
+                else
+                    return globalLoadInt(identAdr(p.obj));
             case INTCON:
                 return p.val;
             case DOT:
@@ -112,9 +132,12 @@ public class Interpreter {
     public float floatExpr(Node p) {
         switch (p.kind) {
             case IDENT:
-                return loadFloat(identAdr(p.obj));
+                if (p.obj.level > 0)
+                    return loadFloat(identAdr(p.obj));
+                else
+                    return globalLoadFloat(identAdr(p.obj));
             case FLOATCON:
-                return p.val;
+                return p.fVal;
             case DOT:
                 return loadFloat(adr(p.left) + p.right.val);
             case INDEX:
@@ -132,14 +155,18 @@ public class Interpreter {
             case CALL:
                 call(p);
                 return loadFloat(retAdr);
-            default: return 0f;
+            default:
+                return 0f;
         }
     }
 
     public char charExpr(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case IDENT:
-                return loadChar(identAdr(p.obj));
+                if (p.obj.level > 0)
+                    return loadChar(identAdr(p.obj));
+                else
+                    return globalLoadChar(identAdr(p.obj));
             case I2C:
                 return (char) intExpr(p.left);
             case CHARCON:
@@ -159,11 +186,11 @@ public class Interpreter {
     public void call(Node p) {
         createFrame(p.left.obj);
         Obj formPar = p.left.obj.localScope.locals;
-        for(Node actPar = p.right; actPar != null; actPar = actPar.next) {
-            if(formPar.isRef) {
+        for (Node actPar = p.right; actPar != null; actPar = actPar.next) {
+            if (formPar.isRef) {
                 storeInt(framePointer + formPar.adr, adr(actPar));
             } else {
-                switch(formPar.type.kind) {
+                switch (formPar.type.kind) {
                     case Type.INT:
                         storeInt(framePointer + formPar.adr, intExpr(actPar));
                         break;
@@ -186,7 +213,7 @@ public class Interpreter {
     }
 
     public int adr(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case IDENT:
                 return identAdr(p.obj);
             case DOT:
@@ -199,19 +226,19 @@ public class Interpreter {
     }
 
     public int identAdr(Obj obj) {
-        if(obj.level == 0) return GB + obj.adr;
+        if (obj.level == 0) return GB + obj.adr;
         else if (obj.kind == ObjKind.REFPAR) return loadInt(framePointer + obj.adr);
         else return framePointer + obj.adr;
 
     }
 
     public void createFrame(Obj proc) {
-      //  storeInt(stackPointer, proc.);
-        stackPointer +=4;
+        //  storeInt(stackPointer, proc.);
+        stackPointer += 4;
 //        storeInt(stackPointer, proc.val);
-        stackPointer +=4;
+        stackPointer += 4;
         storeInt(stackPointer, framePointer);
-        stackPointer +=4;
+        stackPointer += 4;
         framePointer = stackPointer;
         stackPointer += proc.localScope.size;
     }
@@ -335,8 +362,8 @@ public class Interpreter {
     public int loadInt(int adr) {
         byte[] b = new byte[4];
 
-        for(int i = 0; i < 4; i++) {
-            b[i] = stack[adr+i];
+        for (int i = 0; i < 4; i++) {
+            b[i] = stack[adr + i];
         }
 
         return ByteBuffer.wrap(b).getInt();
@@ -344,14 +371,15 @@ public class Interpreter {
 
     /**
      * Loads 4 bytes from the stack starting at adr and returns them as a float
+     *
      * @param adr
      * @return
      */
     public float loadFloat(int adr) {
         byte[] b = new byte[4];
 
-        for(int i = 0; i < 4; i++) {
-            b[i] = stack[adr+i];
+        for (int i = 0; i < 4; i++) {
+            b[i] = stack[adr + i];
         }
 
         return ByteBuffer.wrap(b).getFloat();
@@ -376,15 +404,15 @@ public class Interpreter {
      */
     public void storeInt(int adr, int val) {
         byte[] b = ByteBuffer.allocate(4).putInt(val).array();
-        for(int i = 0; i < 4; i++) {
-            stack[adr+i] = b[i];
+        for (int i = 0; i < 4; i++) {
+            stack[adr + i] = b[i];
         }
     }
 
     public void storeFloat(int adr, float val) {
         byte[] b = ByteBuffer.allocate(4).putFloat(val).array();
-        for(int i = 0; i < 4; i++) {
-            stack[adr+i] = b[i];
+        for (int i = 0; i < 4; i++) {
+            stack[adr + i] = b[i];
         }
     }
 
@@ -404,10 +432,18 @@ public class Interpreter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-            return ch;
+        return ch;
+    }
+
+    public void print(int ch) {
+        System.out.print(ch);
     }
 
     public void print(char ch) {
+        System.out.print(ch);
+    }
+
+    public void print(float ch) {
         System.out.print(ch);
     }
 
@@ -416,7 +452,7 @@ public class Interpreter {
     }
 
 
-    public void dumpStack(){
+    public void dumpStack() {
         System.out.println();
         System.out.println("#~#  DUMP  #~#  STACK");
         System.out.println();
@@ -429,7 +465,7 @@ public class Interpreter {
         System.out.println();
     }
 
-    public void dumpGlobalData(){
+    public void dumpGlobalData() {
         System.out.println();
         System.out.println("#~#  DUMP  #~#  GLOBAL DATA");
         System.out.println();
@@ -442,14 +478,14 @@ public class Interpreter {
         System.out.println();
     }
 
-    public void dumpStringStorage(){
+    public void dumpStringStorage() {
         System.out.println();
         System.out.println("#~#  DUMP  #~#  STRING STORAGE");
         System.out.println();
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < globalData.length; i++) {
-            if(globalData[i]!=0)
-                System.out.println("Position "+i+"\t= "+globalData[i]);
+            if (globalData[i] != 0)
+                System.out.println("Position " + i + "\t= " + globalData[i]);
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
