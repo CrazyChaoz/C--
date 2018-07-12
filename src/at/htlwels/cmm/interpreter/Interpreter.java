@@ -341,4 +341,21 @@ public class Interpreter {
         return s.length();
     }
 
+
+    public void stackDump(){
+        System.out.println("#~#  DUMP  #~#  STACK");
+        for (int i = 0; i < stack.length; i++) {
+            if(stack[i]!=0)
+                System.out.println("Position "+i+"\t="+stack[i]);
+        }
+    }
+
+    public void globalDataDump(){
+        System.out.println("#~#  DUMP  #~#  GLOBAL DATA");
+        for (int i = 0; i < globalData.length; i++) {
+            if(globalData[i]!=0)
+                System.out.println("Position "+i+"\t="+globalData[i]);
+        }
+    }
+
 }

@@ -74,6 +74,7 @@ public class SymbolTable implements Serializable {
         if (object.isForward) {
             found.ast = object.ast;
             found.localScope=object.localScope;
+            found.isForward=false;
             return found;
         } else if (found != noObj) {
             parser.errors.count++;
