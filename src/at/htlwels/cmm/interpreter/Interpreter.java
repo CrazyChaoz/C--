@@ -156,7 +156,7 @@ public class Interpreter {
     public void call(Node p) {
         createFrame(p.left.obj);
         Obj formPar = p.left.obj.localScope.locals;
-        for(Node actPar = p.left; actPar != null; actPar = actPar.next) {
+        for(Node actPar = p.right; actPar != null; actPar = actPar.next) {
             if(formPar.isRef) {
                 storeInt(framePointer + formPar.adr, adr(actPar));
             } else {
@@ -177,6 +177,9 @@ public class Interpreter {
             }
 
         }
+
+        statSeq(p.left.obj.ast);
+        disposeFrame();
     }
 
     public int adr(Node p) {
