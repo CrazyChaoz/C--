@@ -27,26 +27,25 @@ public class Interpreter {
     byte[] globalData = new byte[32768];
 
 
-
-
-
     public Interpreter(SymbolTable tab) {
         this.tab = tab;
+        storeGlobals();
+
+
         //this.obj = obj;
 
     }
 
     public void statSeq(Node p) {
-        for(p = p.left; p!= null; p=p.next) {
+        for (p = p.left; p != null; p = p.next) {
             statement(p);
         }
     }
 
     public void statement(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case ASSIGN:
-                System.out.println(p.right.type);
-                switch(p.right.type.kind) {
+                switch (p.right.type.kind) {
                     case Type.INT:
                         storeInt(adr(p.left), intExpr(p.right));
                         break;
@@ -59,25 +58,28 @@ public class Interpreter {
                 }
                 break;
             case IF:
-                if(condition(p.left)) statement(p.right);
+                if (condition(p.left)) statement(p.right);
                 break;
             case IFELSE:
-                if(condition(p.left)) {
+                if (condition(p.left)) {
                     statement(p.right);
                 } else {
                     statement(p.right);
                 }
                 break;
             case WHILE:
-                while(condition(p.left)) {
+                while (condition(p.left)) {
                     statement(p.right);
                 }
+                break;
+            case RETURN:
+
                 break;
         }
     }
 
     public int intExpr(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case IDENT:
                 return loadInt(identAdr(p.obj));
             case INTCON:
@@ -102,12 +104,13 @@ public class Interpreter {
                 call(p);
                 return loadInt(retAdr);
 
-            default: return 0;
+            default:
+                return 0;
         }
     }
 
     public float floatExpr(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case IDENT:
                 return loadFloat(identAdr(p.obj));
             case FLOATCON:
@@ -257,6 +260,75 @@ public class Interpreter {
 
     /**
      * Loads 4 bytes from the stack starting at adr and returns them as an integer.
+     *
+     * @param adr
+     * @return
+     */
+    public int globalLoadInt(int adr) {
+        byte[] b = new byte[4];
+
+        for (int i = 0; i < 4; i++) {
+            b[i] = globalData[adr + i];
+        }
+
+        return ByteBuffer.wrap(b).getInt();
+    }
+
+    /**
+     * Loads 4 bytes from the stack starting at adr and returns them as a float
+     *
+     * @param adr
+     * @return
+     */
+    public float globalLoadFloat(int adr) {
+        byte[] b = new byte[4];
+
+        for (int i = 0; i < 4; i++) {
+            b[i] = globalData[adr + i];
+        }
+
+        return ByteBuffer.wrap(b).getFloat();
+    }
+
+    /**
+     * Loads a single byte from the stack at address adr and returns it as a casted char.
+     * Keep in mind that the chars are strictly ASCII and not the java standard UTF-16.
+     *
+     * @param adr
+     * @return
+     */
+    public char globalLoadChar(int adr) {
+        return (char) globalData[adr];
+    }
+
+    /**
+     * Stores an integer in the stack starting at adr.
+     *
+     * @param adr
+     * @param val
+     */
+    public void globalStoreInt(int adr, int val) {
+        byte[] b = ByteBuffer.allocate(4).putInt(val).array();
+        for (int i = 0; i < 4; i++) {
+            globalData[adr + i] = b[i];
+        }
+    }
+
+    public void globalStoreFloat(int adr, float val) {
+        byte[] b = ByteBuffer.allocate(4).putFloat(val).array();
+        for (int i = 0; i < 4; i++) {
+            globalData[adr + i] = b[i];
+        }
+    }
+
+    public void globalStoreChar(int adr, char val) {
+        globalData[adr] = (byte) val;
+    }
+
+
+    /**
+     * Loads 4 bytes from the stack starting at adr and returns them as an integer.
+     *
      * @param adr
      * @return
      */
@@ -288,6 +360,7 @@ public class Interpreter {
     /**
      * Loads a single byte from the stack at address adr and returns it as a casted char.
      * Keep in mind that the chars are strictly ASCII and not the java standard UTF-16.
+     *
      * @param adr
      * @return
      */
@@ -297,6 +370,7 @@ public class Interpreter {
 
     /**
      * Stores an integer in the stack starting at adr.
+     *
      * @param adr
      * @param val
      */
@@ -348,8 +422,8 @@ public class Interpreter {
         System.out.println();
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < stack.length; i++) {
-            if(stack[i]!=0)
-                System.out.println("Position "+i+"\t= "+stack[i]);
+            if (stack[i] != 0)
+                System.out.println("Position " + i + "\t= " + stack[i] + "\t| " + Integer.toString(stack[i], 2) + "\t| " + Integer.toString(stack[i], 16));
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
@@ -361,8 +435,8 @@ public class Interpreter {
         System.out.println();
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < globalData.length; i++) {
-            if(globalData[i]!=0)
-                System.out.println("Position "+i+"\t= "+globalData[i]);
+            if (globalData[i] != 0)
+                System.out.println("Position " + i + "\t= " + globalData[i] + "\t| " + Integer.toString(globalData[i], 2) + "\t| " + Integer.toString(globalData[i], 16));
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
@@ -379,6 +453,26 @@ public class Interpreter {
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
+    }
+
+    public void storeGlobals() {
+        for (Obj globVar = tab.curScope.locals; globVar != null; globVar = globVar.next)
+            if (globVar.kind == ObjKind.CON || globVar.kind == ObjKind.VAR) {
+                switch (globVar.type.kind) {
+                    case Type.INT:
+                        globalStoreInt(globVar.adr, globVar.val);
+                        break;
+                    case Type.FLOAT:
+                        globalStoreFloat(globVar.adr, globVar.fVal);
+                        break;
+                    case Type.CHAR:
+                        globalStoreChar(globVar.adr, (char) globVar.val);
+                        break;
+                    case Type.STRING:
+                        stringStorage.put(globVar.strVal);
+                        break;
+                }
+            }
     }
 
 }
