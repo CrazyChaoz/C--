@@ -8,7 +8,10 @@ void main() {
 int z;
 z = proc();
 z=z+conA;
-print(z);
+if(z > 10)
+    print(z);
+else
+    print('n');
 }
 
 int proc() {
