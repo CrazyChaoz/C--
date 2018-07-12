@@ -4,9 +4,19 @@ float gloooooo;
 const int conA = 5;
 int uwu;
 
+
+struct japanese{
+    int dotto;
+    int dotto2;
+}
 int proc(); forward;
 void main() {
 uwu = 5;
+
+japanese jp1;
+
+jp1.dotto=123;
+
 
 
 int z;
