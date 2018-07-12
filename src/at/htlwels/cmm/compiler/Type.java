@@ -8,9 +8,7 @@ A Type holds information about a C-- type. There are 3 primitive types
 results from compare operations, but there is no boolean type in C--.
 --------------------------------------------------------------------------------*/
 
-import java.io.Serializable;
-
-public class Type implements Serializable {
+public class Type {
     public static final int // structure kinds
             NONE   = 0,
             INT    = 1,

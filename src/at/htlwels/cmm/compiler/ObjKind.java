@@ -1,8 +1,6 @@
 package at.htlwels.cmm.compiler;
 
-import java.io.Serializable;
-
-public enum ObjKind implements Serializable {
+public enum ObjKind {
     // object kinds
             CON,
             VAR,

@@ -11,8 +11,6 @@ The scopes are linked by the "outer" pointer.
 --------------------------------------------------------------------------------*/
 
 
-import java.io.Serializable;
-
 public class Scope {
     public Scope outer;        // to outer scope
     public Obj locals;    // to local variables of this scope
