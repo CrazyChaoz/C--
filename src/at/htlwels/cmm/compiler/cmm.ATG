@@ -158,10 +158,10 @@ ConstDecl
 "const"
 Type<out Type type> Ident<out String name>      (.Obj o=new Obj(ObjKind.CON,name,type);.)
  "="
- (intCon                                        (.o.val=symbolTable.intVal(this.t.val);.)
- | floatCon                                     (.o.fVal=symbolTable.floatVal(this.t.val);.)
- | charCon                                      (.o.val=symbolTable.charVal(this.t.val);.)
- | stringCon                                    (.o.strVal=this.t.val;.)
+ (intCon                                        (.o.val=symbolTable.intVal(this.t.val);if(type!=symbolTable.intType)this.errors.count++;.)
+ | floatCon                                     (.o.fVal=symbolTable.floatVal(this.t.val);if(type!=symbolTable.floatType)this.errors.count++;.)
+ | charCon                                      (.o.val=symbolTable.charVal(this.t.val);if(type!=symbolTable.charType)this.errors.count++;.)
+ | stringCon                                    (.o.strVal=this.t.val;if(type!=symbolTable.stringType)this.errors.count++;.)
  )                                              (.symbolTable.insert(o);.)
  ";".
 //##################################################################################
@@ -250,7 +250,7 @@ Statement<out Node statement>                   (. statement=null;Node expressio
 (
 IF(isCall())ProcCall<out statement>
 |Designator<out Node designator>
-"=" Expr<out expression>                        (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);/*Node.dump(expression,0);*/.)";"
+"=" Expr<out expression>                        (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)";"
 | ReturnStatement<out statement>
 | ";"
 | "print" "(" Expr<out expression> ")" ";"      (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
@@ -332,9 +332,10 @@ IF(isCall()) ProcCall<out faktor>
 |Designator<out faktor>
 | intCon                                        (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
 | floatCon                                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
-| charCon                                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
 | stringCon                                     (. faktor=new Node(this.t.val); .)
-| "read" "(" Designator<out Node designator>")" (. faktor=new Node(NodeKind.READ,designator,null,designator.type);.)
+| charCon                                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
+| "readInt" "(" ")"                             (. faktor=new Node(NodeKind.READINT,null,null,symbolTable.intType);.)
+| "readChar" "(" ")"                            (. faktor=new Node(NodeKind.READCHAR,null,null,symbolTable.charType);.)
 | "-" Factor<out Node faktor1>                  (. faktor=new Node(NodeKind.MINUS,new Node(0),faktor1,faktor1.type);.)
 | IF (isCast())
 "(" Type<out Type type> ")" Factor<out Node factor>
@@ -343,7 +344,7 @@ faktor=new Node(
 factor.type==symbolTable.intType&&type==symbolTable.charType?NodeKind.I2C:
 factor.type==symbolTable.intType&&type==symbolTable.floatType?NodeKind.I2F:
 factor.type==symbolTable.floatType&&type==symbolTable.intType?NodeKind.F2I:
-factor.type==symbolTable.floatType&&type==symbolTable.intType?NodeKind.C2I:
+factor.type==symbolTable.charType&&type==symbolTable.intType?NodeKind.C2I:
 NodeKind.GENERIC_CAST,
 factor,null,type);
 .)

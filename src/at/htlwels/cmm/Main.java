@@ -4,11 +4,11 @@ import at.htlwels.cmm.compiler.Parser;
 import at.htlwels.cmm.compiler.Scanner;
 import at.htlwels.cmm.interpreter.Interpreter;
 
+
 public class Main {
     public static void main(String[] args){
         Parser parser = new Parser(new Scanner(args[0]));
         parser.Parse();
-        System.out.println();
 
         if (parser.hasErrors()){
             System.out.println("\nParser has Errors\n");

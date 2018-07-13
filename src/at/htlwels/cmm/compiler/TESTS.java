@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class TESTS {
+
+
+
     @Test
     @DisplayName("Simple Structure Test")
     public void structTest() {
@@ -183,7 +186,6 @@ public class TESTS {
     public void interpreterReadTest() {
         Parser parser = new Parser(new Scanner("testfiles/readTest.c"));
         parser.Parse();
-
 
         parser.symbolTable.dumpTable();
 

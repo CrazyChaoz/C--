@@ -28,7 +28,8 @@ public enum  NodeKind{
     TIMES ,   // *
     DIV ,   // /
     REM ,   // %
-    READ ,   // read operation
+    READINT,   // read operation
+    READCHAR,   // read operation
     I2F ,   // conversion from int to float
     F2I ,   // conversion from float to int
     I2C ,   // conversion from int to char

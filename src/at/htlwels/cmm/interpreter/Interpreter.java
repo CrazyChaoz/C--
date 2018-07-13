@@ -2,6 +2,9 @@
 package at.htlwels.cmm.interpreter;
 
 import at.htlwels.cmm.compiler.*;
+import at.htlwels.cmm.error.DivisionByZeroSin;
+import at.htlwels.cmm.error.ExprSin;
+import at.htlwels.cmm.error.Sin;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -15,6 +18,9 @@ public class Interpreter {
 
     private int stackPointer, framePointer, GB = 0;
     Strings stringStorage = new Strings();
+
+
+    boolean isReturned = false;
 
     /**
      * call stack
@@ -37,7 +43,7 @@ public class Interpreter {
     }
 
     public void statSeq(Node p) {
-        for (p = p.left; p != null; p = p.next) {
+        for (p = p.left; p != null && !isReturned; p = p.next) {
             //TODO: Implement Single Stepping
             statement(p);
         }
@@ -62,26 +68,53 @@ public class Interpreter {
                 }
                 break;
             case IF:
-                if(p.right.kind==NodeKind.IFELSE) {
+                if (p.right.kind == NodeKind.IFELSE) {
                     if (condition(p.left))
-                        statement(p.right.left);
+                        for (Node node = p.right.left; node != null && !isReturned; node = node.next)
+                            statement(node);
                     else
-                        statement(p.right.right);
-                }else if(condition(p.left))
-                    statement(p.right);
+                        for (Node node = p.right.right; node != null && !isReturned; node = node.next)
+                            statement(node);
+                } else if (condition(p.left))
+                    for (Node node = p.right; node != null && !isReturned; node = node.next)
+                        statement(node);
                 break;
             case WHILE:
                 while (condition(p.left)) {
-                    for(Node inner = p.right; inner != null; inner = inner.next) {
+                    for (Node inner = p.right; inner != null; inner = inner.next) {
                         statement(inner);
                     }
                 }
                 break;
             case RETURN:
-                retAdr = framePointer + p.left.obj.adr;
+                switch (p.left.kind) {
+                    case FLOATCON:
+                        retAdr = stackPointer;
+                        storeFloat(stackPointer, p.left.fVal);
+                        break;
+                    case CHARCON:
+                        retAdr = stackPointer;
+                        storeChar(stackPointer, (char) p.left.val);
+                    case INTCON:
+                        retAdr = stackPointer;
+                        storeInt(stackPointer, p.left.val);
+                        break;
+                    case STRINGCON:
+                        retAdr = stackPointer;
+                        storeString(stackPointer, p.left.strVal);
+                        break;
+                    case IDENT:
+                    case INDEX:
+                    case DOT:
+                        retAdr = adr(p.left);
+                        break;
+
+                }
+
+                isReturned = true;
                 break;
             case PRINT:
-                switch(p.left.type.kind) {
+                switch (p.left.type.kind) {
                     case Type.INT:
                         print(intExpr(p.left));
                         break;
@@ -98,7 +131,6 @@ public class Interpreter {
                         System.err.println("ERROR IN PRINT");
                 }
                 break;
-
         }
     }
 
@@ -114,26 +146,33 @@ public class Interpreter {
             case DOT:
                 return loadInt(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return loadInt(adr(p.left) + intExpr(p.right)*4);
+                return loadInt(adr(p.left) + intExpr(p.right) * 4);
             case PLUS:
                 return intExpr(p.left) + intExpr(p.right);
             case MINUS:
                 return intExpr(p.left) - intExpr(p.right);
             case DIV:
-                return intExpr(p.left) / intExpr(p.right);
+                int asdf = intExpr(p.right);
+                if (asdf == 0)
+                    Sin.commit(new DivisionByZeroSin());
+                return intExpr(p.left) / asdf;
             case TIMES:
                 return intExpr(p.left) * intExpr(p.right);
             case C2I:
                 return (int) charExpr(p.left);
             case F2I:
                 return (int) floatExpr(p.left);
+            case READINT:
+                return readInt();
             case CALL:
                 call(p);
+                isReturned = false;
                 return loadInt(retAdr);
 
             default:
-                return 0;
+                Sin.commit(new ExprSin("IntExpr, " + p.kind));
         }
+        return 0;
     }
 
     public float floatExpr(Node p) {
@@ -148,7 +187,7 @@ public class Interpreter {
             case DOT:
                 return loadFloat(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return loadFloat(adr(p.left) + intExpr(p.right)*4);
+                return loadFloat(adr(p.left) + intExpr(p.right) * 4);
             case PLUS:
                 return floatExpr(p.left) + floatExpr(p.right);
             case MINUS:
@@ -161,10 +200,12 @@ public class Interpreter {
                 return (float) intExpr(p.left);
             case CALL:
                 call(p);
+                isReturned = false;
                 return loadFloat(retAdr);
             default:
-                return 0f;
+                Sin.commit(new ExprSin("FloatExpr"));
         }
+        return 0;
     }
 
     public char charExpr(Node p) {
@@ -183,14 +224,16 @@ public class Interpreter {
                 return (char) intExpr(p.left);
             case CHARCON:
                 return (char) p.val;
-            case READ:
-               return read();
+            case READCHAR:
+                return readChar();
             case CALL:
                 call(p);
+                isReturned = false;
                 return loadChar(retAdr);
             default:
-                return '0';
+                Sin.commit(new ExprSin("CharExpr"));
         }
+        return '0';
     }
 
     public String stringExpr(Node p) {
@@ -198,8 +241,7 @@ public class Interpreter {
             case IDENT:
                 if (p.obj.level > 0) {
                     return stringStorage.get(loadInt(identAdr(p.obj)));
-                }
-                else {
+                } else {
                     return stringStorage.get(globalLoadInt(identAdr(p.obj)));
                 }
             case DOT:
@@ -210,14 +252,16 @@ public class Interpreter {
                 return p.strVal;
             case CALL:
                 call(p);
+                isReturned = false;
                 return stringStorage.get(loadInt(retAdr));
             default:
-                return "error";
+                Sin.commit(new ExprSin("StringExpr"));
         }
+        return "error";
     }
 
     public boolean condition(Node p) {
-        switch(p.kind) {
+        switch (p.kind) {
             case IDENT:
                 if (p.obj.level > 0)
                     return loadBool(identAdr(p.obj));
@@ -228,9 +272,9 @@ public class Interpreter {
             case INDEX:
                 return loadBool(adr(p.left) + intExpr(p.right));
             default:
-                switch(p.left.type.kind) {
+                switch (p.left.type.kind) {
                     case Type.INT:
-                        switch(p.kind) {
+                        switch (p.kind) {
                             case EQL:
                                 return intExpr(p.left) == intExpr(p.right);
                             case NEQ:
@@ -251,7 +295,7 @@ public class Interpreter {
                         }
 
                     case Type.FLOAT:
-                        switch(p.kind) {
+                        switch (p.kind) {
                             case EQL:
                                 return floatExpr(p.left) == floatExpr(p.right);
 
@@ -312,7 +356,7 @@ public class Interpreter {
             case DOT:
                 return adr(p.left) + adr(p.right);
             case INDEX:
-                return adr(p.left) + intExpr(p.right)*p.type.size;
+                return adr(p.left) + intExpr(p.right) * p.type.size;
             default:
                 return framePointer;
         }
@@ -546,43 +590,54 @@ public class Interpreter {
     }
 
     public void globalStoreBool(int adr, boolean val) {
-        byte b = (byte)(val?1:0);
+        byte b = (byte) (val ? 1 : 0);
 
         globalData[adr] = b;
         GB++;
     }
 
     public boolean globalloadBool(int adr) {
-        return (int)globalData[adr] == 1;
+        return (int) globalData[adr] == 1;
     }
 
     public void storeBool(int adr, boolean val) {
-        byte b = (byte)(val?1:0);
+        byte b = (byte) (val ? 1 : 0);
 
         stack[adr] = b;
         stackPointer++;
     }
 
     public boolean loadBool(int adr) {
-        return ((int)stack[adr] == 1);
+        return ((int) stack[adr] == 1);
     }
-
-
 
 
     /**
      * Pre-declared standard procedures
      */
-    public char read() {
-        char ch = '\0';
-        System.out.println("read");
+    public int readInt() {
+        int ch = 0;
+
         try {
-            ch = (char) new java.util.Scanner(System.in).nextInt();
+            ch = new java.util.Scanner(System.in).nextInt();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return ch;
     }
+
+
+    public char readChar() {
+        char ch = '\0';
+
+        try {
+            ch = (char) System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ch;
+    }
+
 
     public void print(int ch) {
         System.out.print(ch);
@@ -638,7 +693,7 @@ public class Interpreter {
         System.out.println("#~#  -------------  #~#");
         for (byte b : stringStorage.data) {
             if (b != 0)
-                System.out.println((char)b);
+                System.out.println((char) b);
         }
 
 

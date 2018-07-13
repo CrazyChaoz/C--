@@ -1,3 +1,4 @@
+/*
 
 const float conB = 5.4;
 float gloooooo;
@@ -42,12 +43,15 @@ int z;
 
 z = x * y ;
 
-if(z>0)
+if(z>0){
+    print("returns now");
     return z;
-
-print('a');
 }
 
+print("unreachable");
+}
+
+*/
 
 
 
@@ -100,4 +104,25 @@ int arrayProc(ref int i){
 
 */
 
+
+int proc(); forward;
+void main() {
+    int i;
+//    i=proc();
+    print("Please type an Integer");
+    i=readInt();
+    print(i);
+}
+
+int proc() {
+
+    if(2>0){
+        print("returns now");
+        print("returns now");
+        print("returns now");
+        return 3;
+    }
+
+    print("unreachable");
+}
 
