@@ -161,6 +161,39 @@ public class TESTS {
         it.dumpGlobalData();
     }
 
+    @Test
+    @DisplayName("Interpreter String Test")
+    public void interpreterStringTest() {
+        Parser parser = new Parser(new Scanner("testfiles/stringTest.c"));
+        parser.Parse();
+
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
+        it.dumpStringStorage();
+    }
+
+    @Test
+    @DisplayName("Interpreter Read Test")
+    public void interpreterReadTest() {
+        Parser parser = new Parser(new Scanner("testfiles/readTest.c"));
+        parser.Parse();
+
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
+        it.dumpStringStorage();
+    }
 
     @Test
     @DisplayName("Interpreter Array Struct Test")

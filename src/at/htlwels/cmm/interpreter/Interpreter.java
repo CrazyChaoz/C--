@@ -57,7 +57,7 @@ public class Interpreter {
                         storeChar(adr(p.left), charExpr(p.right));
                         break;
                     case Type.STRING:
-
+                        storeString(adr(p.left), stringExpr(p.right));
                         break;
                 }
                 break;
@@ -92,13 +92,13 @@ public class Interpreter {
                         print(charExpr(p.left));
                         break;
                     case Type.STRING:
+                        print(stringExpr((p.left)));
                         break;
                     default:
                         System.err.println("ERROR IN PRINT");
                 }
                 break;
-            case READ:
-                break;
+
         }
     }
 
@@ -183,11 +183,36 @@ public class Interpreter {
                 return (char) intExpr(p.left);
             case CHARCON:
                 return (char) p.val;
+            case READ:
+               return read();
             case CALL:
                 call(p);
                 return loadChar(retAdr);
             default:
                 return '0';
+        }
+    }
+
+    public String stringExpr(Node p) {
+        switch (p.kind) {
+            case IDENT:
+                if (p.obj.level > 0) {
+                    return stringStorage.get(loadInt(identAdr(p.obj)));
+                }
+                else {
+                    return stringStorage.get(globalLoadInt(identAdr(p.obj)));
+                }
+            case DOT:
+                return stringStorage.get((adr(p.left) + p.right.obj.adr));
+            case INDEX:
+                return stringStorage.get((adr(p.left) + intExpr(p.right)));
+            case STRINGCON:
+                return p.strVal;
+            case CALL:
+                call(p);
+                return stringStorage.get(loadInt(retAdr));
+            default:
+                return "error";
         }
     }
 
@@ -491,10 +516,40 @@ public class Interpreter {
         stackPointer++;
     }
 
+    public void globalStoreString(int adr, String val) {
+
+        int localAdr = stringStorage.put(val);
+
+        byte[] b = ByteBuffer.allocate(4).putInt(localAdr).array();
+        for (int i = 0; i < 4; i++) {
+            globalData[adr + i] = b[i];
+            GB++;
+        }
+    }
+
+    public String globalloadString(int adr) {
+        return stringStorage.get(loadInt(adr));
+    }
+
+    public void storeString(int adr, String val) {
+        int localAdr = stringStorage.put(val);
+
+        byte[] b = ByteBuffer.allocate(4).putInt(localAdr).array();
+        for (int i = 0; i < 4; i++) {
+            stack[adr + i] = b[i];
+            stackPointer++;
+        }
+    }
+
+    public String loadString(int adr) {
+        return stringStorage.get(loadInt(adr));
+    }
+
     public void globalStoreBool(int adr, boolean val) {
         byte b = (byte)(val?1:0);
 
         globalData[adr] = b;
+        GB++;
     }
 
     public boolean globalloadBool(int adr) {
@@ -505,6 +560,7 @@ public class Interpreter {
         byte b = (byte)(val?1:0);
 
         stack[adr] = b;
+        stackPointer++;
     }
 
     public boolean loadBool(int adr) {
@@ -512,15 +568,17 @@ public class Interpreter {
     }
 
 
+
+
     /**
      * Pre-declared standard procedures
      */
     public char read() {
         char ch = '\0';
-
+        System.out.println("read");
         try {
-            ch = (char) System.in.read();
-        } catch (IOException e) {
+            ch = (char) new java.util.Scanner(System.in).nextInt();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ch;
@@ -536,6 +594,10 @@ public class Interpreter {
 
     public void print(float ch) {
         System.out.print(ch);
+    }
+
+    public void print(String s) {
+        System.out.println(s);
     }
 
     public int length(String s) {
@@ -574,10 +636,12 @@ public class Interpreter {
         System.out.println("#~#  DUMP  #~#  STRING STORAGE");
         System.out.println();
         System.out.println("#~#  -------------  #~#");
-        for (int i = 0; i < globalData.length; i++) {
-            if (globalData[i] != 0)
-                System.out.println("Position " + i + "\t= " + globalData[i]);
+        for (byte b : stringStorage.data) {
+            if (b != 0)
+                System.out.println((char)b);
         }
+
+
         System.out.println("#~#  -------------  #~#");
         System.out.println();
     }

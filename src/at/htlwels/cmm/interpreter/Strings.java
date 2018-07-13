@@ -16,7 +16,7 @@ import java.util.Map;
 public class Strings {
 	private final int GROW_INCREMENT = 4096;
 	private int storageSize = GROW_INCREMENT;
-	private byte[] data = new byte[GROW_INCREMENT]; // grows automatically
+	public byte[] data = new byte[GROW_INCREMENT]; // grows automatically
 	private int top = 0;
 	private Map<String, Integer> map = new HashMap<>();
 
@@ -61,14 +61,26 @@ public class Strings {
 
 			map.put(s, adr);
 
-			return adr;
-		} else {
-			return map.get(s);
 		}
+
+		return map.get(s);
 	}
 
 	// Returns the string that is stored at adr in the string storage
-	public int get(String s) {
+	public String get(int adr) {
+		String s;
+		int i;
+		StringBuilder sb = new StringBuilder();
+
+		for(i = adr; data[i]!='\0'; i++) {
+			sb.append((char) data[i]);
+		}
+		s = sb.toString();
+
+		return s;
+	}
+
+	public int getAdr(String s) {
 		return map.get(s);
 	}
 

@@ -74,7 +74,7 @@ public final class Node {
     public Node(String str) {
         this.kind = STRINGCON;
         this.type = SymbolTable.stringType;
-        this.strVal = str;
+        this.strVal = str.substring(1,str.length()-1);
     }
 
     //----------------------- for dumping ASTs -----------------------------------
