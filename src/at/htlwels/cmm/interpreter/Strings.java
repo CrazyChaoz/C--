@@ -61,23 +61,15 @@ public class Strings {
 
 			map.put(s, adr);
 
+			return adr;
+		} else {
+			return map.get(s);
 		}
-
-		return map.get(s);
 	}
 
 	// Returns the string that is stored at adr in the string storage
-	public String get(int adr) {
-		String s;
-		int i;
-		StringBuilder sb = new StringBuilder();
-
-		for(i = adr; data[i]!='\0'; i++) {
-			sb.append((char) data[i]);
-		}
-		s = sb.toString();
-
-		return s;
+	public int get(String s) {
+		return map.get(s);
 	}
 
 	// Returns the character at adr in the string storage

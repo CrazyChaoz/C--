@@ -55,6 +55,9 @@ public class Interpreter {
                     case Type.CHAR:
                         storeChar(adr(p.left), charExpr(p.right));
                         break;
+                    case Type.STRING:
+
+                        break;
                 }
                 break;
             case IF:
@@ -93,6 +96,8 @@ public class Interpreter {
                         System.out.println("ErrrrrAwrXd");
                 }
                 break;
+            case READ:
+                break;
         }
     }
 
@@ -106,7 +111,7 @@ public class Interpreter {
             case INTCON:
                 return p.val;
             case DOT:
-                return loadInt(adr(p.left) + p.right.val);
+                return loadInt(adr(p.left) + p.right.obj.adr);
             case INDEX:
                 return loadInt(adr(p.left)) + intExpr(p.right);
             case PLUS:
@@ -140,9 +145,9 @@ public class Interpreter {
             case FLOATCON:
                 return p.fVal;
             case DOT:
-                return loadFloat(adr(p.left) + p.right.val);
+                return loadFloat(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return loadFloat(adr(p.left)) + floatExpr(p.right);
+                return loadFloat(adr(p.left)) + intExpr(p.right);
             case PLUS:
                 return floatExpr(p.left) + floatExpr(p.right);
             case MINUS:
@@ -170,7 +175,7 @@ public class Interpreter {
                     return globalLoadChar(identAdr(p.obj));
 
             case DOT:
-                return loadChar(adr(p.left) + p.right.val);
+                return loadChar(adr(p.left) + p.right.obj.adr);
             case INDEX:
                 return 'c';
             case I2C:
