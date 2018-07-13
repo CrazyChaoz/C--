@@ -356,7 +356,7 @@ Designator<out Node designator>
 =
 Ident<out String name>                          (. designator=new Node(symbolTable.find(name));.)
 
-{"." Ident<out String name2>                    (. Obj typeObject=symbolTable.findField(name2,designator.type); designator=new Node(NodeKind.DOT,new Node(typeObject),designator,typeObject.type );.)
+{"." Ident<out String name2>                    (. Obj typeVar=symbolTable.findField(name2,designator.type); designator=new Node(NodeKind.DOT,designator,new Node(typeVar),typeVar.type );.)
 | "[" Expr<out Node expr>                       (. designator=new Node(NodeKind.INDEX,designator,expr,designator.type ); .) "]"}.
 //##################################################################################
 
