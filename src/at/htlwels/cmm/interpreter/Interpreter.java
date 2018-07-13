@@ -142,7 +142,7 @@ public class Interpreter {
             case DOT:
                 return loadFloat(adr(p.left) + p.right.val);
             case INDEX:
-                return loadFloat(adr(p.left)) + intExpr(p.right);
+                return loadFloat(adr(p.left)) + floatExpr(p.right);
             case PLUS:
                 return floatExpr(p.left) + floatExpr(p.right);
             case MINUS:
@@ -168,6 +168,11 @@ public class Interpreter {
                     return loadChar(identAdr(p.obj));
                 else
                     return globalLoadChar(identAdr(p.obj));
+
+            case DOT:
+                return loadChar(adr(p.left) + p.right.val);
+            case INDEX:
+                return 'c';
             case I2C:
                 return (char) intExpr(p.left);
             case CHARCON:

@@ -146,6 +146,14 @@ public class TESTS {
     }
 
     @Test
+    @DisplayName("stack test")
+    public void stackTest() {
+        Interpreter it = new Interpreter(new Parser(new Scanner("testfile2.c")).symbolTable);
+        //it.storeInt();
+    }
+
+
+    @Test
     @DisplayName("Interpreter Test")
     public void interpreterTest() {
         Interpreter it = new Interpreter(null);
