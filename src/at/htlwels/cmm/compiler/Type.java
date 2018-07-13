@@ -31,6 +31,7 @@ public class Type {
             case FLOAT:  size = 4; break;
             case CHAR:   size = 1; break;
             case BOOL:   size = 1; break;
+            case STRING: size = 4; break;
             case STRUCT: fields=new Scope();
             default:     size = 0; break;
         }
