@@ -42,8 +42,10 @@ int z;
 
 z = x * y ;
 
-return z;
+if(z>0)
+    return z;
 
+print('a');
 }
 
 

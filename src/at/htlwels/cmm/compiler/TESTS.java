@@ -117,7 +117,7 @@ public class TESTS {
     @Test
     @DisplayName("Basic Interpreter Execution")
     public void basicInterpreterExecution() {
-        Parser parser = new Parser(new Scanner("testfile.c"));
+        Parser parser = new Parser(new Scanner("testfiles/testfile.c"));
         parser.Parse();
 
         //parser.symbolTable.dumpTable();
@@ -131,9 +131,9 @@ public class TESTS {
 
 
     @Test
-    @DisplayName("Basic interpreter struct test XDrawr")
+    @DisplayName("Interpreter struct Test")
     public void interpreterStructTest() {
-        Parser parser = new Parser(new Scanner("testfile2.c"));
+        Parser parser = new Parser(new Scanner("testfiles/testfile2.c"));
         parser.Parse();
 
         //parser.symbolTable.dumpTable();
@@ -146,12 +146,37 @@ public class TESTS {
     }
 
     @Test
-    @DisplayName("stack test")
-    public void stackTest() {
-        Interpreter it = new Interpreter(new Parser(new Scanner("testfile2.c")).symbolTable);
-        //it.storeInt();
+    @DisplayName("Interpreter Array Test")
+    public void interpreterArrayTest() {
+        Parser parser = new Parser(new Scanner("testfiles/arrayTest.c"));
+        parser.Parse();
+
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
     }
 
+
+    @Test
+    @DisplayName("Interpreter Array Struct Test")
+    public void interpreterArrayStructFile() {
+        Parser parser = new Parser(new Scanner("testfiles/arraysStructsTest.c"));
+        parser.Parse();
+
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
+    }
 
     @Test
     @DisplayName("Interpreter Test")
@@ -191,9 +216,9 @@ public class TESTS {
         System.out.println(strings.charAt(1));
         System.out.println(strings.charAt(2));
         System.out.println(strings.charAt(3));
-        System.out.println(strings.get(0));
-        System.out.println(strings.get(5));
-        System.out.println(strings.get(14));
+//        System.out.println(strings.get(0));
+//        System.out.println(strings.get(5));
+//        System.out.println(strings.get(14));
     }
 
 

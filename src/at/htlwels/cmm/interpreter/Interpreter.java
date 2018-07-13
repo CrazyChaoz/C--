@@ -93,7 +93,7 @@ public class Interpreter {
                     case Type.STRING:
                         break;
                     default:
-                        System.out.println("ErrrrrAwrXd");
+                        System.err.println("ERROR IN PRINT");
                 }
                 break;
             case READ:
@@ -113,7 +113,7 @@ public class Interpreter {
             case DOT:
                 return loadInt(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return loadInt(adr(p.left)) + intExpr(p.right);
+                return loadInt(adr(p.left) + intExpr(p.right)*4);
             case PLUS:
                 return intExpr(p.left) + intExpr(p.right);
             case MINUS:
@@ -147,7 +147,7 @@ public class Interpreter {
             case DOT:
                 return loadFloat(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return loadFloat(adr(p.left)) + intExpr(p.right);
+                return loadFloat(adr(p.left) + intExpr(p.right)*4);
             case PLUS:
                 return floatExpr(p.left) + floatExpr(p.right);
             case MINUS:
@@ -177,7 +177,7 @@ public class Interpreter {
             case DOT:
                 return loadChar(adr(p.left) + p.right.obj.adr);
             case INDEX:
-                return 'c';
+                return loadChar(adr(p.left) + intExpr(p.right));
             case I2C:
                 return (char) intExpr(p.left);
             case CHARCON:
@@ -284,9 +284,9 @@ public class Interpreter {
             case IDENT:
                 return identAdr(p.obj);
             case DOT:
-                return adr(p.left) + p.right.obj.adr;
+                return adr(p.left) + adr(p.right);
             case INDEX:
-                return adr(p.left) + intExpr(p.right);
+                return adr(p.left) + intExpr(p.right)*p.type.size;
             default:
                 return framePointer;
         }
@@ -549,7 +549,7 @@ public class Interpreter {
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < stack.length; i++) {
             if (stack[i] != 0)
-                System.out.println("Position " + i + "\t= " + stack[i] + "\t| " + Integer.toString(stack[i], 2) + "\t| " + Integer.toString(stack[i], 16));
+                System.out.println("Position " + i + /*\n\tValue:*/ "\t\t\t| " + stack[i] /*+ "\n\tBinary: \t\t| " + Integer.toString(stack[i], 2) + "\n\tHexadecimal: \t| " + Integer.toString(stack[i], 16)*/);
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
@@ -562,7 +562,7 @@ public class Interpreter {
         System.out.println("#~#  -------------  #~#");
         for (int i = 0; i < globalData.length; i++) {
             if (globalData[i] != 0)
-                System.out.println("Position " + i + "\t= " + globalData[i] + "\t| " + Integer.toString(globalData[i], 2) + "\t| " + Integer.toString(globalData[i], 16));
+                System.out.println("Position " + i + "\t= " + globalData[i] + "\n\t\t\t| " + Integer.toString(globalData[i], 2) + "\n\t\t\t| " + Integer.toString(globalData[i], 16));
         }
         System.out.println("#~#  -------------  #~#");
         System.out.println();
