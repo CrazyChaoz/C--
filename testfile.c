@@ -4,34 +4,31 @@ float gloooooo;
 const int conA = 5;
 int uwu;
 
-
-struct japanese{
-    int dotto;
-    int dotto2;
+struct penniz{
+    int length;
+    char name;
 }
+
 int proc(); forward;
 void main() {
 uwu = 5;
-
-japanese jp1;
-
-jp1.dotto=123;
-
 
 
 int z;
 z = proc();
 z=z+conA;
-if(z > 10)
-    if(z > 16)
-        print(z);
-else
-    print('n');
-if(z > 10) {
+if(z < 10) {
     print('g');
     }
 else {
     print('h');
+    }
+
+    int i;
+    i = 0;
+    while(i<5) {
+        i = i + 1;
+        print(i);
     }
 }
 

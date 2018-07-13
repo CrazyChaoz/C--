@@ -94,8 +94,8 @@ public class SymbolTable implements Serializable {
         object.level = curLevel;
 
         if (object.kind == ObjKind.VAR || object.kind == ObjKind.CON) {
-            curScope.size += object.type.size;
             object.adr = curScope.size;
+            curScope.size += object.type.size;
         }
 
         return object;

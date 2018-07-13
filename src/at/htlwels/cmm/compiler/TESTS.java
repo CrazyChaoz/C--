@@ -120,7 +120,23 @@ public class TESTS {
         Parser parser = new Parser(new Scanner("testfile.c"));
         parser.Parse();
 
-        parser.symbolTable.dumpTable();
+        //parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+       // it.dumpStack();
+       // it.dumpGlobalData();
+    }
+
+
+    @Test
+    @DisplayName("Basic interpreter struct test XDrawr")
+    public void interpreterStructTest() {
+        Parser parser = new Parser(new Scanner("testfile2.c"));
+        parser.Parse();
+
+        //parser.symbolTable.dumpTable();
 
 
         Interpreter it = new Interpreter(parser.symbolTable);
@@ -128,8 +144,6 @@ public class TESTS {
         it.dumpStack();
         it.dumpGlobalData();
     }
-
-
 
     @Test
     @DisplayName("Interpreter Test")

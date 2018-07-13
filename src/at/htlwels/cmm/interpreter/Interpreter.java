@@ -58,18 +58,19 @@ public class Interpreter {
                 }
                 break;
             case IF:
-                if (condition(p.left)) statement(p.right);
-                break;
-            case IFELSE:
-                if (condition(p.left)) {
+                if(p.right.kind==NodeKind.IFELSE) {
+                    if (condition(p.left))
+                        statement(p.right.left);
+                    else
+                        statement(p.right.right);
+                }else if(condition(p.left))
                     statement(p.right);
-                } else {
-                    statement(p.left);
-                }
                 break;
             case WHILE:
                 while (condition(p.left)) {
-                    statement(p.right);
+                    for(Node inner = p.right; inner != null; inner = inner.next) {
+                        statement(inner);
+                    }
                 }
                 break;
             case RETURN:
@@ -180,7 +181,63 @@ public class Interpreter {
     }
 
     public boolean condition(Node p) {
-        return true;
+        switch(p.kind) {
+            case IDENT:
+                if (p.obj.level > 0)
+                    return loadBool(identAdr(p.obj));
+                else
+                    return globalloadBool(identAdr(p.obj));
+            case DOT:
+                return loadBool(adr(p.left) + p.right.val);
+            case INDEX:
+                return loadBool(adr(p.left) + intExpr(p.right));
+            default:
+                switch(p.left.type.kind) {
+                    case Type.INT:
+                        switch(p.kind) {
+                            case EQL:
+                                return intExpr(p.left) == intExpr(p.right);
+                            case NEQ:
+                                return intExpr(p.left) != intExpr(p.right);
+                            case GTR:
+                                return intExpr(p.left) > intExpr(p.right);
+
+                            case LSS:
+                                return intExpr(p.left) < intExpr(p.right);
+
+                            case GEQ:
+                                return intExpr(p.left) >= intExpr(p.right);
+                            case LEQ:
+                                return intExpr(p.left) <= intExpr(p.right);
+
+                            default:
+                                return false;
+                        }
+
+                    case Type.FLOAT:
+                        switch(p.kind) {
+                            case EQL:
+                                return floatExpr(p.left) == floatExpr(p.right);
+
+                            case NEQ:
+                                return floatExpr(p.left) != floatExpr(p.right);
+                            case GTR:
+                                return floatExpr(p.left) > floatExpr(p.right);
+
+                            case LSS:
+                                return floatExpr(p.left) < floatExpr(p.right);
+
+                            case GEQ:
+                                return floatExpr(p.left) >= floatExpr(p.right);
+                            case LEQ:
+                                return floatExpr(p.left) <= floatExpr(p.right);
+
+                            default:
+                                return false;
+                        }
+                }
+        }
+        return false;
     }
 
     public void call(Node p) {
@@ -217,7 +274,7 @@ public class Interpreter {
             case IDENT:
                 return identAdr(p.obj);
             case DOT:
-                return adr(p.left) + p.right.val;
+                return adr(p.left) + p.right.obj.adr;
             case INDEX:
                 return adr(p.left) + intExpr(p.right);
             default:
@@ -234,17 +291,14 @@ public class Interpreter {
 
     public void createFrame(Obj proc) {
         //  storeInt(stackPointer, proc.);
-        stackPointer += 4;
 //        storeInt(stackPointer, proc.val);
-        stackPointer += 4;
         storeInt(stackPointer, framePointer);
-        stackPointer += 4;
         framePointer = stackPointer;
         stackPointer += proc.localScope.size;
     }
 
     public void disposeFrame() {
-        stackPointer = framePointer - 12;
+        stackPointer = framePointer - 4;
         framePointer = loadInt(stackPointer + 8);
     }
 
@@ -338,6 +392,7 @@ public class Interpreter {
         byte[] b = ByteBuffer.allocate(4).putInt(val).array();
         for (int i = 0; i < 4; i++) {
             globalData[adr + i] = b[i];
+            GB++;
         }
     }
 
@@ -345,11 +400,13 @@ public class Interpreter {
         byte[] b = ByteBuffer.allocate(4).putFloat(val).array();
         for (int i = 0; i < 4; i++) {
             globalData[adr + i] = b[i];
+            GB++;
         }
     }
 
     public void globalStoreChar(int adr, char val) {
         globalData[adr] = (byte) val;
+        GB++;
     }
 
 
@@ -406,6 +463,7 @@ public class Interpreter {
         byte[] b = ByteBuffer.allocate(4).putInt(val).array();
         for (int i = 0; i < 4; i++) {
             stack[adr + i] = b[i];
+            stackPointer++;
         }
     }
 
@@ -413,11 +471,33 @@ public class Interpreter {
         byte[] b = ByteBuffer.allocate(4).putFloat(val).array();
         for (int i = 0; i < 4; i++) {
             stack[adr + i] = b[i];
+            stackPointer++;
         }
     }
 
     public void storeChar(int adr, char val) {
         stack[adr] = (byte) val;
+        stackPointer++;
+    }
+
+    public void globalStoreBool(int adr, boolean val) {
+        byte b = (byte)(val?1:0);
+
+        globalData[adr] = b;
+    }
+
+    public boolean globalloadBool(int adr) {
+        return (int)globalData[adr] == 1;
+    }
+
+    public void storeBool(int adr, boolean val) {
+        byte b = (byte)(val?1:0);
+
+        stack[adr] = b;
+    }
+
+    public boolean loadBool(int adr) {
+        return ((int)stack[adr] == 1);
     }
 
 
