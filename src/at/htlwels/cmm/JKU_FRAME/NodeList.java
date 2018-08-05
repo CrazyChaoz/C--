@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 NodeList   Builds lists of AST nodes

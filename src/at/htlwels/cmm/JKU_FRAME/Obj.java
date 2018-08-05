@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 Obj   Object node of the C-- symbol table

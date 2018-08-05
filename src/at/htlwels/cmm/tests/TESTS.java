@@ -1,5 +1,8 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.tests;
 
+import at.htlwels.cmm.compiler.Parser;
+import at.htlwels.cmm.compiler.Scanner;
+import at.htlwels.cmm.compiler.Token;
 import at.htlwels.cmm.interpreter.Interpreter;
 import at.htlwels.cmm.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;

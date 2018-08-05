@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 Node   Node of the abstract syntax tree (AST) of a C-- program
@@ -9,7 +9,6 @@ Nodes representing a statement have a line number, whereas nodes representing
 a part of an expression have a type.
 --------------------------------------------------------------------------------*/
 
-import static at.htlwels.cmm.compiler.NodeKind.*;
 
 public final class Node {
 
@@ -44,35 +43,35 @@ public final class Node {
 
     // for leaf nodes
     public Node(Obj obj) {
-        this.kind = IDENT;
+        this.kind = NodeKind.IDENT;
         this.type = obj.type;
         this.obj = obj;
     }
 
     // a int Node
     public Node(int val) {
-        this.kind = INTCON;
+        this.kind =  NodeKind.INTCON;
         this.type = SymbolTable.intType;
         this.val = val;
     }
 
     // a float Node
     public Node(float fValue) {
-        this.kind = FLOATCON;
+        this.kind =  NodeKind.FLOATCON;
         this.type = SymbolTable.floatType;
         this.fVal = fValue;
     }
 
     // a char Node
     public Node(char ch) {
-        this.kind = CHARCON;
+        this.kind =  NodeKind.CHARCON;
         this.type = SymbolTable.charType;
         this.val = ch;
     }
 
     // a string Node
     public Node(String str) {
-        this.kind = STRINGCON;
+        this.kind =  NodeKind.STRINGCON;
         this.type = SymbolTable.stringType;
         this.strVal = str.substring(1,str.length()-1);
     }
@@ -108,7 +107,7 @@ public final class Node {
             if (x.type != null)
                 System.out.print(" type=" + x.type);
 
-            if (x.kind.ordinal() >= STATSEQ.ordinal() && x.kind.ordinal() <= TRAP.ordinal())
+            if (x.kind.ordinal() >=  NodeKind.STATSEQ.ordinal() && x.kind.ordinal() <=  NodeKind.TRAP.ordinal())
                 System.out.print(" line=" + x.line);
 
             System.out.println();

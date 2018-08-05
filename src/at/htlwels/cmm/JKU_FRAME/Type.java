@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 Type   Structure of a C-- type

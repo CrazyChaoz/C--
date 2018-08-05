@@ -57,19 +57,15 @@ COMPILER CMM
         return true;
     }
 
-    //just a helperfunction
-//    void printNext5Values(){
-//        scanner.ResetPeek();
-//        System.out.println("-------");
-//        System.out.println("Value: "+this.la.val);
-//        for(int i = 0; i < 4; i++) {
-//            System.out.println("Value: "+scanner.Peek().val);
-//        }
-//    }
-
     public boolean hasErrors(){
         return this.errors.count!=0;
     }
+
+    public void addError(String message){
+            this.errors.count++;
+            //TODO: make error message do somethig
+        }
+
 
 //##################################################################################
 

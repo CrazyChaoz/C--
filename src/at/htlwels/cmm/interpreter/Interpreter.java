@@ -1,7 +1,7 @@
 
 package at.htlwels.cmm.interpreter;
 
-import at.htlwels.cmm.compiler.*;
+import at.htlwels.cmm.JKU_FRAME.*;
 import at.htlwels.cmm.error.DivisionByZeroSin;
 import at.htlwels.cmm.error.ExprSin;
 import at.htlwels.cmm.error.Sin;

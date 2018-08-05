@@ -1,4 +1,4 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
 
 public enum  NodeKind{
 

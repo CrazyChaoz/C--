@@ -1,4 +1,5 @@
-package at.htlwels.cmm.compiler;
+package at.htlwels.cmm.JKU_FRAME;
+
 
 /*--------------------------------------------------------------------------------
 SymbolTable   Symbol table for C--
@@ -15,6 +16,8 @@ The symbol table has methods for
 - utilities for converting strings to constants
 --------------------------------------------------------------------------------*/
 
+
+import at.htlwels.cmm.compiler.Parser;
 
 import java.io.Serializable;
 
@@ -77,7 +80,7 @@ public class SymbolTable implements Serializable {
             found.isForward = false;
             return found;
         } else if (found != noObj) {
-            parser.errors.count++;
+            parser.addError("Already defined: "+object.name);
             System.err.println(object.name);
         }
 
@@ -123,7 +126,7 @@ public class SymbolTable implements Serializable {
 
         System.out.println(name);
 
-        parser.errors.count++;
+        parser.addError("Not (yet) defined: "+name);
         //Detailed error messages
         return noObj;
     }
@@ -181,8 +184,8 @@ public class SymbolTable implements Serializable {
         for (Obj localVar = scope.locals; localVar != null; localVar = localVar.next) {
             if (localVar.kind == ObjKind.PROC)
                 if (localVar.ast == null) {
-                    System.err.println("Forward decleration not implemented");
-                    parser.errors.count++;
+                    System.err.println("Forward decleration not resolved");
+                    parser.addError("Forward decleration not resolved: "+localVar.name);
                 }
         }
     }
