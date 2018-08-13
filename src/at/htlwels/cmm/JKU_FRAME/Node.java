@@ -79,7 +79,7 @@ public final class Node {
     //----------------------- for dumping ASTs -----------------------------------
 
 
-    static void dump(Node x, int indent) {
+    public static void dump(Node x, int indent) {
         for (int i = 0; i < indent; i++) System.out.print("  ");
         if (x == null) System.out.println("-null-");
         else {

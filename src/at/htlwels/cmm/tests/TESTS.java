@@ -1,21 +1,16 @@
 package at.htlwels.cmm.tests;
 
+import at.htlwels.cmm.JKU_FRAME.*;
 import at.htlwels.cmm.compiler.Parser;
 import at.htlwels.cmm.compiler.Scanner;
-import at.htlwels.cmm.compiler.Token;
 import at.htlwels.cmm.interpreter.Interpreter;
 import at.htlwels.cmm.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
-import static at.htlwels.cmm.compiler.SymbolTable.charType;
-import static at.htlwels.cmm.compiler.SymbolTable.intType;
-import static at.htlwels.cmm.compiler.SymbolTable.stringType;
-import static org.junit.jupiter.api.Assertions.*;
+import static at.htlwels.cmm.JKU_FRAME.SymbolTable.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class TESTS {
@@ -54,7 +49,7 @@ public class TESTS {
 
 //        table.dumpTable();
 
-        assertEquals(0,table.parser.errors.count);
+        assertEquals(false,table.parser.hasErrors());
     }
 
     @Test
@@ -89,7 +84,7 @@ public class TESTS {
 
 //        table.dumpTable();
 
-        assertEquals(0,table.parser.errors.count);
+        assertEquals(false,table.parser.hasErrors());
     }
 
     @Test
@@ -115,7 +110,7 @@ public class TESTS {
 
         table.dumpTable();
 
-        assertNotEquals(0, table.parser.errors.count);
+        assertNotEquals(false, table.parser.hasErrors());
 
     }
 
@@ -258,32 +253,6 @@ public class TESTS {
 //        System.out.println(strings.get(5));
 //        System.out.println(strings.get(14));
     }
-
-
-    @Test
-    @DisplayName("Token Test")
-    public void tokenTest() throws UnsupportedEncodingException {
-        System.out.println("TokenTest");
-        // Initialize
-        String sContent = "=";
-        InputStream is = new ByteArrayInputStream(sContent.getBytes("UTF-8"));
-
-        Scanner instance = new Scanner(is);
-        Token expected = new Token();
-        expected.kind = Parser._assign;
-        expected.val = sContent;
-
-
-        // Test
-        Token result = instance.Scan();
-        // Validate
-        assertNotNull(result);
-        assertNotNull(result.val);
-        assertEquals(expected.kind, result.kind);
-        assertEquals(expected.val, result.val);
-    }
-
-
 
 }
 

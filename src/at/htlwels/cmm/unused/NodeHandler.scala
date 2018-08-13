@@ -1,6 +1,6 @@
 package at.htlwels.cmm.unused
 
-import at.htlwels.cmm.compiler._
+import at.htlwels.cmm.JKU_FRAME._
 
 
 object NodeHandler {

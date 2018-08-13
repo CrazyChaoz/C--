@@ -7,15 +7,22 @@ void main() {
     print(i);
 }
 
-int proc() {
 
-    if(2>0){
-        print("returns now");
-        print("returns now");
-        print("returns now");
-        return 3;
+int proc(){
+    int i;
+    i=0;
+    while(i<20){
+        print("do SOMETHING");
+        i=i+1;
     }
 
-    print("unreachable");
-}
 
+    if(2>0 && 3>2){
+            print("1");
+            print("2");
+            print("returns now");
+            return i;
+        }
+
+        print("unreachable");
+    }

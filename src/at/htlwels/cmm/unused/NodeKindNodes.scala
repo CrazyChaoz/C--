@@ -1,6 +1,6 @@
 package at.htlwels.cmm.unused
 
-import at.htlwels.cmm.compiler.Node
+import at.htlwels.cmm.JKU_FRAME.Node
 
 trait NodeKindNode {
   def exec(node: Node): Unit
