@@ -4,17 +4,21 @@ import at.htlwels.cmm.JKU_FRAME.{Node => _, _}
 import javafx.application._
 import javafx.geometry.Pos
 import javafx.scene._
-import javafx.scene.control.{Label, MenuButton, MenuItem, ScrollPane}
+import javafx.scene.control._
 import javafx.stage._
 import javafx.scene.layout._
 
-object Helpers{
-  def getOrError[T](variable: T):T=if(variable equals null)throw new RuntimeException("Error") else variable
+object Helpers {
+
+  val symbolTable = Helpers.getOrError(GraphicalAstConfigurator.symbolTable)
+
+
+  def getOrError[T](variable: T): T = if (variable equals null) throw new RuntimeException("Error") else variable
 }
+
 trait GUI_Generator {
   def generate(pane: Pane)
 }
-
 
 
 class GUI extends Application {
@@ -24,47 +28,55 @@ class GUI extends Application {
     val scrollPane = new ScrollPane
     val rootNode = new HBox
 
-    AST_Node_Generator.generate(rootNode)
+    Main_GUI_Generator.generate(rootNode)
 
     scrollPane.setContent(rootNode)
 
-    val myScene = new Scene(scrollPane, 300, 200)
+    val myScene = new Scene(scrollPane)
     myStage.setScene(myScene)
     myStage.show
   }
 }
 
 object Main_GUI_Generator extends GUI_Generator {
-  def getDropdownButton = {
-    val menuButton = new MenuButton("Type of Node")
 
-    val nodeKinds = at.htlwels.cmm.JKU_FRAME.NodeKind.values
-    nodeKinds.foreach(nodeKind => {
-      val menuItem = new MenuItem(nodeKind.name)
-      menuItem.setOnAction(event => {
-        menuButton.setText(nodeKind.name)
-        println(nodeKind.name + " is Selected")
-      })
-      menuButton.getItems.add(menuItem)
-    })
-
-    menuButton
-  }
 
   override def generate(pane: Pane): Unit = {
     pane.getChildren.clear
 
+    val interprete_button = new Button("Interprete")
+    val show_ast_button = new Button("Show AST")
+
+    interprete_button.setOnMouseClicked(event => {
+      new at.htlwels.cmm.interpreter.Interpreter(Helpers.symbolTable)
+    })
+
+    show_ast_button.setOnMouseClicked(event => {
+      AST_Viewer_Generator.generate(pane)
+    })
+
+
+    pane.getChildren.add(interprete_button)
+    pane.getChildren.add(show_ast_button)
 
   }
 }
 
-object AST_Node_Generator extends GUI_Generator {
+object AST_Viewer_Generator extends GUI_Generator {
 
 
   def generate(parent: Pane) = {
     parent.getChildren.clear
 
-    var outermostNode = Helpers.getOrError(GraphicalAstConfigurator.symbolTable.curScope)
+    val backButton = new Button("<<")
+
+    backButton.setOnMouseClicked(event => {
+      Main_GUI_Generator.generate(parent)
+    })
+    parent.getChildren.add(backButton)
+
+    parent.autosize()
+    var outermostNode = Helpers.symbolTable.curScope
 
     while (outermostNode.outer != null) outermostNode = outermostNode.outer
 
@@ -74,7 +86,6 @@ object AST_Node_Generator extends GUI_Generator {
     while (node != null) {
       if (node.kind == ObjKind.PROC) {
         parent.getChildren.add(constructVisuals(node.ast, node.name))
-        println(node.name)
       }
       node = node.next
     }
@@ -103,9 +114,72 @@ object AST_Node_Generator extends GUI_Generator {
 
     superSelf.getChildren.add(nodeLabel)
     nodeLabel.setOnMouseClicked(event => {
-      Platform.runLater(() => {
+      Platform.runLater(()=>{
         val stage = new Stage(StageStyle.DECORATED)
-        val rootNode = new Label(node.kind + ";; ")
+        val rootNode=new VBox
+        val submitButton=new Button("Submit")
+
+
+        rootNode.setAlignment(Pos.CENTER)
+
+        node.kind match {
+          case NodeKind.INTCON => {
+            val textField=new TextField()
+
+
+            rootNode.getChildren.add(new Label("Integer"))
+            rootNode.getChildren.add(textField)
+
+
+            submitButton.setOnMouseClicked(event=>{
+              node.`val`=Integer.parseInt(textField.getText)
+            })
+
+          }
+          case NodeKind.CHARCON => {
+            val textField=new TextField()
+
+
+            rootNode.getChildren.add(new Label("Character"))
+            rootNode.getChildren.add(textField)
+
+
+            submitButton.setOnMouseClicked(event=>{
+              node.`val`=Integer.parseInt(textField.getText)
+            })
+
+          }
+          case NodeKind.FLOATCON => {
+            val textField=new TextField()
+
+
+            rootNode.getChildren.add(new Label("Float"))
+            rootNode.getChildren.add(textField)
+
+
+            submitButton.setOnMouseClicked(event=>{
+              node.fVal=java.lang.Float.parseFloat(textField.getText)
+            })
+
+          }
+          case NodeKind.STRINGCON => {
+            val textField=new TextField()
+
+
+            rootNode.getChildren.add(new Label("String"))
+            rootNode.getChildren.add(textField)
+
+
+            submitButton.setOnMouseClicked(event=>{
+              node.strVal=textField.getText
+            })
+          }
+          case _=>{}
+        }
+
+
+        rootNode.getChildren.add(submitButton)
+
         val scene = new Scene(rootNode)
         stage.setScene(scene)
         stage.show
@@ -161,3 +235,21 @@ object AST_Node_Generator extends GUI_Generator {
     rootBox
   }
 }
+
+
+//def getDropdownButton = {
+//  //
+//  val menuButton = new MenuButton("Type of Node")
+//
+//  val nodeKinds = at.htlwels.cmm.JKU_FRAME.NodeKind.values
+//  nodeKinds.foreach(nodeKind => {
+//  val menuItem = new MenuItem(nodeKind.name)
+//  menuItem.setOnAction(event => {
+//  menuButton.setText(nodeKind.name)
+//  println(nodeKind.name + " is Selected")
+//})
+//  menuButton.getItems.add(menuItem)
+//})
+//
+//  menuButton
+//}
