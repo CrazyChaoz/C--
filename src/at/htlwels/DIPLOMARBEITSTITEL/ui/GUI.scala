@@ -1,6 +1,6 @@
-package at.htlwels.cmm.ui
+package at.htlwels.DIPLOMARBEITSTITEL.ui
 
-import at.htlwels.cmm.JKU_FRAME.{Node => _, _}
+import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME._
 import javafx.application._
 import javafx.geometry.Pos
 import javafx.scene._
@@ -48,7 +48,7 @@ object Main_GUI_Generator extends GUI_Generator {
     val show_ast_button = new Button("Show AST")
 
     interprete_button.setOnMouseClicked(event => {
-      new at.htlwels.cmm.interpreter.Interpreter(Helpers.symbolTable)
+      new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")
     })
 
     show_ast_button.setOnMouseClicked(event => {
@@ -93,7 +93,7 @@ object AST_Viewer_Generator extends GUI_Generator {
   }
 
 
-  def constructVisuals(node: at.htlwels.cmm.JKU_FRAME.Node, name: String = null): Pane = {
+  def constructVisuals(node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node, name: String = null): Pane = {
 
     val rootBox = new HBox
     val superSelf = new VBox
@@ -241,7 +241,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 //  //
 //  val menuButton = new MenuButton("Type of Node")
 //
-//  val nodeKinds = at.htlwels.cmm.JKU_FRAME.NodeKind.values
+//  val nodeKinds = at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.NodeKind.values
 //  nodeKinds.foreach(nodeKind => {
 //  val menuItem = new MenuItem(nodeKind.name)
 //  menuItem.setOnAction(event => {

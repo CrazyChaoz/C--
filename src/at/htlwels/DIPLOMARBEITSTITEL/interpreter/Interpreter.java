@@ -1,10 +1,10 @@
 
-package at.htlwels.cmm.interpreter;
+package at.htlwels.DIPLOMARBEITSTITEL.interpreter;
 
-import at.htlwels.cmm.JKU_FRAME.*;
-import at.htlwels.cmm.error.DivisionByZeroSin;
-import at.htlwels.cmm.error.ExprSin;
-import at.htlwels.cmm.error.Sin;
+import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
+import at.htlwels.DIPLOMARBEITSTITEL.error.DivisionByZeroSin;
+import at.htlwels.DIPLOMARBEITSTITEL.error.ExprSin;
+import at.htlwels.DIPLOMARBEITSTITEL.error.Sin;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,6 +40,10 @@ public class Interpreter {
 
         //this.obj = obj;
 
+    }
+
+    public void startProgramFrom(String entryPoint){
+        this.statSeq(tab.find(entryPoint).ast);
     }
 
     public void statSeq(Node p) {
@@ -272,7 +276,7 @@ public class Interpreter {
             case INDEX:
                 return loadBool(adr(p.left) + intExpr(p.right));
             default:
-                switch (p.left.type.kind) {
+                switch (p.left.type.kind) {     //FIXME: THROWS NULLPOINTEREXCEPTION
                     case Type.INT:
                         switch (p.kind) {
                             case EQL:

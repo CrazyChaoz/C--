@@ -1,10 +1,10 @@
-package at.htlwels.cmm.unused
+package at.htlwels.DIPLOMARBEITSTITEL.unused
 
-import at.htlwels.cmm.JKU_FRAME._
+import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME._
 
 
 object NodeHandler {
-  private val pathPrefix = "at.htlwels.cmm.unused."
+  private val pathPrefix = "at.htlwels.DIPLOMARBEITSTITEL.unused."
   private val functions: Map[NodeKind, Node => Unit] = Map()
 
 

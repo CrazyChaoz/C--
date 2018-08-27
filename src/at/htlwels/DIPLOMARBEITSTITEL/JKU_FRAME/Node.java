@@ -1,4 +1,4 @@
-package at.htlwels.cmm.JKU_FRAME;
+package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 Node   Node of the abstract syntax tree (AST) of a C-- program

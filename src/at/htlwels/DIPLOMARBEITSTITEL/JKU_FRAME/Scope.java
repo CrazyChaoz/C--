@@ -1,4 +1,4 @@
-package at.htlwels.cmm.JKU_FRAME;
+package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
 /*--------------------------------------------------------------------------------
 Scope   Scope in the C-- symbol table

@@ -1,8 +1,8 @@
-package at.htlwels.cmm;
+package at.htlwels.DIPLOMARBEITSTITEL;
 
-import at.htlwels.cmm.compiler.Parser;
-import at.htlwels.cmm.compiler.Scanner;
-import at.htlwels.cmm.interpreter.Interpreter;
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner;
+import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter;
 
 
 public class Main {

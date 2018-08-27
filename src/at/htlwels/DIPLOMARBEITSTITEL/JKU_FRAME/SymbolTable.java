@@ -1,4 +1,4 @@
-package at.htlwels.cmm.JKU_FRAME;
+package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
 
 /*--------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
-import at.htlwels.cmm.compiler.Parser;
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
 
 import java.io.Serializable;
 

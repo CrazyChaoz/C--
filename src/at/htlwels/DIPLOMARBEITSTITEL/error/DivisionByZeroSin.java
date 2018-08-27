@@ -1,4 +1,4 @@
-package at.htlwels.cmm.error;
+package at.htlwels.DIPLOMARBEITSTITEL.error;
 
 public class DivisionByZeroSin extends Sin {
     public DivisionByZeroSin() {

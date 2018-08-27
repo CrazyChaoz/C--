@@ -1,6 +1,6 @@
-package at.htlwels.cmm.ui
+package at.htlwels.DIPLOMARBEITSTITEL.ui
 
-import at.htlwels.cmm.compiler.{Parser, Scanner}
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.{Parser, Scanner}
 import javafx.application.Application
 
 object GraphicalAstConfigurator {

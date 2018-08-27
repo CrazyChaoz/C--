@@ -1,6 +1,6 @@
-package at.htlwels.cmm.unused
+package at.htlwels.DIPLOMARBEITSTITEL.unused
 
-import at.htlwels.cmm.JKU_FRAME.Node
+import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node
 
 trait NodeKindNode {
   def exec(node: Node): Unit

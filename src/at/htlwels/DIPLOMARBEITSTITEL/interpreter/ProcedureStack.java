@@ -1,4 +1,4 @@
-package at.htlwels.cmm.interpreter;
+package at.htlwels.DIPLOMARBEITSTITEL.interpreter;
 
 public class ProcedureStack {
     private int stackPointer, framePointer = 0;

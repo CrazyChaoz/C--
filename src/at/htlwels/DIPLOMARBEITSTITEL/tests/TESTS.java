@@ -1,14 +1,14 @@
-package at.htlwels.cmm.tests;
+package at.htlwels.DIPLOMARBEITSTITEL.tests;
 
-import at.htlwels.cmm.JKU_FRAME.*;
-import at.htlwels.cmm.compiler.Parser;
-import at.htlwels.cmm.compiler.Scanner;
-import at.htlwels.cmm.interpreter.Interpreter;
-import at.htlwels.cmm.interpreter.Strings;
+import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner;
+import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter;
+import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static at.htlwels.cmm.JKU_FRAME.SymbolTable.*;
+import static at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.SymbolTable.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

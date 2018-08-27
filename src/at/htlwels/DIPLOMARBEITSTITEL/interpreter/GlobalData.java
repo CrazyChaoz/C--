@@ -1,4 +1,4 @@
-package at.htlwels.cmm.interpreter;
+package at.htlwels.DIPLOMARBEITSTITEL.interpreter;
 
 public class GlobalData {
     private int gb;

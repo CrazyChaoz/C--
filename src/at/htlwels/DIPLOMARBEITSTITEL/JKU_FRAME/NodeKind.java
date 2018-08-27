@@ -1,4 +1,4 @@
-package at.htlwels.cmm.JKU_FRAME;
+package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
 public enum  NodeKind{
 

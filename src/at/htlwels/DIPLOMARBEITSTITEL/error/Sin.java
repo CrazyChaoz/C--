@@ -1,4 +1,4 @@
-package at.htlwels.cmm.error;
+package at.htlwels.DIPLOMARBEITSTITEL.error;
 
 public class Sin{
     private String message="You commited a sin !\n";

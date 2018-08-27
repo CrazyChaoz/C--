@@ -1,4 +1,4 @@
-package at.htlwels.cmm.interpreter;
+package at.htlwels.DIPLOMARBEITSTITEL.interpreter;
 
 /*--------------------------------------------------------------------------------
 Strings   String storage of a C-- program
