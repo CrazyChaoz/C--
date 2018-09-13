@@ -1,6 +1,7 @@
 package at.htlwels.DIPLOMARBEITSTITEL.ui
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME._
+import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.{Parser, Scanner}
 import javafx.application._
 import javafx.geometry.Pos
 import javafx.scene._
@@ -9,8 +10,15 @@ import javafx.stage._
 import javafx.scene.layout._
 
 object Helpers {
-  val symbolTable = Helpers.getOrError(GraphicalAstConfigurator.symbolTable)
+  var symbolTable: SymbolTable = null
+
   def getOrError[T](variable: T): T = if (variable equals null) throw new RuntimeException("Error") else variable
+
+  def parseSymboltable(filename: String): Unit = {
+    val parser = new Parser(new Scanner("testfiles/" + filename))
+    parser.Parse()
+    symbolTable = parser.symbolTable
+  }
 }
 
 
@@ -18,7 +26,7 @@ trait GUI_Generator {
   def generate(pane: Pane)
 
   implicit class OnClickMakro(node: javafx.scene.Node) {
-    def onClick(function: => Unit) = node.setOnMouseClicked(event=> function)
+    def onClick(function: => Unit) = node.setOnMouseClicked(event => function)
   }
 
   implicit class GetChildrenMakro(pane: Pane) {
@@ -51,8 +59,11 @@ object Main_GUI_Generator extends GUI_Generator {
   override def generate(pane: Pane): Unit = {
     pane.getChildren.clear
 
+    val filename_textfield = new TextField()
+    val parse_button=new Button("Parse")
     val interprete_button = new Button("Interprete")
     val show_ast_button = new Button("Show AST")
+
 
 
     interprete_button.onClick {
@@ -63,10 +74,15 @@ object Main_GUI_Generator extends GUI_Generator {
       AST_Viewer_Generator.generate(pane)
     }
 
+    parse_button.onClick{
+      Helpers.parseSymboltable(filename_textfield.getText)
+    }
 
     pane.addChild(interprete_button)
     pane.addChild(show_ast_button)
 
+    pane.addChild(filename_textfield)
+    pane.addChild(parse_button)
   }
 }
 
@@ -78,7 +94,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 
     val backButton = new Button("<<")
 
-    backButton.onClick{
+    backButton.onClick {
       Main_GUI_Generator.generate(parent)
     }
 
@@ -102,7 +118,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 
   def constructVisuals(node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node, name: String = null): Pane = {
 
-    val rootBox = new HBox
+    val rootBox = new VBox
     val superSelf = new VBox
     val self = new HBox
     var nodeLabel: Label = null
@@ -120,7 +136,7 @@ object AST_Viewer_Generator extends GUI_Generator {
     }
 
     superSelf.addChild(nodeLabel)
-    nodeLabel.onClick{
+    nodeLabel.onClick {
       Platform.runLater(() => {
         val stage = new Stage(StageStyle.DECORATED)
         val rootNode = new VBox
@@ -131,57 +147,80 @@ object AST_Viewer_Generator extends GUI_Generator {
 
         node.kind match {
           case NodeKind.INTCON => {
-            val textField = new TextField()
+            val textField = new TextField(node.`val` + "")
 
 
             rootNode.addChild(new Label("Integer"))
             rootNode.addChild(textField)
 
 
-            submitButton.onClick{
+            submitButton.onClick {
               node.`val` = Integer.parseInt(textField.getText)
+              nodeLabel.setText(node.`val`+"")
+              stage.close()
             }
 
           }
           case NodeKind.CHARCON => {
-            val textField = new TextField()
+            val textField = new TextField(node.`val` + "")
 
 
             rootNode.addChild(new Label("Character"))
             rootNode.addChild(textField)
 
 
-            submitButton.onClick{
+            submitButton.onClick {
               node.`val` = Integer.parseInt(textField.getText)
+              nodeLabel.setText(node.`val`+"")
+              stage.close()
             }
 
           }
           case NodeKind.FLOATCON => {
-            val textField = new TextField()
-
-
+            val textField = new TextField(node.fVal + "")
             rootNode.addChild(new Label("Float"))
             rootNode.addChild(textField)
-
-
             submitButton.onClick {
               node.fVal = java.lang.Float.parseFloat(textField.getText)
+              nodeLabel.setText(node.fVal+"")
+              stage.close()
             }
-
           }
+
           case NodeKind.STRINGCON => {
-            val textField = new TextField()
-
-
+            val textField = new TextField(node.strVal)
             rootNode.addChild(new Label("String"))
             rootNode.addChild(textField)
-
-
             submitButton.onClick {
               node.strVal = textField.getText
+              nodeLabel.setText(node.strVal)
+              stage.close()
             }
           }
+
           case _ => {
+            if (NodeKind.isBoolean(node.kind)) {
+              val menuButton = new MenuButton(node.kind.name())
+              val nodeKinds = at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.NodeKind.values
+
+              nodeKinds.foreach(nodeKind => {
+                if (NodeKind.isBoolean(nodeKind)) {
+                  val menuItem = new MenuItem(nodeKind.name)
+                  menuItem.setOnAction(event => {
+                    menuButton.setText(nodeKind.name)
+                    //                    println(nodeKind.name + " is Selected")
+                    node.kind = nodeKind
+                    nodeLabel.setText(nodeKind.name())
+                  })
+                  menuButton.getItems.add(menuItem)
+                }
+              })
+              rootNode.addChild(menuButton)
+              submitButton.onClick {
+                stage.close()
+              }
+            }
+
             println("code not implemented yet")
           }
         }
@@ -192,7 +231,8 @@ object AST_Viewer_Generator extends GUI_Generator {
         val scene = new Scene(rootNode)
         stage.setScene(scene)
         stage.show
-      })
+      }
+      )
     }
 
 
@@ -202,6 +242,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 
     rootBox.setAlignment(Pos.TOP_CENTER)
     superSelf.setAlignment(Pos.TOP_CENTER)
+    self.setAlignment(Pos.TOP_CENTER)
     //    superSelf.setStyle("-fx-padding: 5;" + "-fx-border-style: solid inside;"
     //      + "-fx-border-width: 2;" + "-fx-border-insets: 2;"
     //      + "-fx-border-radius: 5;" + "-fx-border-color: yellow;")
@@ -232,12 +273,12 @@ object AST_Viewer_Generator extends GUI_Generator {
 
 
     if (node.next != null) {
-      val yellowBox = new HBox
-      yellowBox.setStyle("-fx-padding: 0;" + "-fx-border-style: solid inside;"
+      val magentaBox = new VBox
+      magentaBox.setStyle("-fx-padding: 0;" + "-fx-border-style: solid inside;"
         + "-fx-border-width: 2;" + "-fx-border-insets: 2;"
         + "-fx-border-radius: 2;" + "-fx-border-color: magenta;")
 
-      rootBox.addChild(yellowBox)
+      rootBox.addChild(magentaBox)
       rootBox.addChild(constructVisuals(node.next))
     }
 

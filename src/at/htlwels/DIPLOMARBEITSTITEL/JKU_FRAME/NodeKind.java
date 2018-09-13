@@ -45,4 +45,8 @@ public enum  NodeKind{
     NOT ,   // !
     OR ,   // ||
     AND ;   // &&
+
+    public static boolean isBoolean(NodeKind nodeKind){
+        return nodeKind.ordinal()>=EQL.ordinal()&&nodeKind.ordinal()<=AND.ordinal();
+    }
 }
