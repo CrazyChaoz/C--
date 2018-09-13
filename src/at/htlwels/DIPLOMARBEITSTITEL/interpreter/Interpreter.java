@@ -276,7 +276,7 @@ public class Interpreter {
             case INDEX:
                 return loadBool(adr(p.left) + intExpr(p.right));
             default:
-                switch (p.left.type.kind) {     //FIXME: THROWS NULLPOINTEREXCEPTION
+                switch (p.left.type.kind) {     //FIXME: THROWS NULLPOINTEREXCEPTION ON LAST ITERATION OF LOOP
                     case Type.INT:
                         switch (p.kind) {
                             case EQL:

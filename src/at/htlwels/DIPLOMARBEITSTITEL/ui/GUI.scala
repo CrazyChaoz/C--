@@ -9,15 +9,22 @@ import javafx.stage._
 import javafx.scene.layout._
 
 object Helpers {
-
   val symbolTable = Helpers.getOrError(GraphicalAstConfigurator.symbolTable)
-
-
   def getOrError[T](variable: T): T = if (variable equals null) throw new RuntimeException("Error") else variable
 }
 
+
 trait GUI_Generator {
   def generate(pane: Pane)
+
+  implicit class OnClickMakro(node: javafx.scene.Node) {
+    def onClick(function: => Unit) = node.setOnMouseClicked(event=> function)
+  }
+
+  implicit class GetChildrenMakro(pane: Pane) {
+    def addChild(child: javafx.scene.Node) = pane.getChildren.add(child)
+  }
+
 }
 
 
@@ -47,17 +54,18 @@ object Main_GUI_Generator extends GUI_Generator {
     val interprete_button = new Button("Interprete")
     val show_ast_button = new Button("Show AST")
 
-    interprete_button.setOnMouseClicked(event => {
+
+    interprete_button.onClick {
       new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")
-    })
+    }
 
-    show_ast_button.setOnMouseClicked(event => {
+    show_ast_button.onClick {
       AST_Viewer_Generator.generate(pane)
-    })
+    }
 
 
-    pane.getChildren.add(interprete_button)
-    pane.getChildren.add(show_ast_button)
+    pane.addChild(interprete_button)
+    pane.addChild(show_ast_button)
 
   }
 }
@@ -70,22 +78,21 @@ object AST_Viewer_Generator extends GUI_Generator {
 
     val backButton = new Button("<<")
 
-    backButton.setOnMouseClicked(event => {
+    backButton.onClick{
       Main_GUI_Generator.generate(parent)
-    })
-    parent.getChildren.add(backButton)
+    }
 
-    parent.autosize()
+
+    parent.addChild(backButton)
+    parent.autosize
     var outermostNode = Helpers.symbolTable.curScope
-
     while (outermostNode.outer != null) outermostNode = outermostNode.outer
-
     var node = outermostNode.locals
 
 
     while (node != null) {
       if (node.kind == ObjKind.PROC) {
-        parent.getChildren.add(constructVisuals(node.ast, node.name))
+        parent.addChild(constructVisuals(node.ast, node.name))
       }
       node = node.next
     }
@@ -112,83 +119,85 @@ object AST_Viewer_Generator extends GUI_Generator {
       case _ => nodeLabel = new Label(node.kind.name)
     }
 
-    superSelf.getChildren.add(nodeLabel)
-    nodeLabel.setOnMouseClicked(event => {
-      Platform.runLater(()=>{
+    superSelf.addChild(nodeLabel)
+    nodeLabel.onClick{
+      Platform.runLater(() => {
         val stage = new Stage(StageStyle.DECORATED)
-        val rootNode=new VBox
-        val submitButton=new Button("Submit")
+        val rootNode = new VBox
+        val submitButton = new Button("Submit")
 
 
         rootNode.setAlignment(Pos.CENTER)
 
         node.kind match {
           case NodeKind.INTCON => {
-            val textField=new TextField()
+            val textField = new TextField()
 
 
-            rootNode.getChildren.add(new Label("Integer"))
-            rootNode.getChildren.add(textField)
+            rootNode.addChild(new Label("Integer"))
+            rootNode.addChild(textField)
 
 
-            submitButton.setOnMouseClicked(event=>{
-              node.`val`=Integer.parseInt(textField.getText)
-            })
+            submitButton.onClick{
+              node.`val` = Integer.parseInt(textField.getText)
+            }
 
           }
           case NodeKind.CHARCON => {
-            val textField=new TextField()
+            val textField = new TextField()
 
 
-            rootNode.getChildren.add(new Label("Character"))
-            rootNode.getChildren.add(textField)
+            rootNode.addChild(new Label("Character"))
+            rootNode.addChild(textField)
 
 
-            submitButton.setOnMouseClicked(event=>{
-              node.`val`=Integer.parseInt(textField.getText)
-            })
+            submitButton.onClick{
+              node.`val` = Integer.parseInt(textField.getText)
+            }
 
           }
           case NodeKind.FLOATCON => {
-            val textField=new TextField()
+            val textField = new TextField()
 
 
-            rootNode.getChildren.add(new Label("Float"))
-            rootNode.getChildren.add(textField)
+            rootNode.addChild(new Label("Float"))
+            rootNode.addChild(textField)
 
 
-            submitButton.setOnMouseClicked(event=>{
-              node.fVal=java.lang.Float.parseFloat(textField.getText)
-            })
+            submitButton.onClick {
+              node.fVal = java.lang.Float.parseFloat(textField.getText)
+            }
 
           }
           case NodeKind.STRINGCON => {
-            val textField=new TextField()
+            val textField = new TextField()
 
 
-            rootNode.getChildren.add(new Label("String"))
-            rootNode.getChildren.add(textField)
+            rootNode.addChild(new Label("String"))
+            rootNode.addChild(textField)
 
 
-            submitButton.setOnMouseClicked(event=>{
-              node.strVal=textField.getText
-            })
+            submitButton.onClick {
+              node.strVal = textField.getText
+            }
           }
-          case _=>{}
+          case _ => {
+            println("code not implemented yet")
+          }
         }
 
 
-        rootNode.getChildren.add(submitButton)
+        rootNode.addChild(submitButton)
 
         val scene = new Scene(rootNode)
         stage.setScene(scene)
         stage.show
       })
-    })
+    }
 
 
-    superSelf.getChildren.add(self)
-    rootBox.getChildren.addAll(superSelf)
+    superSelf.addChild(self)
+    rootBox.addChild(superSelf)
 
 
     rootBox.setAlignment(Pos.TOP_CENTER)
@@ -205,7 +214,7 @@ object AST_Viewer_Generator extends GUI_Generator {
         leftChild.setStyle("-fx-padding: 5;" + "-fx-border-style: solid inside;"
           + "-fx-border-width: 2;" + "-fx-border-insets: 2;"
           + "-fx-border-radius: 2;" + "-fx-border-color: red;")
-        self.getChildren.add(leftChild)
+        self.addChild(leftChild)
       }
     }
 
@@ -217,7 +226,7 @@ object AST_Viewer_Generator extends GUI_Generator {
         rightChild.setStyle("-fx-padding: 5;" + "-fx-border-style: solid inside;"
           + "-fx-border-width: 2;" + "-fx-border-insets: 2;"
           + "-fx-border-radius: 2;" + "-fx-border-color: blue;")
-        self.getChildren.add(rightChild)
+        self.addChild(rightChild)
       }
     }
 
@@ -228,8 +237,8 @@ object AST_Viewer_Generator extends GUI_Generator {
         + "-fx-border-width: 2;" + "-fx-border-insets: 2;"
         + "-fx-border-radius: 2;" + "-fx-border-color: magenta;")
 
-      rootBox.getChildren.add(yellowBox)
-      rootBox.getChildren.add(constructVisuals(node.next))
+      rootBox.addChild(yellowBox)
+      rootBox.addChild(constructVisuals(node.next))
     }
 
     rootBox
