@@ -236,6 +236,22 @@ public class TESTS {
 
 
     @Test
+    @DisplayName("Interpreter Loop Test")
+    public void interpreterLoopTest() {
+        Parser parser = new Parser(new Scanner("testfiles/onlyLoop.c"));
+        parser.Parse();
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
+        it.dumpStringStorage();
+    }
+
+    @Test
     @DisplayName("String Test")
     public void stringTest() {
         System.out.println("String Test");

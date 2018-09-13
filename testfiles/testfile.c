@@ -11,7 +11,7 @@ void main() {
 int proc(){
     int i;
     i=0;
-    while(i<20&&10>5){
+    while(i<20){
         print("do SOMETHING");
         print(i);
         i=i+1;
