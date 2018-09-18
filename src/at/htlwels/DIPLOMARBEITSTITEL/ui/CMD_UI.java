@@ -1,12 +1,17 @@
-package at.htlwels.DIPLOMARBEITSTITEL;
+package at.htlwels.DIPLOMARBEITSTITEL.ui;
 
 import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
 import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner;
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
-public class Main {
-    public static void main(String[] args){
+
+public class CMD_UI {
+    public static void main(String[] args) throws IOException {
         Parser parser = new Parser(new Scanner(args[0]));
         parser.Parse();
 
@@ -35,6 +40,12 @@ public class Main {
                 case "-str":
                 case "--dumpstringstorage":
                     interpreter.dumpStringStorage();
+                    break;
+                case "-b":
+                case "--build-lib":
+                    File file=new File(args[i+1]);
+                    file.createNewFile();
+                    new ObjectOutputStream(new FileOutputStream(file)).writeObject(parser.symbolTable);
                     break;
             }
         }

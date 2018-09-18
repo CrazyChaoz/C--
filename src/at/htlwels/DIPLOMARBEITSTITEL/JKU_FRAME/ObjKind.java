@@ -1,6 +1,8 @@
 package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
-public enum ObjKind {
+import java.io.Serializable;
+
+public enum ObjKind implements Serializable {
     // object kinds
             CON,
             VAR,

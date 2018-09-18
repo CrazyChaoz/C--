@@ -1,6 +1,8 @@
 package at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME;
 
-public enum  NodeKind{
+import java.io.Serializable;
+
+public enum  NodeKind implements Serializable {
 
     //------------ statements
     STATSEQ ,   // statement sequence

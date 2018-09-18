@@ -10,7 +10,9 @@ a part of an expression have a type.
 --------------------------------------------------------------------------------*/
 
 
-public final class Node {
+import java.io.Serializable;
+
+public final class Node implements Serializable {
 
 
     public NodeKind kind;       // STATSEQ, ASSIGN, ...

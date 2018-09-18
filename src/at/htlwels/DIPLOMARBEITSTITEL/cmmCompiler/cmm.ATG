@@ -115,6 +115,9 @@ PRODUCTIONS
 CMM
 =	                                            (. symbolTable = new SymbolTable(this);.)
 {
+
+}
+{
 IF(isVarDecl()) VarDecl
 | ConstDecl
 | StructDecl
@@ -131,6 +134,15 @@ Ident<out String name>
 =
 ident                                          (.name=this.t.val;.)
 .
+//##################################################################################
+
+
+
+
+//##################################################################################
+ImportDecl
+=
+"import<" Ident<out String name> ">"(..).
 //##################################################################################
 
 

@@ -8,9 +8,10 @@ information about this object.
 --------------------------------------------------------------------------------*/
 
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Obj{
+public class Obj implements Serializable {
 
     public ObjKind kind;        // CON, VAR, TYPE, PROC
     public String name;         // object name
