@@ -17,8 +17,6 @@ The symbol table has methods for
 --------------------------------------------------------------------------------*/
 
 
-import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
-
 import java.io.Serializable;
 
 public class SymbolTable implements Serializable {

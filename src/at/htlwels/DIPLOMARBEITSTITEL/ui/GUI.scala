@@ -6,18 +6,20 @@ import javafx.application._
 import javafx.geometry.Pos
 import javafx.scene._
 import javafx.scene.control._
-import javafx.stage._
 import javafx.scene.layout._
+import javafx.stage._
 
 object Helpers {
   var symbolTable: SymbolTable = null
+  var filename=""
 
-  def getOrError[T](variable: T): T = if (variable equals null) throw new RuntimeException("Error") else variable
+  def getOrError[T](variable: T): T = if (variable equals null) throw new RuntimeException("Error, variable is null") else variable
 
   def parseSymboltable(filename: String): Unit = {
     val parser = new Parser(new Scanner("testfiles/" + filename))
     parser.Parse()
     symbolTable = parser.symbolTable
+    this.filename=filename
   }
 }
 
@@ -35,6 +37,12 @@ trait GUI_Generator {
 
 }
 
+
+object GUI {
+  def main(args: Array[String]): Unit = {
+    Application.launch(new GUI().getClass)
+  }
+}
 
 class GUI extends Application {
   override def start(myStage: Stage): Unit = {
@@ -54,27 +62,26 @@ class GUI extends Application {
 }
 
 object Main_GUI_Generator extends GUI_Generator {
-
-
   override def generate(pane: Pane): Unit = {
     pane.getChildren.clear
 
-    val filename_textfield = new TextField()
-    val parse_button=new Button("Parse")
+    val filename_textfield = new TextField(Helpers.filename)
+    val parse_button = new Button("Parse")
     val interprete_button = new Button("Interprete")
     val show_ast_button = new Button("Show AST")
 
 
-
     interprete_button.onClick {
-      new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")
+      if (Helpers.symbolTable != null)
+        new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")
     }
 
     show_ast_button.onClick {
-      AST_Viewer_Generator.generate(pane)
+      if (Helpers.symbolTable != null)
+        AST_Viewer_Generator.generate(pane)
     }
 
-    parse_button.onClick{
+    parse_button.onClick {
       Helpers.parseSymboltable(filename_textfield.getText)
     }
 
@@ -87,8 +94,6 @@ object Main_GUI_Generator extends GUI_Generator {
 }
 
 object AST_Viewer_Generator extends GUI_Generator {
-
-
   def generate(parent: Pane) = {
     parent.getChildren.clear
 
@@ -128,7 +133,7 @@ object AST_Viewer_Generator extends GUI_Generator {
       case NodeKind.STATSEQ => nodeLabel = new Label(name)
       case NodeKind.IDENT => nodeLabel = new Label(node.obj.name)
       case NodeKind.INTCON => nodeLabel = new Label(node.`val` + "")
-      case NodeKind.CHARCON => nodeLabel = new Label(node.`val` + "")
+      case NodeKind.CHARCON => nodeLabel = new Label(node.`val`.toChar + "")
       case NodeKind.FLOATCON => nodeLabel = new Label(node.fVal + "")
       case NodeKind.STRINGCON => nodeLabel = new Label(node.strVal)
       case NodeKind.TRAP => return null
@@ -156,13 +161,13 @@ object AST_Viewer_Generator extends GUI_Generator {
 
             submitButton.onClick {
               node.`val` = Integer.parseInt(textField.getText)
-              nodeLabel.setText(node.`val`+"")
+              nodeLabel.setText(node.`val` + "")
               stage.close()
             }
 
           }
           case NodeKind.CHARCON => {
-            val textField = new TextField(node.`val` + "")
+            val textField = new TextField(node.`val`.toChar + "")
 
 
             rootNode.addChild(new Label("Character"))
@@ -170,8 +175,8 @@ object AST_Viewer_Generator extends GUI_Generator {
 
 
             submitButton.onClick {
-              node.`val` = Integer.parseInt(textField.getText)
-              nodeLabel.setText(node.`val`+"")
+              node.`val` = textField.getText.charAt(0)
+              nodeLabel.setText(node.`val`.toChar + "")
               stage.close()
             }
 
@@ -182,7 +187,7 @@ object AST_Viewer_Generator extends GUI_Generator {
             rootNode.addChild(textField)
             submitButton.onClick {
               node.fVal = java.lang.Float.parseFloat(textField.getText)
-              nodeLabel.setText(node.fVal+"")
+              nodeLabel.setText(node.fVal + "")
               stage.close()
             }
           }
@@ -219,9 +224,7 @@ object AST_Viewer_Generator extends GUI_Generator {
               submitButton.onClick {
                 stage.close()
               }
-            }
-
-            println("code not implemented yet")
+            } else println("code not implemented yet")
           }
         }
 
