@@ -1,0 +1,9 @@
+struct Laptop(
+    int preis;
+)
+
+void main()(
+    int i;
+    i=2;
+    >i;
+)

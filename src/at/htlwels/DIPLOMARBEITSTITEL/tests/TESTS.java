@@ -283,5 +283,22 @@ public class TESTS {
     public void symboltableGenerateTest() {
         CommandLineStuff.parseFile("importTestA.c").dumpTable();
     }
+
+    @Test
+    @DisplayName("Initial Lang2 Test")
+    public void lang2Test() {
+        at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser parser =
+                new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser(new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Scanner("testfiles/lang2testfile.l2"));
+        parser.Parse();
+
+        parser.symbolTable.dumpTable();
+
+
+        Interpreter it = new Interpreter(parser.symbolTable);
+        it.statSeq(parser.symbolTable.find("main").ast);
+        it.dumpStack();
+        it.dumpGlobalData();
+        it.dumpStringStorage();
+    }
 }
 
