@@ -25,6 +25,7 @@ public class Type implements Serializable {
     public int    elements; // ARR: number of elements
     public Type   elemType; // ARR: element type
     public Scope  fields;   // STRUCT: fields
+    public boolean isGlobalInsertedType;
 
     public Type(int kind) {
         this.kind = kind;
@@ -37,6 +38,11 @@ public class Type implements Serializable {
             case STRUCT: fields=new Scope();
             default:     size = 0; break;
         }
+    }
+
+    public Type(int kind, boolean isGlobalInsertedType){
+        this(kind);
+        this.isGlobalInsertedType=isGlobalInsertedType;
     }
 
     public Type(int kind, int elements, Type elemType) {

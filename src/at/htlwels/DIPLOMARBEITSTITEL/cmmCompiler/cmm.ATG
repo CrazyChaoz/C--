@@ -115,7 +115,7 @@ PRODUCTIONS
 CMM
 =	                                            (. symbolTable = new SymbolTable(this);.)
 {
-
+ImportDecl
 }
 {
 IF(isVarDecl()) VarDecl
@@ -142,7 +142,7 @@ ident                                          (.name=this.t.val;.)
 //##################################################################################
 ImportDecl
 =
-"import<" Ident<out String name> ">"(..).
+"import" stringCon (.symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));.).
 //##################################################################################
 
 

@@ -5,6 +5,7 @@ import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
 import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner;
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter;
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Strings;
+import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class TESTS {
+
 
 
 
@@ -270,5 +272,16 @@ public class TESTS {
 //        System.out.println(strings.get(14));
     }
 
+    @Test
+    @DisplayName("Symboltable Save Test")
+    public void symboltableSaveTest() {
+        CommandLineStuff.parseLib("testfiles/testfile2.c");
+    }
+
+    @Test
+    @DisplayName("Symboltable Generate Test")
+    public void symboltableGenerateTest() {
+        CommandLineStuff.parseFile("importTestA.c").dumpTable();
+    }
 }
 

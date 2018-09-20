@@ -161,6 +161,17 @@ public class SymbolTable implements Serializable {
         return noObj;
     }
 
+
+    //-----------------  handling multiple source files  -----------------
+
+    public void mergeWithSymboltable(SymbolTable symbolTable){
+        Obj globalsOfOtherSymboltable=symbolTable.curScope.locals;
+        while (globalsOfOtherSymboltable!=null){
+            if(!globalsOfOtherSymboltable.type.isGlobalInsertedType)
+                this.insert(globalsOfOtherSymboltable);
+            globalsOfOtherSymboltable=globalsOfOtherSymboltable.next;
+        }
+    }
     //----------------- handling of forward declaration  -----------------
 
     // Check if parameters of forward declaration and actual declaration match
@@ -303,12 +314,12 @@ public class SymbolTable implements Serializable {
         curLevel = -1;
 
         // create predeclared types
-        intType = new Type(Type.INT);
-        floatType = new Type(Type.FLOAT);
-        charType = new Type(Type.CHAR);
-        boolType = new Type(Type.BOOL);
-        stringType = new Type(Type.STRING);
-        noType = new Type(Type.NONE);
+        intType = new Type(Type.INT,true);
+        floatType = new Type(Type.FLOAT,true);
+        charType = new Type(Type.CHAR,true);
+        boolType = new Type(Type.BOOL,true);
+        stringType = new Type(Type.STRING,true);
+        noType = new Type(Type.NONE,true);
         noObj = new Obj(ObjKind.VAR, "???", noType);
 
         // insert predeclared types into universe
