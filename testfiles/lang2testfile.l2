@@ -1,9 +1,19 @@
-struct Laptop(
+class Laptop(
     int preis;
+
+    int calcSmth()(
+        return 34+preis;
+    )
 )
 
 void main()(
-    int i;
-    i=2;
-    >i;
+    Laptop i;
+    int asdf;
+    asdf=3333;
+    i.preis=3;
+    >"output --- ";
+    >i.calcSmth;
+    >"<>"
+    >asdf;
+    >"output --- ";
 )

@@ -174,7 +174,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			} else if (la.kind == 22) {
 				StructDecl();
 			} else {
-				Obj procedure = ProcDecl();
+				ProcDecl();
 			}
 		}
 	}
@@ -214,15 +214,18 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		Expect(6);
 		Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);
 		while (la.kind == 1) {
-			VarDecl();
+			if (isVarDecl()) {
+				VarDecl();
+			} else {
+				ProcDecl();
+			}
 		}
 		symbolTable.closeScope();type.size=type.fields.size;
 		Expect(7);
 	}
 
-	Obj  ProcDecl() {
-		Obj  procedure;
-		NodeList nodeList=new NodeList();
+	void ProcDecl() {
+		Obj procedure=null; NodeList nodeList=new NodeList();
 		Type type = Type();
 		String name = Ident();
 		procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;
@@ -265,7 +268,6 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			Expect(8);
 		} else SynErr(39);
 		symbolTable.closeScope();symbolTable.insert(procedure);
-		return procedure;
 	}
 
 	String  Ident() {
@@ -666,7 +668,7 @@ class Errors {
 			case 19: s = "add expected"; break;
 			case 20: s = "substr expected"; break;
 			case 21: s = "\"&\" expected"; break;
-			case 22: s = "\"struct\" expected"; break;
+			case 22: s = "\"class\" expected"; break;
 			case 23: s = "\"const\" expected"; break;
 			case 24: s = "\",\" expected"; break;
 			case 25: s = "\"forward\" expected"; break;

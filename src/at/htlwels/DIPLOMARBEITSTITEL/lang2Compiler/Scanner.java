@@ -302,7 +302,7 @@ public class Scanner {
 		start.set(37, 36); 
 		start.set(124, 37); 
 		start.set(Buffer.EOF, -1);
-		literals.put("struct", new Integer(22));
+		literals.put("class", new Integer(22));
 		literals.put("const", new Integer(23));
 		literals.put("forward", new Integer(25));
 		literals.put("ref", new Integer(26));

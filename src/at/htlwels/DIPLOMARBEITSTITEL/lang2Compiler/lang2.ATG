@@ -120,7 +120,7 @@ ImportDecl
 {
 ConstDecl
 | StructDecl
-| ProcDecl<out Obj procedure>
+| ProcDecl
 }
 .
 //##################################################################################
@@ -150,8 +150,11 @@ ImportDecl
 //##################################################################################
 StructDecl
 =
-"struct" Ident<out String name> "("             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
-{ VarDecl }
+"class" Ident<out String name> "("             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
+{
+IF(isVarDecl())VarDecl
+|
+ProcDecl }
                                                 (.symbolTable.closeScope();type.size=type.fields.size;.)
  ")".
 //##################################################################################
@@ -201,7 +204,7 @@ Ident<out String name>                          (.type=symbolTable.find(name).ty
 
 
 //##################################################################################
-ProcDecl<out Obj procedure>                     (.NodeList nodeList=new NodeList();.)
+ProcDecl                                        (.Obj procedure=null; NodeList nodeList=new NodeList();.)
 =
 Type<out Type type>
 Ident<out String name>                          (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;.)
