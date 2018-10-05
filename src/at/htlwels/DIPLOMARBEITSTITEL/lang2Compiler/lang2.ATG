@@ -87,7 +87,7 @@ TOKENS
   lpar      = "(".
   rpar      = ")".
   semicolon = ";".
-  assign    = '='.
+  assign    = ':'.
   eql       = "==".
   neq       = "!=".
   lss       = "<".
@@ -150,7 +150,7 @@ ImportDecl
 //##################################################################################
 StructDecl
 =
-"class" Ident<out String name> "("             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
+"data" Ident<out String name> "("             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
 {
 IF(isVarDecl())VarDecl
 |
@@ -167,13 +167,13 @@ ConstDecl
 =
 "const"
 Type<out Type type> Ident<out String name>      (.Obj o=new Obj(ObjKind.CON,name,type);.)
- "="
+ assign
  (intCon                                        (.o.val=symbolTable.intVal(this.t.val);if(type!=symbolTable.intType)this.errors.count++;.)
  | floatCon                                     (.o.fVal=symbolTable.floatVal(this.t.val);if(type!=symbolTable.floatType)this.errors.count++;.)
  | charCon                                      (.o.val=symbolTable.charVal(this.t.val);if(type!=symbolTable.charType)this.errors.count++;.)
  | stringCon                                    (.o.strVal=this.t.val;if(type!=symbolTable.stringType)this.errors.count++;.)
  )                                              (.symbolTable.insert(o);.)
- ";".
+ semicolon.
 //##################################################################################
 
 
@@ -185,7 +185,7 @@ VarDecl
 Type<out Type type>
 Ident<out String name>                          (.symbolTable.insert(ObjKind.VAR,name,type);.)
 {"," Ident<out String name1>                    (.symbolTable.insert(ObjKind.VAR,name1,type);.)
-}";".
+}semicolon.
 //##################################################################################
 
 
@@ -235,7 +235,7 @@ IF(isVarDecl()) VarDecl
 }
                                                 (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),procedure.type);.)
 ")"
-|";" "forward" ";"
+|semicolon "forward" semicolon
 )                                               (.symbolTable.closeScope();symbolTable.insert(procedure);.)
 .
 //##################################################################################
@@ -259,10 +259,10 @@ Statement<out Node statement>                   (. statement=null;Node expressio
 (
 IF(isCall())ProcCall<out statement>
 |(Designator<out designator>)
-"=" Expr<out expression>                        (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)";"
+assign Expr<out expression>                        (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)semicolon
 | ReturnStatement<out statement>
-| ";"
-| ">"  Expr<out expression> ";"      (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
+| semicolon
+| ">"  Expr<out expression> semicolon      (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
 | "§""("Condition<out Node condition>")"
     Statement<out Node innerStatement>          (.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
 | "?""("Condition<out Node condition>")"
@@ -298,7 +298,7 @@ Designator<out Node designator>                 (. nodeList.add(isRef?new Node(N
 //##################################################################################
 ReturnStatement<out Node statement>             (.statement=null; Node expression=null;.)
 =
-"return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)";".
+"return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)semicolon.
 //##################################################################################
 
 

@@ -273,12 +273,6 @@ public class TESTS {
     }
 
     @Test
-    @DisplayName("Symboltable Save Test")
-    public void symboltableSaveTest() {
-        CommandLineStuff.parseLib("testfiles/testfile2.c");
-    }
-
-    @Test
     @DisplayName("Symboltable Generate Test")
     public void symboltableGenerateTest() {
         CommandLineStuff.parseFile("importTestA.c").dumpTable();

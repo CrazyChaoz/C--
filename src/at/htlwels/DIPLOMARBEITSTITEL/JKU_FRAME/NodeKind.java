@@ -51,4 +51,8 @@ public enum  NodeKind implements Serializable {
     public static boolean isBoolean(NodeKind nodeKind){
         return nodeKind.ordinal()>=EQL.ordinal()&&nodeKind.ordinal()<=AND.ordinal();
     }
+
+    public static boolean isStatement(NodeKind nodeKind){
+        return (nodeKind.ordinal()>STATSEQ.ordinal()&&nodeKind.ordinal()<TRAP.ordinal());
+    }
 }

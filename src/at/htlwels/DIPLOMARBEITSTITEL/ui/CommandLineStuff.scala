@@ -28,10 +28,6 @@ object CommandLineStuff {
   }
 
 
-  def parseLib(location: String): Unit = {
-    new ObjectOutputStream(new FileOutputStream(location + ".klib")).writeObject(parseFile(location))
-  }
-
   def parseProgram(args: Array[String]): Unit = {
     val symbolTable = parseFile(args(0))
     val interpreter = new Interpreter(symbolTable)

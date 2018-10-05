@@ -42,7 +42,7 @@ public class Interpreter {
 
     }
 
-    public void startProgramFrom(String entryPoint){
+    public void startProgramFrom(String entryPoint) {
         this.statSeq(tab.find(entryPoint).ast);
     }
 
@@ -285,10 +285,8 @@ public class Interpreter {
                                 return intExpr(p.left) != intExpr(p.right);
                             case GTR:
                                 return intExpr(p.left) > intExpr(p.right);
-
                             case LSS:
                                 return intExpr(p.left) < intExpr(p.right);
-
                             case GEQ:
                                 return intExpr(p.left) >= intExpr(p.right);
                             case LEQ:
@@ -656,7 +654,7 @@ public class Interpreter {
     }
 
     public void print(String s) {
-        System.out.println(s);
+        System.out.print(s);
     }
 
     public int length(String s) {
