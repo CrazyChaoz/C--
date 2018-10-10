@@ -19,15 +19,16 @@ object Helpers {
 
 	def parseSymboltable(filename: String): Unit = {
 		val parser = new Parser(new Scanner("testfiles/" + filename))
-		parser.Parse()
+		parser.Parse
 		symbolTable = parser.symbolTable
 		this.filename = filename
 	}
+
 }
 
 
 trait GUI_Generator {
-	def generate()
+	def generate
 
 	implicit class OnClickMakro(node: javafx.scene.Node) {
 		def onClick(function: => Unit) = node.setOnMouseClicked(event => function)
@@ -44,7 +45,7 @@ object GUI {
 	var stage: Stage = _
 
 	def main(args: Array[String]): Unit = {
-		Application.launch(new GUI().getClass)
+		Application.launch(new GUI getClass)
 	}
 }
 
@@ -57,7 +58,7 @@ class GUI extends Application {
 		mainStage.setTitle("AST Node Editor")
 
 
-		Main_GUI_Generator.generate()
+		Main_GUI_Generator.generate
 
 		mainStage.show
 	}
@@ -70,7 +71,7 @@ class GUI extends Application {
 
 
 object Main_GUI_Generator extends GUI_Generator {
-	override def generate() = {
+	override def generate = {
 
 		val fxmlLoader = new FXMLLoader
 
@@ -85,7 +86,7 @@ object Main_GUI_Generator extends GUI_Generator {
 
 		controller.showAstButton.onClick {
 			if (Helpers.symbolTable != null)
-				AST_Viewer_Generator.generate()
+				AST_Viewer_Generator.generate
 		}
 
 		controller.parseButton.onClick {
@@ -111,15 +112,15 @@ object Main_GUI_Generator extends GUI_Generator {
 
 
 object AST_Viewer_Generator extends GUI_Generator {
-	def generate() = {
-		val parent = new HBox()
+	def generate = {
+		val parent = new HBox
 		val scrolly = new ScrollPane(parent)
 
 
-		val backButton = new HBox()
+		val backButton = new HBox
 
 		backButton.onClick {
-			Main_GUI_Generator.generate()
+			Main_GUI_Generator.generate
 		}
 
 		backButton.setId("backButton")
@@ -145,7 +146,14 @@ object AST_Viewer_Generator extends GUI_Generator {
 	}
 
 
-	def constructVisuals(node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node, name: String = null): Pane = {
+	def initConstructVisuals(node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node, name: String): Pane = {
+		val nodePrev = new at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node(0)
+		nodePrev.next = node
+		constructVisuals(node, name, nodePrev)
+	}
+
+	def constructVisuals(node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node, name: String = null, nodePref: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node = null): Pane = {
+
 
 		val rootBox = new VBox
 		val superSelf = new VBox
@@ -172,7 +180,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 		nodeLabel.onClick {
 			Platform.runLater(() => {
 				val stage: Stage = new Stage(StageStyle.UNDECORATED)
-				val fxmlLoader = new FXMLLoader()
+				val fxmlLoader = new FXMLLoader
 
 
 				def constantPopup(title: String, value: String, onSave: (TextField) => Unit): Unit = {
@@ -190,11 +198,11 @@ object AST_Viewer_Generator extends GUI_Generator {
 					stage.setScene(new Scene(fxmlLoader.getRoot.asInstanceOf[Pane]))
 				}
 
-				def booleanPopup(value: String): Unit = {
+				def booleanPopup: Unit = {
 					fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/BooleanFXML.fxml"))
 					val controller: BooleanFXMLController = fxmlLoader.getController.asInstanceOf[BooleanFXMLController]
 
-					controller.menuButton.setText(node.kind.name())
+					controller.menuButton.setText(node.kind.name)
 					controller.stage = stage
 
 					at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.NodeKind.values.foreach(nodeKind => {
@@ -203,7 +211,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 							menuItem.setOnAction(_ => {
 								controller.menuButton.setText(nodeKind.name)
 								node.kind = nodeKind
-								nodeLabel.setText(nodeKind.name())
+								nodeLabel.setText(nodeKind.name)
 							})
 							controller.menuButton.getItems.add(menuItem)
 						}
@@ -211,15 +219,19 @@ object AST_Viewer_Generator extends GUI_Generator {
 					stage.setScene(new Scene(fxmlLoader.getRoot.asInstanceOf[Pane]))
 				}
 
-				def statementPopup(value: String, node: at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Node): Unit = {
+				def statementPopup: Unit = {
 					fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/StatementFXML.fxml"))
 					val controller = fxmlLoader.getController.asInstanceOf[StatementFXMLController]
 
-					controller.nameLabel.setText(value)
+					controller.nameLabel.setText(node.kind.name)
 					controller.stage = stage
 
 					controller.deleteButton.onClick {
-						//TODO: implement
+						if (node.next != null)
+							nodePref.next = node.next
+						stage.close
+
+						AST_Viewer_Generator.generate
 					}
 
 					stage.setScene(new Scene(fxmlLoader.getRoot.asInstanceOf[Pane]))
@@ -230,14 +242,14 @@ object AST_Viewer_Generator extends GUI_Generator {
 						constantPopup("Integer", node.`val` + "", (textField: TextField) => {
 							node.`val` = Integer.parseInt(textField.getText)
 							nodeLabel.setText(node.`val` + "")
-							stage.close()
+							stage.close
 						})
 
 					case NodeKind.CHARCON => {
 						constantPopup("Character", node.`val`.toChar + "", (textField: TextField) => {
 							node.`val` = textField.getText.charAt(0)
 							nodeLabel.setText(node.`val`.toChar + "")
-							stage.close()
+							stage.close
 						})
 					}
 
@@ -246,7 +258,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 						constantPopup("Float", node.fVal + "", (textField: TextField) => {
 							node.fVal = java.lang.Float.parseFloat(textField.getText)
 							nodeLabel.setText(node.fVal + "")
-							stage.close()
+							stage.close
 						})
 					}
 
@@ -254,15 +266,15 @@ object AST_Viewer_Generator extends GUI_Generator {
 						constantPopup("String", node.strVal + "", (textField: TextField) => {
 							node.strVal = textField.getText
 							nodeLabel.setText(node.strVal)
-							stage.close()
+							stage.close
 						})
 					}
 
 					case _ => {
 						if (NodeKind.isBoolean(node.kind)) {
-							booleanPopup(node.kind.name())
+							booleanPopup
 						} else if (NodeKind.isStatement(node.kind)) {
-							statementPopup(node.kind.name(), node)
+							statementPopup
 						} else println("code not implemented yet")
 					}
 				}
@@ -304,7 +316,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 			val box = new VBox
 			box.setId("nextBox")
 			rootBox.addChild(box)
-			rootBox.addChild(constructVisuals(node.next))
+			rootBox.addChild(constructVisuals(node.next, "", node))
 		}
 
 		rootBox

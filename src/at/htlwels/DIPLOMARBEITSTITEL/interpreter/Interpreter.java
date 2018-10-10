@@ -275,8 +275,14 @@ public class Interpreter {
                 return loadBool(adr(p.left) + p.right.val);
             case INDEX:
                 return loadBool(adr(p.left) + intExpr(p.right));
+
+            case AND:
+                return condition(p.left) && condition(p.right);
+            case OR:
+                return condition(p.left) || condition(p.right);
+
             default:
-                switch (p.left.type.kind) {     //FIXME: THROWS NULLPOINTEREXCEPTION ON LAST ITERATION OF LOOP
+                switch (p.left.type.kind) {
                     case Type.INT:
                         switch (p.kind) {
                             case EQL:
