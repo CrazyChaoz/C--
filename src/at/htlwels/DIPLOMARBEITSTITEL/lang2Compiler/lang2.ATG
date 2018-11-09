@@ -56,6 +56,10 @@ COMPILER Lang2
 
         return true;
     }
+    public SymbolTable getSymbolTable() {
+    		return symbolTable;
+    	}
+
 
     public boolean hasErrors(){
         return this.errors.count!=0;
@@ -87,7 +91,7 @@ TOKENS
   lpar      = "(".
   rpar      = ")".
   semicolon = ";".
-  assign    = ':'.
+  assign    = ":=".
   eql       = "==".
   neq       = "!=".
   lss       = "<".
@@ -126,6 +130,11 @@ ConstDecl
 //##################################################################################
 
 
+lineending=
+(
+semicolon
+)
+.
 
 
 //##################################################################################
@@ -141,7 +150,7 @@ ident                                          (.name=this.t.val;.)
 //##################################################################################
 ImportDecl
 =
-"&" stringCon (.symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));.).
+"import" stringCon (.symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));.).
 //##################################################################################
 
 
@@ -150,13 +159,13 @@ ImportDecl
 //##################################################################################
 StructDecl
 =
-"data" Ident<out String name> "("             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
+"struct" Ident<out String name> "{"             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
 {
 IF(isVarDecl())VarDecl
 |
 ProcDecl }
                                                 (.symbolTable.closeScope();type.size=type.fields.size;.)
- ")".
+ "}".
 //##################################################################################
 
 
@@ -173,7 +182,7 @@ Type<out Type type> Ident<out String name>      (.Obj o=new Obj(ObjKind.CON,name
  | charCon                                      (.o.val=symbolTable.charVal(this.t.val);if(type!=symbolTable.charType)this.errors.count++;.)
  | stringCon                                    (.o.strVal=this.t.val;if(type!=symbolTable.stringType)this.errors.count++;.)
  )                                              (.symbolTable.insert(o);.)
- semicolon.
+ lineending.
 //##################################################################################
 
 
@@ -185,7 +194,8 @@ VarDecl
 Type<out Type type>
 Ident<out String name>                          (.symbolTable.insert(ObjKind.VAR,name,type);.)
 {"," Ident<out String name1>                    (.symbolTable.insert(ObjKind.VAR,name1,type);.)
-}semicolon.
+}
+lineending.
 //##################################################################################
 
 
@@ -195,8 +205,8 @@ Ident<out String name>                          (.symbolTable.insert(ObjKind.VAR
 Type<out Type type>
 =
 Ident<out String name>                          (.type=symbolTable.find(name).type; .)
-{"(" intCon                                     (.type=new Type(Type.ARR,symbolTable.intVal(this.t.val),type);.)
-")" }
+{"[" intCon                                     (.type=new Type(Type.ARR,symbolTable.intVal(this.t.val),type);.)
+"]" }
 .
 //##################################################################################
 
@@ -228,13 +238,12 @@ if(forwardProc!=symbolTable.noObj){
     procedure.isForward=true;
 }
 .)
-"("
+"{"
 {
 IF(isVarDecl()) VarDecl
 |Statement<out Node statement>                  (.nodeList.add(statement);.)
-}
-                                                (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),procedure.type);.)
-")"
+}                                               (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),procedure.type);.)
+"}"
 |semicolon "forward" semicolon
 )                                               (.symbolTable.closeScope();symbolTable.insert(procedure);.)
 .
@@ -258,21 +267,32 @@ Statement<out Node statement>                   (. statement=null;Node expressio
 =
 (
 IF(isCall())ProcCall<out statement>
-|(Designator<out designator>)
-assign Expr<out expression>                        (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)semicolon
+|Designator<out designator> assign
+Expr<out expression>                            (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)
+
 | ReturnStatement<out statement>
-| semicolon
-| ">"  Expr<out expression> semicolon      (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
-| "§""("Condition<out Node condition>")"
+| lineending
+| "print" Expr<out expression>        (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
+| "for"
+Statement<out Node oneTime>
+Condition<out Node condition>";"
+Statement<out Node everyTime>
+"{"
+{Statement<out Node innerStatement>             (.innerStatements.add(innerStatement); .)
+}                                               (.innerStatements.add(everyTime);statement=innerStatements.get(); .)
+"}"                                             (.statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);.)
+| "while"  Condition<out Node condition>
     Statement<out Node innerStatement>          (.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
-| "?""("Condition<out Node condition>")"
+| "if"  Condition<out Node condition>
   Statement<out Node ifStatements>              (. Node ifElse=ifStatements;.)
-  [":" Statement<out Node elseStatements>       (. ifElse=new Node(NodeKind.IFELSE,ifElse,elseStatements,scanner.line);.)]
+  ["else" Statement<out Node elseStatements>    (. ifElse=new Node(NodeKind.IFELSE,ifElse,elseStatements,scanner.line);.)
+  ]
                                                 (. statement=new Node(NodeKind.IF,condition,ifElse,scanner.line);.)
-| "("
-{Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
+|
+"{"
+{Statement<out Node innerStatement>lineending   (. innerStatements.add(innerStatement); .)
 }                                               (. statement=innerStatements.get(); .)
-")"
+"}"
 
 ).
 //##################################################################################
@@ -298,7 +318,8 @@ Designator<out Node designator>                 (. nodeList.add(isRef?new Node(N
 //##################################################################################
 ReturnStatement<out Node statement>             (.statement=null; Node expression=null;.)
 =
-"return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)semicolon.
+"return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)
+.
 //##################################################################################
 
 
@@ -343,8 +364,8 @@ IF(isCall()) ProcCall<out faktor>
 | floatCon                                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
 | stringCon                                     (. faktor=new Node(this.t.val); .)
 | charCon                                       (. faktor=new Node(symbolTable.charVal(this.t.val)); .)
-| "<i" "(" ")"                             (. faktor=new Node(NodeKind.READINT,null,null,symbolTable.intType);.)
-| "<c" "(" ")"                            (. faktor=new Node(NodeKind.READCHAR,null,null,symbolTable.charType);.)
+| "readInt"                                     (. faktor=new Node(NodeKind.READINT,null,null,symbolTable.intType);.)
+| "readChar"                                    (. faktor=new Node(NodeKind.READCHAR,null,null,symbolTable.charType);.)
 | "-" Factor<out Node faktor1>                  (. faktor=new Node(NodeKind.MINUS,new Node(0),faktor1,faktor1.type);.)
 | IF (isCast())
 "(" Type<out Type type> ")" Factor<out Node factor>
@@ -371,7 +392,8 @@ Designator<out Node designator>
 Ident<out String name>                          (. designator=new Node(symbolTable.find(name));.)
 
 {"." Ident<out String name2>                    (. Obj typeVar=symbolTable.findField(name2,designator.type); designator=new Node(NodeKind.DOT,designator,new Node(typeVar),typeVar.type );.)
-| "(" Expr<out Node expr>                       (. designator=new Node(NodeKind.INDEX,designator,expr,designator.type.elemType ); .) ")"}.
+| "[" Expr<out Node expr>                       (. designator=new Node(NodeKind.INDEX,designator,expr,designator.type.elemType ); .)
+"]"}.
 //##################################################################################
 
 

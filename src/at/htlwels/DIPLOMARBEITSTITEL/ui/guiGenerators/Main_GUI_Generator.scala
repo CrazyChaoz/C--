@@ -11,13 +11,14 @@ object Main_GUI_Generator extends GUI_Generator {
 
 		val fxmlLoader = new FXMLLoader
 
-		fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/MainFXML.fxml"))
+		fxmlLoader.load(this.getClass.getResourceAsStream("../fxmlFiles/MainFXML.fxml"))
 		val controller = fxmlLoader.getController.asInstanceOf[MainFXMLController]
 
 
 		controller.interpreteButton.onClick {
 			if (Helpers.symbolTable != null)
 				new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")
+//				new Thread(()=>{new at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter(Helpers.symbolTable).startProgramFrom("main")})
 		}
 
 		controller.showAstButton.onClick {

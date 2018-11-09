@@ -41,7 +41,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 
 		GUI.stage.setScene(new Scene(scrolly))
 
-		GUI.stage.getScene.getStylesheets.addAll(this.getClass.getResource("stylesheet.css").toExternalForm)
+		GUI.stage.getScene.getStylesheets.addAll(this.getClass.getResource("../stylesheet.css").toExternalForm)
 		GUI.stage.setFullScreen(true)
 	}
 
@@ -84,7 +84,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 
 
 				def constantPopup(title: String, value: String, onSave: (TextField) => Unit): Unit = {
-					fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/ConstantFXML.fxml"))
+					fxmlLoader.load(this.getClass.getResourceAsStream("../fxmlFiles/ConstantFXML.fxml"))
 					val controller: ConstantFXMLController = fxmlLoader.getController.asInstanceOf[ConstantFXMLController]
 
 					controller.title.setText(title)
@@ -100,7 +100,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 				}
 
 				def booleanPopup: Unit = {
-					fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/BooleanFXML.fxml"))
+					fxmlLoader.load(this.getClass.getResourceAsStream("../fxmlFiles/BooleanFXML.fxml"))
 					val controller: BooleanFXMLController = fxmlLoader.getController.asInstanceOf[BooleanFXMLController]
 
 					controller.menuButton.setText(node.kind.name)
@@ -121,7 +121,7 @@ object AST_Viewer_Generator extends GUI_Generator {
 				}
 
 				def statementPopup: Unit = {
-					fxmlLoader.load(this.getClass.getResourceAsStream("fxmlFiles/StatementFXML.fxml"))
+					fxmlLoader.load(this.getClass.getResourceAsStream("../fxmlFiles/StatementFXML.fxml"))
 					val controller = fxmlLoader.getController.asInstanceOf[StatementFXMLController]
 
 					controller.nameLabel.setText(node.kind.name)

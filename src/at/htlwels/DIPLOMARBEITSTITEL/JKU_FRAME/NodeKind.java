@@ -11,6 +11,7 @@ public enum  NodeKind implements Serializable {
     IF ,   // if statement without else branch
     IFELSE ,   // if statement with else branch
     WHILE ,   // while statement
+    FOR,      //for statement
     PRINT ,   // print statement
     RETURN ,   // return statement
     TRAP ,   // trap if a function reaches its end without a return

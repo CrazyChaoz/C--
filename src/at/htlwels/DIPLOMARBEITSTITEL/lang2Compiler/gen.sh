@@ -2,4 +2,4 @@ java -jar Coco.jar -package at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler lang2.AT
 rm Parser.java.old
 rm Scanner.java.old
 
-sleep 100
+sleep 1

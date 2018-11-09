@@ -56,6 +56,9 @@ COMPILER CMM
 
         return true;
     }
+    public SymbolTable getSymbolTable() {
+		return symbolTable;
+	}
 
     public boolean hasErrors(){
         return this.errors.count!=0;
