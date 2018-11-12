@@ -356,7 +356,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			}
 			innerStatements.add(everyTime);statement=innerStatements.get(); 
 			Expect(24);
-			statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);
+			NodeList forStuff=new NodeList();forStuff.add(oneTime);forStuff.add(new Node(NodeKind.WHILE,condition,statement,scanner.line));statement=forStuff.get();/*statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);*/
 		} else if (la.kind == 33) {
 			Get();
 			Node condition = Condition();

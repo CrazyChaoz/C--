@@ -83,9 +83,6 @@ public class Interpreter {
                     for (Node node = p.right; node != null && !isReturned; node = node.next)
                         statement(node);
                 break;
-            case FOR:
-                statement(p.left);
-                p=p.right;
             case WHILE:
                 while (condition(p.left)) {
                     for (Node inner = p.right; inner != null; inner = inner.next) {
@@ -663,7 +660,7 @@ public class Interpreter {
     }
 
     public void print(String s) {
-        System.out.print(s);
+        System.out.printf(s);
     }
 
     public int length(String s) {

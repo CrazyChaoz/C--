@@ -269,18 +269,19 @@ Statement<out Node statement>                   (. statement=null;Node expressio
 IF(isCall())ProcCall<out statement>
 |Designator<out designator> assign
 Expr<out expression>                            (. statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;.)
-
+lineending
 | ReturnStatement<out statement>
 | lineending
-| "print" Expr<out expression>        (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
+| "print" Expr<out expression> lineending       (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
 | "for"
 Statement<out Node oneTime>
 Condition<out Node condition>";"
 Statement<out Node everyTime>
+
 "{"
 {Statement<out Node innerStatement>             (.innerStatements.add(innerStatement); .)
 }                                               (.innerStatements.add(everyTime);statement=innerStatements.get(); .)
-"}"                                             (.statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);.)
+"}"                                             (.NodeList forStuff=new NodeList();forStuff.add(oneTime);forStuff.add(new Node(NodeKind.WHILE,condition,statement,scanner.line));statement=forStuff.get();/*statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);*/.)
 | "while"  Condition<out Node condition>
     Statement<out Node innerStatement>          (.statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);.)
 | "if"  Condition<out Node condition>
@@ -290,7 +291,7 @@ Statement<out Node everyTime>
                                                 (. statement=new Node(NodeKind.IF,condition,ifElse,scanner.line);.)
 |
 "{"
-{Statement<out Node innerStatement>lineending   (. innerStatements.add(innerStatement); .)
+{Statement<out Node innerStatement>             (. innerStatements.add(innerStatement); .)
 }                                               (. statement=innerStatements.get(); .)
 "}"
 
@@ -319,7 +320,7 @@ Designator<out Node designator>                 (. nodeList.add(isRef?new Node(N
 ReturnStatement<out Node statement>             (.statement=null; Node expression=null;.)
 =
 "return" [Expr<out expression>]                 (. statement=new Node(NodeKind.RETURN,expression,null,scanner.line);.)
-.
+lineending.
 //##################################################################################
 
 

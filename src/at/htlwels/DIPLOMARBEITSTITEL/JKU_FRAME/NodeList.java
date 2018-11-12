@@ -16,7 +16,13 @@ public class NodeList {
 			else
 				tail.next = x;
 
-			tail = x;
+
+			//addition by stefan kempinger
+			//to eliminate the need for an additional "for" type
+			while(x!=null) {
+				tail = x;
+				x=x.next;
+			}
 		}
 	}
 
