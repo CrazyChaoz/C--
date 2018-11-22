@@ -2,6 +2,8 @@ package at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler;
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
 import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
+import java.util.List;
+import java.util.ArrayList;
 
 
 public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
@@ -26,7 +28,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	public static final int _div = 18;
 	public static final int _add = 19;
 	public static final int _substr = 20;
-	public static final int maxT = 43;
+	public static final int maxT = 45;
 
 	static final boolean _T = true;
 	static final boolean _x = false;
@@ -172,7 +174,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		while (la.kind == 21) {
 			ImportDecl();
 		}
-		while (la.kind == 1 || la.kind == 22 || la.kind == 25) {
+		while (la.kind == 22 || la.kind == 25 || la.kind == 29) {
 			if (la.kind == 25) {
 				ConstDecl();
 			} else if (la.kind == 22) {
@@ -207,7 +209,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		} else if (la.kind == 5) {
 			Get();
 			o.strVal=this.t.val;if(type!=symbolTable.stringType)this.errors.count++;
-		} else SynErr(44);
+		} else SynErr(46);
 		symbolTable.insert(o);
 		lineending();
 	}
@@ -218,33 +220,36 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		Expect(23);
 		Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);
 		while (la.kind == 1) {
-			if (isVarDecl()) {
-				VarDecl();
-			} else {
-				ProcDecl();
-			}
+			VarDecl();
 		}
 		symbolTable.closeScope();type.size=type.fields.size;
 		Expect(24);
 	}
 
 	void ProcDecl() {
-		Obj procedure=null; NodeList nodeList=new NodeList();
-		Type type = Type();
+		Obj procedure=null; NodeList nodeList=new NodeList();List<Obj> args=new ArrayList(); Type type=symbolTable.noType;
+		Expect(29);
 		String name = Ident();
-		procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;
-		Expect(6);
-		if (la.kind == 1 || la.kind == 30) {
+		if (la.kind == 1 || la.kind == 32) {
 			Obj param1 = Parameter();
-			symbolTable.insert(param1);procedure.nPars++; 
+			args.add(param1); 
 			while (la.kind == 26) {
 				Get();
 				Obj paramN = Parameter();
-				symbolTable.insert(paramN);procedure.nPars++; 
+				args.add(paramN); 
 			}
 		}
-		Expect(7);
+		if (la.kind == 30) {
+			Get();
+			type = Type();
+		}
+		procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;
 		if (la.kind == 23) {
+			for(Obj parameter:args)
+			   symbolTable.insert(parameter);
+			
+			procedure.nPars=args.size();
+			
 			Obj forwardProc=symbolTable.lookup(name);
 			if(forwardProc!=symbolTable.noObj){
 			   /*forward declerated or error*/
@@ -268,9 +273,9 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			Expect(24);
 		} else if (la.kind == 8) {
 			Get();
-			Expect(29);
+			Expect(31);
 			Expect(8);
-		} else SynErr(45);
+		} else SynErr(47);
 		symbolTable.closeScope();symbolTable.insert(procedure);
 	}
 
@@ -313,7 +318,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	Obj  Parameter() {
 		Obj  obj;
 		boolean isRef=false;
-		if (la.kind == 30) {
+		if (la.kind == 32) {
 			Get();
 			isRef=true;
 		}
@@ -334,16 +339,16 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			expression = Expr();
 			statement=new Node(NodeKind.ASSIGN,designator,expression,scanner.line);if(designator.type!=expression.type)this.errors.count++;
 			lineending();
-		} else if (la.kind == 36) {
+		} else if (la.kind == 38) {
 			statement = ReturnStatement();
 		} else if (la.kind == 8) {
 			lineending();
-		} else if (la.kind == 31) {
+		} else if (la.kind == 33) {
 			Get();
 			expression = Expr();
 			lineending();
 			statement=new Node(NodeKind.PRINT,expression,null,scanner.line);
-		} else if (la.kind == 32) {
+		} else if (la.kind == 34) {
 			Get();
 			Node oneTime = Statement();
 			Node condition = Condition();
@@ -357,17 +362,17 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			innerStatements.add(everyTime);statement=innerStatements.get(); 
 			Expect(24);
 			NodeList forStuff=new NodeList();forStuff.add(oneTime);forStuff.add(new Node(NodeKind.WHILE,condition,statement,scanner.line));statement=forStuff.get();/*statement=new Node(NodeKind.FOR,oneTime,new Node(NodeKind.WHILE,condition,statement,scanner.line),scanner.line);*/
-		} else if (la.kind == 33) {
+		} else if (la.kind == 35) {
 			Get();
 			Node condition = Condition();
 			Node innerStatement = Statement();
 			statement=new Node(NodeKind.WHILE,condition,innerStatement,scanner.line);
-		} else if (la.kind == 34) {
+		} else if (la.kind == 36) {
 			Get();
 			Node condition = Condition();
 			Node ifStatements = Statement();
 			Node ifElse=ifStatements;
-			if (la.kind == 35) {
+			if (la.kind == 37) {
 				Get();
 				Node elseStatements = Statement();
 				ifElse=new Node(NodeKind.IFELSE,ifElse,elseStatements,scanner.line);
@@ -381,7 +386,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			}
 			statement=innerStatements.get(); 
 			Expect(24);
-		} else SynErr(46);
+		} else SynErr(48);
 		return statement;
 	}
 
@@ -390,8 +395,8 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		NodeList nodeList=new NodeList();boolean isRef=false; int parCount=0;
 		String name = Ident();
 		Expect(6);
-		while (la.kind == 1 || la.kind == 30) {
-			if (la.kind == 30) {
+		while (la.kind == 1 || la.kind == 32) {
+			if (la.kind == 32) {
 				Get();
 				isRef=true;
 			}
@@ -407,8 +412,8 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		Node  designator;
 		String name = Ident();
 		designator=new Node(symbolTable.find(name));
-		while (la.kind == 27 || la.kind == 39) {
-			if (la.kind == 39) {
+		while (la.kind == 27 || la.kind == 41) {
+			if (la.kind == 41) {
 				Get();
 				String name2 = Ident();
 				Obj typeVar=symbolTable.findField(name2,designator.type); designator=new Node(NodeKind.DOT,designator,new Node(typeVar),typeVar.type );
@@ -437,7 +442,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	Node  ReturnStatement() {
 		Node  statement;
 		statement=null; Node expression=null;
-		Expect(36);
+		Expect(38);
 		if (StartOf(2)) {
 			expression = Expr();
 		}
@@ -449,7 +454,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	Node  Condition() {
 		Node  cond;
 		cond = CondTerm();
-		while (la.kind == 41) {
+		while (la.kind == 43) {
 			Get();
 			Node cond2 = CondTerm();
 			cond=new Node(NodeKind.OR,cond,cond2,Type.BOOL); 
@@ -461,7 +466,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		Node  term;
 		Node faktor;NodeKind kind;
 		term = Factor();
-		while (la.kind == 17 || la.kind == 18 || la.kind == 40) {
+		while (la.kind == 17 || la.kind == 18 || la.kind == 42) {
 			kind = Mulop();
 			faktor = Factor();
 			term=new Node(kind,term,faktor,faktor.type==term.type?faktor.type:SymbolTable.noType); 
@@ -478,7 +483,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		} else if (la.kind == 20) {
 			Get();
 			kind=NodeKind.MINUS; 
-		} else SynErr(47);
+		} else SynErr(49);
 		return kind;
 	}
 
@@ -501,10 +506,10 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		} else if (la.kind == 4) {
 			Get();
 			faktor=new Node(symbolTable.charVal(this.t.val)); 
-		} else if (la.kind == 37) {
+		} else if (la.kind == 39) {
 			Get();
 			faktor=new Node(NodeKind.READINT,null,null,symbolTable.intType);
-		} else if (la.kind == 38) {
+		} else if (la.kind == 40) {
 			Get();
 			faktor=new Node(NodeKind.READCHAR,null,null,symbolTable.charType);
 		} else if (la.kind == 20) {
@@ -528,7 +533,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			Get();
 			faktor = Expr();
 			Expect(7);
-		} else SynErr(48);
+		} else SynErr(50);
 		return faktor;
 	}
 
@@ -541,17 +546,17 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 		} else if (la.kind == 18) {
 			Get();
 			kind=NodeKind.DIV;
-		} else if (la.kind == 40) {
+		} else if (la.kind == 42) {
 			Get();
 			kind=NodeKind.REM;
-		} else SynErr(49);
+		} else SynErr(51);
 		return kind;
 	}
 
 	Node  CondTerm() {
 		Node  cond;
 		cond = CondFact();
-		while (la.kind == 42) {
+		while (la.kind == 44) {
 			Get();
 			Node cond2 = CondFact();
 			cond=new Node(NodeKind.AND,cond,cond2,Type.BOOL); 
@@ -578,7 +583,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			Node cond1 = Condition();
 			Expect(7);
 			cond=cond1;
-		} else SynErr(50);
+		} else SynErr(52);
 		return cond;
 	}
 
@@ -616,7 +621,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			which=NodeKind.LEQ;
 			break;
 		}
-		default: SynErr(51); break;
+		default: SynErr(53); break;
 		}
 		return which;
 	}
@@ -633,9 +638,9 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	}
 
 	private static final boolean[][] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_T,_x,_x, _x,_x,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_T,_T,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_x, _x,_x,_x,_x, _x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
+		{_x,_T,_x,_x, _x,_x,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_T, _T,_x,_T,_x, _x,_x,_x,_x, _x,_x,_x},
+		{_x,_T,_T,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_x,_x,_x, _x,_x,_x}
 
 	};
 } // end Parser
@@ -689,29 +694,31 @@ class Errors {
 			case 26: s = "\",\" expected"; break;
 			case 27: s = "\"[\" expected"; break;
 			case 28: s = "\"]\" expected"; break;
-			case 29: s = "\"forward\" expected"; break;
-			case 30: s = "\"ref\" expected"; break;
-			case 31: s = "\"print\" expected"; break;
-			case 32: s = "\"for\" expected"; break;
-			case 33: s = "\"while\" expected"; break;
-			case 34: s = "\"if\" expected"; break;
-			case 35: s = "\"else\" expected"; break;
-			case 36: s = "\"return\" expected"; break;
-			case 37: s = "\"readInt\" expected"; break;
-			case 38: s = "\"readChar\" expected"; break;
-			case 39: s = "\".\" expected"; break;
-			case 40: s = "\"%\" expected"; break;
-			case 41: s = "\"||\" expected"; break;
-			case 42: s = "\"&&\" expected"; break;
-			case 43: s = "??? expected"; break;
-			case 44: s = "invalid ConstDecl"; break;
-			case 45: s = "invalid ProcDecl"; break;
-			case 46: s = "invalid Statement"; break;
-			case 47: s = "invalid Addop"; break;
-			case 48: s = "invalid Factor"; break;
-			case 49: s = "invalid Mulop"; break;
-			case 50: s = "invalid CondFact"; break;
-			case 51: s = "invalid Relop"; break;
+			case 29: s = "\"def\" expected"; break;
+			case 30: s = "\":\" expected"; break;
+			case 31: s = "\"forward\" expected"; break;
+			case 32: s = "\"ref\" expected"; break;
+			case 33: s = "\"print\" expected"; break;
+			case 34: s = "\"for\" expected"; break;
+			case 35: s = "\"while\" expected"; break;
+			case 36: s = "\"if\" expected"; break;
+			case 37: s = "\"else\" expected"; break;
+			case 38: s = "\"return\" expected"; break;
+			case 39: s = "\"readInt\" expected"; break;
+			case 40: s = "\"readChar\" expected"; break;
+			case 41: s = "\".\" expected"; break;
+			case 42: s = "\"%\" expected"; break;
+			case 43: s = "\"||\" expected"; break;
+			case 44: s = "\"&&\" expected"; break;
+			case 45: s = "??? expected"; break;
+			case 46: s = "invalid ConstDecl"; break;
+			case 47: s = "invalid ProcDecl"; break;
+			case 48: s = "invalid Statement"; break;
+			case 49: s = "invalid Addop"; break;
+			case 50: s = "invalid Factor"; break;
+			case 51: s = "invalid Mulop"; break;
+			case 52: s = "invalid CondFact"; break;
+			case 53: s = "invalid Relop"; break;
 			default: s = "error " + n; break;
 		}
 		printMsg(line, col, s);

@@ -91,7 +91,7 @@ TOKENS
   lpar      = "(".
   rpar      = ")".
   semicolon = ";".
-  assign    = ":=".
+  assign    = "=".
   eql       = "==".
   neq       = "!=".
   lss       = "<".
@@ -161,9 +161,8 @@ StructDecl
 =
 "struct" Ident<out String name> "{"             (.Type type=new Type(Type.STRUCT);Obj obj=new Obj(ObjKind.TYPE,name,type);symbolTable.insert(obj);symbolTable.openScope(type.fields);.)
 {
-IF(isVarDecl())VarDecl
-|
-ProcDecl }
+VarDecl
+}
                                                 (.symbolTable.closeScope();type.size=type.fields.size;.)
  "}".
 //##################################################################################
@@ -214,20 +213,26 @@ Ident<out String name>                          (.type=symbolTable.find(name).ty
 
 
 //##################################################################################
-ProcDecl                                        (.Obj procedure=null; NodeList nodeList=new NodeList();.)
+ProcDecl                                        (.Obj procedure=null; NodeList nodeList=new NodeList();List<Obj> args=new ArrayList(); Type type=symbolTable.noType;.)
 =
-Type<out Type type>
-Ident<out String name>                          (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;.)
-"("
+"def"
+Ident<out String name>
 [
-    Parameter<out Obj param1>                   (. symbolTable.insert(param1);procedure.nPars++; .)
+    Parameter<out Obj param1>                   (. args.add(param1); .)
     {
-        ',' Parameter<out Obj paramN>           (. symbolTable.insert(paramN);procedure.nPars++; .)
+        ',' Parameter<out Obj paramN>           (. args.add(paramN); .)
     }
 ]
-")"
+[":" Type<out type>]                            (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;.)
+
 (
 (./*Either new or forward declerated*/
+
+for(Obj parameter:args)
+    symbolTable.insert(parameter);
+
+procedure.nPars=args.size();
+
 Obj forwardProc=symbolTable.lookup(name);
 if(forwardProc!=symbolTable.noObj){
     /*forward declerated or error*/
@@ -242,6 +247,8 @@ if(forwardProc!=symbolTable.noObj){
 {
 IF(isVarDecl()) VarDecl
 |Statement<out Node statement>                  (.nodeList.add(statement);.)
+//| StructDecl
+//| ProcDecl
 }                                               (.procedure.ast=new Node(NodeKind.STATSEQ,nodeList.get(),new Node(NodeKind.TRAP,null,null,scanner.line),procedure.type);.)
 "}"
 |semicolon "forward" semicolon

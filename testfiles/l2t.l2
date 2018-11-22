@@ -1,0 +1,11 @@
+def printer:int{
+        int i;
+        print "asdf";
+        i=5;
+        return 5;
+}
+
+def main{
+    print(printer());
+    print "lol";
+}

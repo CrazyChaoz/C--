@@ -29,6 +29,8 @@ Coco/R itself) does not fall under the GNU General Public License.
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
 import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
+import java.util.List;
+import java.util.ArrayList;
 
 
 public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{

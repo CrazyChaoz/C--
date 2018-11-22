@@ -124,7 +124,7 @@ ImportDecl
 IF(isVarDecl()) VarDecl
 | ConstDecl
 | StructDecl
-| ProcDecl<out Obj procedure>
+| ProcDecl
 }
 .
 //##################################################################################
@@ -287,10 +287,12 @@ ProcCall<out Node statement>                    (.NodeList nodeList=new NodeList
 =
 Ident<out String name> "("
 {
-["ref"(.isRef=true;.)]
+(["ref"(.isRef=true;.)]
 Designator<out Node designator>                 (. nodeList.add(isRef?new Node(NodeKind.REF,designator,null,designator.type):designator);parCount++; .)
+)
+//| Expr<out node>                                (. nodeList.add(node);parCount++; .)
 }
-")"                                             (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
+   ")"                                          (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
 .
 //##################################################################################
 
@@ -340,7 +342,7 @@ Factor <out Node faktor>                        (.faktor=null;String name;.)
 =
 (
 IF(isCall()) ProcCall<out faktor>
-|Designator<out faktor>
+| Designator<out faktor>
 | intCon                                        (. faktor=new Node(symbolTable.intVal(this.t.val)); .)
 | floatCon                                      (. faktor=new Node(symbolTable.floatVal(this.t.val)); .)
 | stringCon                                     (. faktor=new Node(this.t.val); .)

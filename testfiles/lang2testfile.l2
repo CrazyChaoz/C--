@@ -2,30 +2,34 @@ struct Laptop{
     int preis;
 }
 
-int testproc(int i){
+def testproc int i:int{
+    print i;
+    print "asdf";
     return i+i;
-
 }
 
-void main(){
+def main{
     Laptop i;
-
     int asdf;
 
-    asdf:= 3333;
+    asdf=3333;
 
     if asdf<1
         print "test_if_true_ ";
     else
         print "test_if_false_ ";
 
-    i.preis := 3;
+    i.preis = 3;
 
-    for i.preis:=1500; i.preis<1600; i.preis:=i.preis+1;{
+    for i.preis=1500; i.preis<1600; i.preis=i.preis+1;{
         print i.preis;
         print " - ";
     }
 
+    i.preis=testproc(i.preis);
+
     print " --- output --- ";
     print i.preis;
+
+    innerproc();
 }

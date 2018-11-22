@@ -1,16 +1,6 @@
-int proc(); forward;
-void main() {
+int proc(int y){
     int i;
-    i=proc();
-    print("Please type an Integer");
-    i=readInt();
-    print(i);
-}
-
-
-int proc(){
-    int i;
-    i=0;
+    i=5;
     while(i<20){
         print("do SOMETHING");
         print(i);
@@ -18,12 +8,28 @@ int proc(){
     }
 
 
-    if(2>0 && 3>2){
-            print("1");
-            print("2");
-            print("returns now");
-            return i;
-        }
-
-        print("unreachable");
+    if(i>0){
+        print(i);
+        print(y);
+        print("returns now");
+        return i;
     }
+
+    print("unreachable");
+}
+
+void main() {
+    int i;
+    int y2;
+    y2=70;
+    i=4;
+    print(i);
+    i=proc(i);
+    print(i);
+    print(y2);
+    print(i);
+//    print("Please type an Integer");
+//    print(readInt());
+}
+
+
