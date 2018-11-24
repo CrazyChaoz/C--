@@ -309,5 +309,21 @@ public class TESTS {
 		Interpreter it = new Interpreter(parser.symbolTable);
 		it.statSeq(parser.symbolTable.find("main").ast);
 	}
+
+	@Test
+	@DisplayName("Ref Test")
+	public void refTest() {
+		Parser parser = new Parser(new Scanner("testfiles/refTest.c"));
+		parser.Parse();
+
+		parser.symbolTable.dumpTable();
+
+
+		Interpreter it = new Interpreter(parser.symbolTable);
+		it.statSeq(parser.symbolTable.find("main").ast);
+		it.dumpStack();
+		it.dumpGlobalData();
+		it.dumpStringStorage();
+	}
 }
 

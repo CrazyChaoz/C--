@@ -314,7 +314,7 @@ ProcCall<out Node statement>                    (.NodeList nodeList=new NodeList
 Ident<out String name> "("
 {
 ["ref"(.isRef=true;.)]
-Designator<out Node designator>                 (. nodeList.add(isRef?new Node(NodeKind.REF,designator,null,designator.type):designator);parCount++; .)
+Designator<out Node designator>                 (. if(isRef)designator.obj.isRef=true;nodeList.add(designator);parCount++; .)
 }
 ")"                                             (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
 .

@@ -146,9 +146,9 @@ public class Interpreter {
 	public int intExpr(Node p) {
 		switch (p.kind) {
 			case IDENT:
-				if (p.obj.level > 0)
+				if (p.obj.level > 0) {
 					return loadInt(identAdr(p.obj));
-				else
+				} else
 					return globalLoadInt(identAdr(p.obj));
 			case INTCON:
 				return p.val;
@@ -334,32 +334,39 @@ public class Interpreter {
 	}
 
 	public void call(Node p) {
+
+		int fp = framePointer;
 		createFrame(p.left.obj);
+		int fp2 = framePointer;
+		framePointer = fp;
+
 		Obj formPar = p.left.obj.localScope.locals;
-		for (Node actPar = p.right; actPar != null; actPar = actPar.next) {
+
+		for (Node actPar = p.right; actPar != null && formPar != null; actPar = actPar.next, formPar = formPar.next) {
 			if (formPar.isRef) {
-				storeInt(framePointer + formPar.adr, adr(actPar));
+				storeInt(fp2 + formPar.adr, adr(actPar));
 			} else {
 				switch (formPar.type.kind) {
 					case Type.INT:
-						storeInt(framePointer + formPar.adr, intExpr(actPar));
+						storeInt(fp2 + formPar.adr, intExpr(actPar));
 						break;
 					case Type.FLOAT:
-						storeFloat(framePointer + formPar.adr, floatExpr(actPar));
+						storeFloat(fp2 + formPar.adr, floatExpr(actPar));
 						break;
 					case Type.CHAR:
-						storeChar(framePointer + formPar.adr, charExpr(actPar));
+						storeChar(fp2 + formPar.adr, charExpr(actPar));
 						break;
 					case Type.STRING:
-						stringStorage.put(formPar.strVal);
+						stringStorage.put(actPar.strVal);
 						break;
 				}
 			}
 
 		}
 
+		framePointer = fp2;
 		statSeq(p.left.obj.ast);
-		disposeFrame();
+		disposeFrame(p.left.obj);
 	}
 
 	public int adr(Node p) {
@@ -376,23 +383,34 @@ public class Interpreter {
 	}
 
 	public int identAdr(Obj obj) {
-		if (obj.level == 0) return GB + obj.adr;
-		else if (obj.kind == ObjKind.REFPAR) return loadInt(framePointer + obj.adr);
-		else return framePointer + obj.adr;
+		if (obj.level == 0)
+			return GB + obj.adr;
+		else if(obj.isRef)
+			return loadInt(loadInt(framePointer+obj.adr));
+		else
+			return framePointer + obj.adr;
 
 	}
 
 	public void createFrame(Obj proc) {
-		//  storeInt(stackPointer, proc.);
-//        storeInt(stackPointer, proc.val);
+//	    System.out.println("CREATING FRAME");
 		storeInt(stackPointer, framePointer);
 		framePointer = stackPointer;
-		stackPointer += proc.localScope.size;
+//	    System.out.println("FRAMEPOINTER:"+framePointer);
+//	    System.out.println("STACKPOINTER:"+stackPointer);
+//	    System.out.println("FRAME SIZE:"+proc.localScope.size);
+		//stackPointer += proc.localScope.size;
 	}
 
-	public void disposeFrame() {
-		stackPointer = framePointer - 4;
-		framePointer = loadInt(stackPointer + 8);
+	public void disposeFrame(Obj proc) {
+//	    System.out.println("DISPOSING FRAME");
+//	    System.out.println("FRAMEPOINTER:"+framePointer);
+//	    System.out.println("STACKPOINTER:"+stackPointer);
+//        stackPointer = framePointer - 4;
+		framePointer = loadInt(framePointer - 4);
+
+//	    System.out.println("FRAMEPOINTER:"+framePointer);
+//	    System.out.println("STACKPOINTER:"+stackPointer);
 	}
 
   /*  public void storeLocals(Obj proc) {
@@ -419,13 +437,6 @@ public class Interpreter {
         }
     }*/
 
-	public SymbolTable gettab() {
-		return tab;
-	}
-
-	public void settab(SymbolTable tab) {
-		this.tab = tab;
-	}
 
 
 	/**
@@ -511,14 +522,16 @@ public class Interpreter {
 	 */
 	public int loadInt(int adr) {
 		byte[] b = new byte[4];
+		int retval;
 
 		for (int i = 0; i < 4; i++) {
 			b[i] = stack[adr + i];
 		}
 
+		retval = ByteBuffer.wrap(b).getInt();
+//		System.out.println("LOAD::\tAddress: "+adr+", \tValue: "+retval);
 
-
-		return ByteBuffer.wrap(b).getInt();
+		return retval;
 	}
 
 	/**
@@ -556,6 +569,11 @@ public class Interpreter {
 	 */
 	public void storeInt(int adr, int val) {
 		byte[] b = ByteBuffer.allocate(4).putInt(val).array();
+
+
+//		System.out.println("STORE::\tAddress: "+adr+", \tValue: "+val);
+
+
 		for (int i = 0; i < 4; i++) {
 			stack[adr + i] = b[i];
 			stackPointer++;
@@ -655,7 +673,7 @@ public class Interpreter {
 
 
 	public void print(int ch) {
-		System.out.print(ch);
+		System.out.println(ch);
 	}
 
 	public void print(char ch) {
@@ -667,7 +685,7 @@ public class Interpreter {
 	}
 
 	public void print(String s) {
-		System.out.printf(s);
+		System.out.println(s);
 	}
 
 	public int length(String s) {

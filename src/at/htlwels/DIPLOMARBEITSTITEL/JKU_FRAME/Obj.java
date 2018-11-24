@@ -58,4 +58,20 @@ public class Obj implements Serializable {
                 Objects.equals(name, obj.name) &&
                 Objects.equals(type, obj.type);
     }
+
+    @Override
+    public String toString() {
+        return "Obj{" +
+                "kind=" + kind +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", val=" + val +
+                ", fVal=" + fVal +
+                ", strVal='" + strVal + '\'' +
+                ", adr=" + adr +
+                ", level=" + level +
+                ", isRef=" + isRef +
+                ", size=" + size +
+                '}';
+    }
 }

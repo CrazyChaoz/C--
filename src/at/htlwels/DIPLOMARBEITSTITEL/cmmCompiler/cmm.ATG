@@ -124,7 +124,7 @@ ImportDecl
 IF(isVarDecl()) VarDecl
 | ConstDecl
 | StructDecl
-| ProcDecl
+| ProcDecl<out Obj procedure>
 }
 .
 //##################################################################################
@@ -287,12 +287,10 @@ ProcCall<out Node statement>                    (.NodeList nodeList=new NodeList
 =
 Ident<out String name> "("
 {
-(["ref"(.isRef=true;.)]
-Designator<out Node designator>                 (. nodeList.add(isRef?new Node(NodeKind.REF,designator,null,designator.type):designator);parCount++; .)
-)
-//| Expr<out node>                                (. nodeList.add(node);parCount++; .)
+["ref"(.isRef=true;.)]
+Designator<out Node designator>                 (. if(isRef)designator.obj.isRef=true;nodeList.add(designator);parCount++; .)
 }
-   ")"                                          (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
+")"                                             (. Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;.)
 .
 //##################################################################################
 
@@ -372,8 +370,7 @@ factor,null,type);
 //##################################################################################
 Designator<out Node designator>
 =
-Ident<out String name>                          (. designator=new Node(symbolTable.find(name));.)
-
+Ident<out String name>                          (. Obj obj=symbolTable.find(name);designator=new Node(obj);.)
 {"." Ident<out String name2>                    (. Obj typeVar=symbolTable.findField(name2,designator.type); designator=new Node(NodeKind.DOT,designator,new Node(typeVar),typeVar.type );.)
 | "[" Expr<out Node expr>                       (. designator=new Node(NodeKind.INDEX,designator,expr,designator.type.elemType ); .) "]"}.
 //##################################################################################

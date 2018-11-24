@@ -401,7 +401,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 				isRef=true;
 			}
 			Node designator = Designator();
-			nodeList.add(isRef?new Node(NodeKind.REF,designator,null,designator.type):designator);parCount++; 
+			if(isRef)designator.obj.isRef=true;nodeList.add(designator);parCount++; 
 		}
 		Expect(7);
 		Obj proc=symbolTable.find(name);statement=new Node(NodeKind.CALL,new Node(proc),nodeList.get(),scanner.line);statement.type=proc.type;if(parCount!=proc.nPars)this.errors.count++;
