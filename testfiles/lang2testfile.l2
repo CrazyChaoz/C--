@@ -2,13 +2,14 @@ struct Laptop{
     int preis;
 }
 
-def testproc int i:int{
+def testproc(int i):int{
     print i;
     print "asdf";
-    return i+i;
+    i=i+i;
+    return i;
 }
 
-def main{
+def main(){
     Laptop i;
     int asdf;
 
@@ -21,10 +22,11 @@ def main{
 
     i.preis = 3;
 
-    for i.preis=1500; i.preis<1600; i.preis=i.preis+1;{
+    for i.preis=1500; i.preis<1600; {i.preis=i.preis+1;print "ulu"}{
         print i.preis;
         print " - ";
-    }
+        }
+
 
     i.preis=testproc(i.preis);
 

@@ -6,7 +6,7 @@ Lang2 Compiler description for Lang2
 COMPILER Lang2
 
     public  SymbolTable     symbolTable;                     // symbol table
-
+    public int foreachVariable=0;
 
 //--- LL(1) conflict resolvers
 
@@ -140,7 +140,7 @@ semicolon
 //##################################################################################
 Ident<out String name>
 =
-ident                                          (.name=this.t.val;.)
+ident                                           (.name=this.t.val;.)
 .
 //##################################################################################
 
@@ -150,7 +150,8 @@ ident                                          (.name=this.t.val;.)
 //##################################################################################
 ImportDecl
 =
-"import" stringCon (.symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));.).
+"import" stringCon                              (.symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));.)
+.
 //##################################################################################
 
 
@@ -217,12 +218,14 @@ ProcDecl                                        (.Obj procedure=null; NodeList n
 =
 "def"
 Ident<out String name>
+lpar
 [
     Parameter<out Obj param1>                   (. args.add(param1); .)
     {
         ',' Parameter<out Obj paramN>           (. args.add(paramN); .)
     }
 ]
+rpar
 [":" Type<out type>]                            (.procedure=new Obj(ObjKind.PROC,name,type);symbolTable.openScope(procedure.localScope); int startLine=scanner.line;.)
 
 (
@@ -280,6 +283,16 @@ lineending
 | ReturnStatement<out statement>
 | lineending
 | "print" Expr<out expression> lineending       (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
+| "foreach" Ident<out String variable> ("<-"|"<=") Designator<out designator> "|" Condition<out Node condition>
+Statement<out Node everyTime>
+(.
+if(!designator.INDEX)
+    Sin.commit(new Sin("ERROR -- no array type to iterate over"));
+
+symbolTable.insert(ObjKind.VAR,"$iterator"+foreachVariable++,symbolTable.intType);
+symbolTable.insert(ObjKind.VAR,variable,designator.type);
+innerStatements.add();
+.)
 | "for"
 Statement<out Node oneTime>
 Condition<out Node condition>";"

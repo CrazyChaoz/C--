@@ -6,6 +6,6 @@ void main(){
 
     int j;
     j=2;
-    referencer(j);
+    referencer(ref j);
     print(j);
 }
