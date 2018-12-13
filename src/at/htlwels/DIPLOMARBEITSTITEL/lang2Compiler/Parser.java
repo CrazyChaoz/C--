@@ -2,6 +2,7 @@ package at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler;
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
 import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
+import at.htlwels.DIPLOMARBEITSTITEL.error.Sin;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	public Errors errors;
 
 	public  SymbolTable     symbolTable;                     // symbol table
-
+    public int foreachVariable=0;
 
 //--- LL(1) conflict resolvers
 
@@ -352,16 +353,42 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			statement=new Node(NodeKind.PRINT,expression,null,scanner.line);
 		} else if (la.kind == 34) {
 			Get();
-			Node toIterate = Designator();
+			String variable = Ident();
 			if (la.kind == 35) {
 				Get();
 			} else if (la.kind == 13) {
 				Get();
+			} else if (la.kind == 36) {
+				Get();
 			} else SynErr(51);
 			designator = Designator();
-			Expect(36);
-			Node condition = Condition();
 			Node everyTime = Statement();
+			if(designator.type.kind==Type.ARR){
+			   //Sin.commit(new Sin("ERROR -- no array type to iterate over"));
+			//else{
+			
+			NodeList ifBody=new NodeList();
+			NodeList whileBody=new NodeList();
+			
+			Obj iteratorObj=new Obj(ObjKind.VAR,("$iterator" + foreachVariable++),symbolTable.intType);
+			symbolTable.insert(iteratorObj);
+			symbolTable.insert(ObjKind.VAR,variable,designator.type.elemType);
+			
+			ifBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(0),scanner.line));
+			
+			
+			
+			//whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.AND,condition,new Node(NodeKind.NEQ,new Node(NodeKind.INDEX,designator,new Node(iteratorObj),0),new Node(0),0),Type.BOOL),everyTime,scanner.line));
+			whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.NEQ,new Node(NodeKind.INDEX,designator,new Node(iteratorObj),designator.type.elemType),new Node(0),Type.BOOL),everyTime,scanner.line));
+			whileBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(NodeKind.PLUS,new Node(iteratorObj),new Node(1),symbolTable.intType),scanner.line));
+			
+			ifBody.add(new Node(NodeKind.WHILE,new Node(NodeKind.LSS,new Node(iteratorObj),new Node(designator.type.elements),Type.BOOL),whileBody.get(),scanner.line));
+			
+			statement=ifBody.get();
+			
+			}
+			
+			
 		} else if (la.kind == 37) {
 			Get();
 			Node oneTime = Statement();
@@ -713,9 +740,9 @@ class Errors {
 			case 31: s = "\"forward\" expected"; break;
 			case 32: s = "\"ref\" expected"; break;
 			case 33: s = "\"print\" expected"; break;
-			case 34: s = "\"filter\" expected"; break;
+			case 34: s = "\"foreach\" expected"; break;
 			case 35: s = "\"<-\" expected"; break;
-			case 36: s = "\"|\" expected"; break;
+			case 36: s = "\"in\" expected"; break;
 			case 37: s = "\"for\" expected"; break;
 			case 38: s = "\"while\" expected"; break;
 			case 39: s = "\"if\" expected"; break;

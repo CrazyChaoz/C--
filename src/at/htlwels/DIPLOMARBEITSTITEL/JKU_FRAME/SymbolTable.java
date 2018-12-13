@@ -71,7 +71,6 @@ public class SymbolTable implements Serializable {
 
         Obj found = lookup(object.name);
 
-
         if (object.isForward) {
             found.ast = object.ast;
             found.localScope = object.localScope;
@@ -107,6 +106,8 @@ public class SymbolTable implements Serializable {
     // Report an error if not found.
     // Error ++ if not found
     public Obj find(String name) {
+
+
         Scope scope = curScope;
         Obj obj;
 

@@ -325,5 +325,20 @@ public class TESTS {
 		it.dumpGlobalData();
 		it.dumpStringStorage();
 	}
+
+	@Test
+	@DisplayName("filter Test")
+	public void filterTest() {
+		at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser parser = new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser(new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Scanner("testfiles/foreach.l2"));
+		parser.Parse();
+
+		parser.symbolTable.dumpTable();
+
+		Interpreter it = new Interpreter(parser.symbolTable);
+		it.statSeq(parser.symbolTable.find("main").ast);
+		it.dumpStack();
+		it.dumpGlobalData();
+		it.dumpStringStorage();
+	}
 }
 

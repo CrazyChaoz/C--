@@ -287,7 +287,7 @@ public class Scanner {
 		start.set(59, 14); 
 		start.set(61, 24); 
 		start.set(33, 25); 
-		start.set(60, 40); 
+		start.set(60, 41); 
 		start.set(62, 26); 
 		start.set(42, 19); 
 		start.set(47, 20); 
@@ -299,10 +299,10 @@ public class Scanner {
 		start.set(91, 31); 
 		start.set(93, 32); 
 		start.set(58, 33); 
-		start.set(124, 41); 
 		start.set(46, 35); 
 		start.set(37, 36); 
-		start.set(38, 38); 
+		start.set(124, 37); 
+		start.set(38, 39); 
 		start.set(Buffer.EOF, -1);
 		literals.put("import", new Integer(21));
 		literals.put("struct", new Integer(22));
@@ -311,7 +311,8 @@ public class Scanner {
 		literals.put("forward", new Integer(31));
 		literals.put("ref", new Integer(32));
 		literals.put("print", new Integer(33));
-		literals.put("filter", new Integer(34));
+		literals.put("foreach", new Integer(34));
+		literals.put("in", new Integer(36));
 		literals.put("for", new Integer(37));
 		literals.put("while", new Integer(38));
 		literals.put("if", new Integer(39));
@@ -559,21 +560,20 @@ public class Scanner {
 				case 36:
 					{t.kind = 45; break loop;}
 				case 37:
-					{t.kind = 46; break loop;}
-				case 38:
-					if (ch == '&') {AddCh(); state = 39; break;}
+					if (ch == '|') {AddCh(); state = 38; break;}
 					else {state = 0; break;}
+				case 38:
+					{t.kind = 46; break loop;}
 				case 39:
-					{t.kind = 47; break loop;}
+					if (ch == '&') {AddCh(); state = 40; break;}
+					else {state = 0; break;}
 				case 40:
+					{t.kind = 47; break loop;}
+				case 41:
 					recEnd = pos; recKind = 12;
 					if (ch == '=') {AddCh(); state = 17; break;}
 					else if (ch == '-') {AddCh(); state = 34; break;}
 					else {t.kind = 12; break loop;}
-				case 41:
-					recEnd = pos; recKind = 36;
-					if (ch == '|') {AddCh(); state = 37; break;}
-					else {t.kind = 36; break loop;}
 
 			}
 		}
