@@ -5,6 +5,7 @@ def main(){
     array[2]=12;
 
     foreach iterator in array {
+        print iterator;
         print "asd";
     }
 }
