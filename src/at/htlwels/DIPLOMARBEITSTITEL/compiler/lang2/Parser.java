@@ -1,8 +1,8 @@
-package at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler;
+package at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2;
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
-import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
-import at.htlwels.DIPLOMARBEITSTITEL.error.Sin;
+import at.htlwels.DIPLOMARBEITSTITEL.ui.CLI;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -189,7 +189,7 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 	void ImportDecl() {
 		Expect(21);
 		Expect(5);
-		symbolTable.mergeWithSymboltable(CommandLineStuff.parseAndStripFile(this.t.val));
+		symbolTable.mergeWithSymboltable(CLI.parseAndStripFile(this.t.val));
 	}
 
 	void ConstDecl() {

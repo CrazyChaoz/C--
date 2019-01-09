@@ -1,11 +1,11 @@
 package at.htlwels.DIPLOMARBEITSTITEL.tests;
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
-import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser;
-import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner;
+import at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Parser;
+import at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Scanner;
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter;
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Strings;
-import at.htlwels.DIPLOMARBEITSTITEL.ui.CommandLineStuff;
+import at.htlwels.DIPLOMARBEITSTITEL.ui.CLI;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 public class TESTS {
-
-
-
-
+	
 	@Test
 	@DisplayName("Simple Structure Test")
 	public void structTest() {
@@ -275,14 +272,14 @@ public class TESTS {
 	@Test
 	@DisplayName("Symboltable Generate Test")
 	public void symboltableGenerateTest() {
-		CommandLineStuff.parseFile("importTestA.c").dumpTable();
+		CLI.parseFile("importTestA.c").dumpTable();
 	}
 
 	@Test
 	@DisplayName("Initial Lang2 Test")
 	public void lang2Test() {
-		at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser parser =
-				new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser(new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Scanner("testfiles/lang2testfile.l2"));
+		at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser parser =
+				new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Scanner("testfiles/lang2testfile.l2"));
 		parser.Parse();
 
 		parser.symbolTable.dumpTable();
@@ -299,8 +296,8 @@ public class TESTS {
 	@Test
 	@DisplayName("Another Lang2 Test")
 	public void differentLang2Test() {
-		at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser parser =
-				new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser(new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Scanner("testfiles/l2t.l2"));
+		at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser parser =
+				new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Scanner("testfiles/l2t.l2"));
 		parser.Parse();
 
 		parser.symbolTable.dumpTable();
@@ -329,7 +326,7 @@ public class TESTS {
 	@Test
 	@DisplayName("filter Test")
 	public void filterTest() {
-		at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser parser = new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Parser(new at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler.Scanner("testfiles/foreach.l2"));
+		at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser parser = new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Scanner("testfiles/foreach.l2"));
 		parser.Parse();
 
 		parser.symbolTable.dumpTable();

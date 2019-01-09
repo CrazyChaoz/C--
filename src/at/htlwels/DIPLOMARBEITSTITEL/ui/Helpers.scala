@@ -3,7 +3,6 @@ package at.htlwels.DIPLOMARBEITSTITEL.ui
 import java.nio.file.Paths
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.SymbolTable
-import at.htlwels.DIPLOMARBEITSTITEL.{cmmCompiler, lang2Compiler}
 
 object Helpers {
 	var symbolTable: SymbolTable = _
@@ -18,9 +17,9 @@ object Helpers {
 
 		val parser:at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser =
 			if (filename.endsWith(".l2"))
-				new lang2Compiler.Parser(new lang2Compiler.Scanner("testfiles/" + filename))
+				new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Scanner("testfiles/" + filename))
 			else
-				new cmmCompiler.Parser(new cmmCompiler.Scanner("testfiles/" + filename))
+				new at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Scanner("testfiles/" + filename))
 
 		parser.Parse
 		symbolTable = parser.getSymbolTable

@@ -1,14 +1,14 @@
 package at.htlwels.DIPLOMARBEITSTITEL.ui
 
-import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Parser
-import at.htlwels.DIPLOMARBEITSTITEL.cmmCompiler.Scanner
+import at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Parser
+import at.htlwels.DIPLOMARBEITSTITEL.compiler.cmm.Scanner
 import at.htlwels.DIPLOMARBEITSTITEL.interpreter.Interpreter
 import java.io._
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.SymbolTable
 
 
-object CommandLineStuff {
+object CLI {
 
   def main(args: Array[String]): Unit = {
     parseProgram(args)

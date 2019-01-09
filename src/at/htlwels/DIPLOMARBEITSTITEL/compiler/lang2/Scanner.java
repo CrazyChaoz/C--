@@ -1,4 +1,4 @@
-package at.htlwels.DIPLOMARBEITSTITEL.lang2Compiler;
+package at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2;
 
 import java.io.InputStream;
 import java.io.IOException;
