@@ -324,8 +324,8 @@ public class TESTS {
 	}
 
 	@Test
-	@DisplayName("filter Test")
-	public void filterTest() {
+	@DisplayName("Foreach Test")
+	public void foreachTest() {
 		at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser parser = new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Parser(new at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2.Scanner("testfiles/foreach.l2"));
 		parser.Parse();
 

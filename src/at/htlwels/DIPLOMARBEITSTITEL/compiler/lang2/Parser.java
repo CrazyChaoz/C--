@@ -2,7 +2,7 @@ package at.htlwels.DIPLOMARBEITSTITEL.compiler.lang2;
 
 import at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.*;
 import at.htlwels.DIPLOMARBEITSTITEL.ui.CLI;
-
+import at.htlwels.DIPLOMARBEITSTITEL.error.Sin;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -362,9 +362,14 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 				Get();
 			} else SynErr(51);
 			designator = Designator();
+			if(designator.type.kind==Type.ARR){
+			symbolTable.insert(ObjKind.VAR,variable,designator.type.elemType);
+			}
+			
 			Node everyTime = Statement();
 			if(designator.type.kind==Type.ARR){
-			   //Sin.commit(new Sin("ERROR -- no array type to iterate over"));
+			
+			 //Sin.commit(new Sin("ERROR -- no array type to iterate over"));
 			//else{
 			
 			NodeList ifBody=new NodeList();
@@ -372,14 +377,14 @@ public class Parser implements at.htlwels.DIPLOMARBEITSTITEL.JKU_FRAME.Parser{
 			
 			Obj iteratorObj=new Obj(ObjKind.VAR,("$iterator" + foreachVariable++),symbolTable.intType);
 			symbolTable.insert(iteratorObj);
-			symbolTable.insert(ObjKind.VAR,variable,designator.type.elemType);
+			Obj variableObj=symbolTable.find(variable);
 			
 			ifBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(0),scanner.line));
 			
-			
-			
+			Node foreachVariableNode=new Node(NodeKind.INDEX,designator,new Node(iteratorObj),designator.type.elemType);
 			//whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.AND,condition,new Node(NodeKind.NEQ,new Node(NodeKind.INDEX,designator,new Node(iteratorObj),0),new Node(0),0),Type.BOOL),everyTime,scanner.line));
-			whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.NEQ,new Node(NodeKind.INDEX,designator,new Node(iteratorObj),designator.type.elemType),new Node(0),Type.BOOL),everyTime,scanner.line));
+			whileBody.add(new Node(NodeKind.ASSIGN,new Node(variableObj),foreachVariableNode,scanner.line));
+			whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.NEQ,foreachVariableNode,new Node(0),Type.BOOL),everyTime,scanner.line));
 			whileBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(NodeKind.PLUS,new Node(iteratorObj),new Node(1),symbolTable.intType),scanner.line));
 			
 			ifBody.add(new Node(NodeKind.WHILE,new Node(NodeKind.LSS,new Node(iteratorObj),new Node(designator.type.elements),Type.BOOL),whileBody.get(),scanner.line));

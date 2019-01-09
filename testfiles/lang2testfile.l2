@@ -25,8 +25,7 @@ def main(){
     for i.preis=1500; i.preis<1600; {i.preis=i.preis+1;print "ulu";}{
         print i.preis;
         print " - ";
-        }
-
+    }
 
     i.preis=testproc(i.preis);
 
