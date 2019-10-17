@@ -10,7 +10,7 @@
 
 [Dokument](diplomarbeit_kempinger.pdf) 
 <br>
-[Präsentation](https://docs.google.com/presentation/d/1ohpukokDTDX9GDIN6kHwtNhM4LCp17UErPJclR3NXAA/edit)
+[Präsentation](https://drive.google.com/file/d/17lhGWlpt_TXJtrNJqyimgH2MsbtjSYYm/view)
 <br>
 <br>
 
