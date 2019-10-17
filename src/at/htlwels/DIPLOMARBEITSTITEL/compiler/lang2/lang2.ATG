@@ -273,7 +273,7 @@ Type<out Type type> Ident<out String name>      (.obj=new Obj(ObjKind.VAR,name,t
 
 
 //##################################################################################
-Statement<out Node statement>                   (. statement=null;Node expression=null; Node designator=null;NodeList innerStatements=new NodeList();.)
+Statement<out Node statement>                   (. statement=null;Node expression=null; Node designator=null;NodeList innerStatements=new NodeList();Node filterCondition=null;boolean isFilter=false;.)
 =
 (
 IF(isCall())ProcCall<out statement>
@@ -283,13 +283,13 @@ lineending
 | ReturnStatement<out statement>
 | lineending
 | "print" Expr<out expression> lineending       (. statement=new Node(NodeKind.PRINT,expression,null,scanner.line);.)
-| "foreach" Ident<out String variable> ("<-"|"<="|"in") Designator<out designator> //"if" Condition<out Node condition>
+| "foreach" Ident<out String variable> ("<-"|"<="|"in") Designator<out designator>
 (.
 if(designator.type.kind==Type.ARR){
 symbolTable.insert(ObjKind.VAR,variable,designator.type.elemType);
 }
 .)
-Statement<out Node everyTime>
+["filter" Condition<out filterCondition>(.isFilter=true;.)] Statement<out Node everyTime>
 (.
 
 if(designator.type.kind==Type.ARR){
@@ -297,24 +297,25 @@ if(designator.type.kind==Type.ARR){
   //Sin.commit(new Sin("ERROR -- no array type to iterate over"));
 //else{
 
-NodeList ifBody=new NodeList();
+NodeList foreachBody=new NodeList();
 NodeList whileBody=new NodeList();
 
 Obj iteratorObj=new Obj(ObjKind.VAR,("$iterator" + foreachVariable++),symbolTable.intType);
 symbolTable.insert(iteratorObj);
 Obj variableObj=symbolTable.find(variable);
 
-ifBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(0),scanner.line));
+foreachBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(0),scanner.line));
 
 Node foreachVariableNode=new Node(NodeKind.INDEX,designator,new Node(iteratorObj),designator.type.elemType);
 //whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.AND,condition,new Node(NodeKind.NEQ,new Node(NodeKind.INDEX,designator,new Node(iteratorObj),0),new Node(0),0),Type.BOOL),everyTime,scanner.line));
 whileBody.add(new Node(NodeKind.ASSIGN,new Node(variableObj),foreachVariableNode,scanner.line));
+if(isFilter)
+whileBody.add(new Node(NodeKind.IF,filterCondition,new Node(NodeKind.IF,new Node(NodeKind.NEQ,foreachVariableNode,new Node(0),Type.BOOL),everyTime,scanner.line),scanner.line));
+else
 whileBody.add(new Node(NodeKind.IF,new Node(NodeKind.NEQ,foreachVariableNode,new Node(0),Type.BOOL),everyTime,scanner.line));
 whileBody.add(new Node(NodeKind.ASSIGN,new Node(iteratorObj),new Node(NodeKind.PLUS,new Node(iteratorObj),new Node(1),symbolTable.intType),scanner.line));
-
-ifBody.add(new Node(NodeKind.WHILE,new Node(NodeKind.LSS,new Node(iteratorObj),new Node(designator.type.elements),Type.BOOL),whileBody.get(),scanner.line));
-
-statement=ifBody.get();
+foreachBody.add(new Node(NodeKind.WHILE,new Node(NodeKind.LSS,new Node(iteratorObj),new Node(designator.type.elements),Type.BOOL),whileBody.get(),scanner.line));
+statement=foreachBody.get();
 
 }
 

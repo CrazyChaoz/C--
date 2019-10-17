@@ -67,8 +67,6 @@ public class SymbolTable implements Serializable {
     }
 
     public Obj insert(Obj object) {
-
-
         Obj found = lookup(object.name);
 
         if (object.isForward) {

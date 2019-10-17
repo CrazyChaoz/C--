@@ -184,8 +184,10 @@ Type<out Type type> Ident<out String name>      (.Obj o=new Obj(ObjKind.CON,name
 VarDecl
 =
 Type<out Type type>
-Ident<out String name>                          (.symbolTable.insert(ObjKind.VAR,name,type);.)
-{"," Ident<out String name1>                    (.symbolTable.insert(ObjKind.VAR,name1,type);.)
+Ident<out String name>
+(.symbolTable.insert(ObjKind.VAR,name,type);.)
+{"," Ident<out String name1>
+(.symbolTable.insert(ObjKind.VAR,name1,type);.)
 }
 ";".
 //##################################################################################

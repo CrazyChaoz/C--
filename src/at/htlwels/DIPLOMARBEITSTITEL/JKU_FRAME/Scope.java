@@ -14,7 +14,7 @@ The scopes are linked by the "outer" pointer.
 import java.io.Serializable;
 
 public class Scope implements Serializable {
-    public Scope outer;        // to outer scope
-    public Obj locals;    // to local variables of this scope
-    public int size = 0;    // total size of variables in this scope
+    public Scope outer;    // to outer scope
+    public Obj locals;     // to local variables of this scope
+    public int size = 0;   // total size of variables in this scope
 }

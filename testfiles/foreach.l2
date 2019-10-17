@@ -1,11 +1,21 @@
-def main(){
-    int[20] array;
-    array[0]=3;
-    array[1]=13;
-    array[2]=12;
 
-    foreach iterator in array {
-        print iterator;
+struct Laptop{
+    int kosten;
+    int diagonale;
+    string name;
+}
+
+
+def main(){
+    Laptop[20] array;
+    array[0].kosten=3000;
+    array[0].diagonale=15;
+    array[0].name="SuperTop";
+
+    foreach var in array{
+        print var.name;
+        print var.kosten;
         print "asd";
     }
+
 }

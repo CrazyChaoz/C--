@@ -26,7 +26,7 @@ public final class Node implements Serializable {
     public Obj      obj;        // object node of an IDENT
     public int      val;        // value of an INTCON or CHARCON
     public float    fVal;       // value of a FLOATCON
-    public String   strVal;
+    public String   strVal;     //
 
 
     // for expression nodes

@@ -1,5 +1,7 @@
 void main() {
-    int i;
+
+    int a,b;
+
     i=0;
     while(i<20){
         print("uwu");
