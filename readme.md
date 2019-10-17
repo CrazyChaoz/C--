@@ -5,6 +5,11 @@
 `in zusammenarbeit mit der `[JKU Linz](ssw.jku.at)
 
 <br>
+
+### Dokument
+
+[Abgegebenes Dokument](diplomarbeit_kempinger.pdf)
+
 <br>
 <br>
 
