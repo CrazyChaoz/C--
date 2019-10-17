@@ -6,10 +6,11 @@
 
 <br>
 
-### Dokument
+### Benotete Dokumente
 
-[Abgegebenes Dokument](diplomarbeit_kempinger.pdf)
-
+[Dokument](diplomarbeit_kempinger.pdf) 
+<br>
+[Präsentation](https://docs.google.com/presentation/d/1ohpukokDTDX9GDIN6kHwtNhM4LCp17UErPJclR3NXAA/edit)
 <br>
 <br>
 
